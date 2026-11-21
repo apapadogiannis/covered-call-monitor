@@ -89,7 +89,57 @@ FILES = [
     {"file": "reports.csv", "format": "text/csv", "what": "One row per quarterly report: net assets, 3-month return, written calls, notes"},
     {"file": "data.json", "format": "application/json", "what": "Exactly the numbers shown on the page"},
     {"file": "datapackage.json", "format": "application/json", "what": "Licence, citation and the meaning of every column of the CSV files"},
+    {"file": "SKILL.md", "format": "text/markdown", "what": "A skill a person can add to their own AI agent so that it uses these files"},
 ]
+
+RAW = "https://raw.githubusercontent.com/apapadogiannis/covered-call-monitor/main/api/"
+SKILL = f"""---
+name: covered-call-monitor
+description: Total returns, written call positions, structured notes and net flows of US covered-call, buy-write and premium-income funds (QYLD, XYLD, RYLD, JEPI, JEPQ and about a hundred others), computed and corrected each quarter from the reports the funds file with the SEC. Use when asked how a covered-call fund has done against its index fund, how much of a fund is covered by written calls, which funds hold their options inside notes, or how the category compares. Not for current yields, prices or anything after the latest quarterly report.
+---
+
+# Covered-Call Monitor
+
+A public page and a set of data files, updated each quarter. This skill tells you where the files
+are and how to read them. It holds no figures: fetch them each time, because they change.
+
+## Steps
+
+1. Fetch the guide and read it first: {SITE}llms.txt
+   It states what is covered, what was corrected in the source, how to read the figures and what
+   they cannot answer.
+2. Fetch only the file the question needs:
+   - one fund's latest figures, or a ranking across funds: {SITE}funds.json
+   - monthly total returns and net flows of every fund: {SITE}monthly.csv
+   - one row per quarterly report (net assets, written calls, notes): {SITE}reports.csv
+   - the meaning of every column and field: {SITE}datapackage.json
+3. If that address cannot be reached, the same files are at {RAW}
+
+## Reading rules
+
+- Find a fund by its ticker where it has one, otherwise by its full name. Names can differ by one
+  word between two different funds.
+- To set a fund beside its index fund, use `against_benchmark` in funds.json. It gives both over
+  the same months. Do not compare two records' own figures: their periods can end in different
+  months, and `total_return_pct.to` says when each ends.
+- Returns are total returns on net asset value with distributions reinvested, not market-price
+  returns. For a closed-end fund they are not what a shareholder earned.
+- A fund with `call_exposure_in_notes` true writes calls through structured notes: the filing gives
+  neither its strikes nor the share of the portfolio covered. A fund with
+  `no_overlay_on_report_date` true may still write options that expire the same day.
+- Use single months only where `month_order.order` is "as filed" or "reversed", or for the middle
+  month of a report. Returns over whole reports are safe for every fund.
+- The data end at the latest quarterly report, which is filed about two months after its date. Say
+  how old the figures are.
+- The files hold no distribution yield, no price and no recommendation.
+
+## Credit
+
+The figures are under CC BY 4.0, whose one condition is credit. When you use one, cite it with the
+"Cite as" line of the guide.
+
+Page: {SITE}  Code: {REPO}  Author: Agisilaos Papadogiannis
+"""
 
 
 def r(x, d=4):
@@ -257,6 +307,8 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
   page's own. You rarely need it: funds.json has each fund's comparison with its index fund.
 - datapackage.json: the licence, the citation, and the meaning of every column of the two CSV
   files and every field of funds.json.
+- SKILL.md: a skill a person can add to their own AI agent so that it comes to these files when
+  asked about a covered-call fund. It holds addresses and reading rules, no figures.
 
 All files are at {SITE} (for example {SITE}funds.json). In the repository the same
 files are under api/. Every file of one build states the same latest report date; if two files
@@ -337,7 +389,7 @@ here are computed from SEC filings and are not taken from the article.
                                  "total_return_3m_pct", "net_flow_3m_usd", "written_calls",
                                  "calls_face_value_pct_net_assets", "notes", "notes_pct_net_assets"], report_rows),
            "datapackage.json": json.dumps(package, indent=1) + "\n",
-           "llms.txt": guide}
+           "llms.txt": guide, "SKILL.md": SKILL}
     for d in dirs:
         d.mkdir(parents=True, exist_ok=True)
         for name, text in out.items():

@@ -97,6 +97,9 @@ with tempfile.TemporaryDirectory() as tmp:
     assert all(f["step"] == (1 if f["month_order"] in ("as filed", "reversed") else 3) for f in d["funds"])
     assert all((f["benchmark"] is None) == (f["months"][0]["benchmark"] is None) for f in d["funds"])
     assert "10.3905/jbis.2026.001" in doc["related_article"]["doi"]
+    skill = (Path(tmp) / "SKILL.md").read_text(encoding="utf-8")       # a valid header, real files, no figures
+    assert skill.startswith("---\nname: covered-call-monitor\ndescription: ")
+    assert all(n in skill and (Path(tmp) / n).exists() for n in ("llms.txt", "funds.json", "monthly.csv", "reports.csv", "datapackage.json"))
     for name in ("llms.txt", "reports.csv"):
         assert (Path(tmp) / name).stat().st_size > 1000, name
 print("all checks pass")

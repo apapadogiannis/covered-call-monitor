@@ -91,6 +91,11 @@
     "file": "datapackage.json",
     "format": "application/json",
     "what": "Licence, citation and the meaning of every column of the CSV files"
+   },
+   {
+    "file": "SKILL.md",
+    "format": "text/markdown",
+    "what": "A skill a person can add to their own AI agent so that it uses these files"
    }
   ]
  },

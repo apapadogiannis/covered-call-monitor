@@ -48,6 +48,8 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
   page's own. You rarely need it: funds.json has each fund's comparison with its index fund.
 - datapackage.json: the licence, the citation, and the meaning of every column of the two CSV
   files and every field of funds.json.
+- SKILL.md: a skill a person can add to their own AI agent so that it comes to these files when
+  asked about a covered-call fund. It holds addresses and reading rules, no figures.
 
 All files are at https://apapadogiannis.github.io/covered-call-monitor/ (for example https://apapadogiannis.github.io/covered-call-monitor/funds.json). In the repository the same
 files are under api/. Every file of one build states the same latest report date; if two files
