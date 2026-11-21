@@ -1,5 +1,9 @@
 """Downloads any quarter of SEC data the monitor does not hold yet. See monitor/update.py."""
-from monitor.update import main
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from monitor.update import main  # noqa: E402
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -30,6 +30,20 @@ jobs:
           SEC_CONTACT: ${{ vars.SEC_CONTACT }}
         run: python3 update.py
 
+      - name: Check the rules and build the page
+        if: always()
+        run: |
+          python3 -I tests/test_monitor.py
+          python3 -I build.py
+          test -s _site/index.html
+
+      - name: Keep the built page with the run
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: page
+          path: _site/
+
       - name: Store the new data in the repository
         if: always()
         run: |
