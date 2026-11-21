@@ -1,5 +1,9 @@
 # Covered-call monitor
 
+[![check](https://github.com/apapadogiannis/covered-call-monitor/actions/workflows/check.yml/badge.svg)](https://github.com/apapadogiannis/covered-call-monitor/actions/workflows/check.yml)
+
+Live at https://apapadogiannis.github.io/covered-call-monitor/
+
 **What does the yield cost?** Covered-call, buy-write and premium-income funds measured each quarter
 from public SEC filings: each fund's total return beside the index fund that holds the same shares,
 the options it had actually written on its last report date, and the money moving in and out.
@@ -45,10 +49,13 @@ site/template.html    the page; the numbers are embedded at build time
 data/nport/<quarter>/ the stored extracts (five small CSV files per quarter)
 data/sources.json     what was downloaded, when, its size and checksum
 tests/test_monitor.py checks of the rules the page depends on
+tests/test_published.py recomputes published fund returns from the stored filings
+reference/            the published returns used as the yardstick
 ```
 
 ```bash
-python3 -I tests/test_monitor.py     # checks
+python3 -I tests/test_monitor.py     # the rules
+python3 -I tests/test_published.py   # published returns reproduced from the filings
 python3 -I build.py                  # writes _site/index.html and _site/data.json
 python3 update.py                    # downloads any quarter not yet stored (needs SEC_CONTACT)
 ```
@@ -58,6 +65,26 @@ Python 3.11 or later, standard library only.
 A GitHub Actions workflow runs the update on the sixth of each month. It does nothing unless the SEC
 has posted a new quarter. The SEC asks automated clients to declare a contact; the workflow reads it
 from the repository variable `SEC_CONTACT`, and it is never written to a file.
+
+## How the check works
+
+The badge at the top is green when all of the following pass, at every change and after every
+quarterly update. The page is published only if they do.
+
+1. **The rules.** `tests/test_monitor.py` tests each rule the figures depend on with small made-up
+   cases: joining reports into monthly series, reading a fund that files its months newest first,
+   dropping months before a fund existed, repairing a strike that was cut short, leaving out a month
+   with a negative flow.
+2. **Published returns.** `tests/test_published.py` recomputes, from the SEC filings stored in
+   `data/`, twelve total returns that a third party has published for two funds (one month to five
+   years, to 30 June 2026) and fails if any differs by more than the published rounding. The figures
+   are in `reference/published_returns.csv`. One of the two funds files its months newest first and
+   the other does not, so both readings are covered.
+3. **The build.** The page and the data files are built, and the files in `api/` must be exactly the
+   ones the build produces.
+
+What the check does not show: that the funds' own filings are right, or that funds other than the two
+in the reference match their published returns.
 
 ## Data and licensing
 

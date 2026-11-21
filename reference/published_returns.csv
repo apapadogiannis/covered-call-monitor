@@ -1,0 +1,13 @@
+ticker,as_of,period,published_pct,basis,source,retrieved
+QYLD,2026-06-30,1 month,3.0,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/QYLD,2026-11-21
+QYLD,2026-06-30,3 months,10.8,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/QYLD,2026-11-21
+QYLD,2026-06-30,year to date,10.8,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/QYLD,2026-11-21
+QYLD,2026-06-30,1 year,24.4,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/QYLD,2026-11-21
+QYLD,2026-06-30,3 years a year,14.4,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/QYLD,2026-11-21
+QYLD,2026-06-30,5 years a year,8.7,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/QYLD,2026-11-21
+JEPI,2026-06-30,1 month,1.5,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/JEPI,2026-11-21
+JEPI,2026-06-30,3 months,1.9,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/JEPI,2026-11-21
+JEPI,2026-06-30,year to date,2.2,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/JEPI,2026-11-21
+JEPI,2026-06-30,1 year,7.8,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/JEPI,2026-11-21
+JEPI,2026-06-30,3 years a year,9.0,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/JEPI,2026-11-21
+JEPI,2026-06-30,5 years a year,7.5,NAV,AAII ETF Evaluator https://www.aaii.com/etf/ticker/JEPI,2026-11-21

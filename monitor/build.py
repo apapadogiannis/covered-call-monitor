@@ -288,7 +288,9 @@ def static_text(data: dict) -> dict[str, str]:
              "<th>Index fund, total return, 3 years</th><th>Longest period on file</th><th>Fund, total return</th>"
              "<th>Index fund, total return</th></tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
              "<p class=\"note\">Total return with every distribution reinvested. Three years to "
-             f"{mon(data['detail'][0]['months'][-1]['month'])}.</p>")
+             f"{mon(data['detail'][0]['months'][-1]['month'])}. The longest period on file is each fund's own, "
+             "from the first month in the SEC's data sets or the fund's first full month, and the index fund is "
+             "measured over the same months.</p>")
     return {
         "<!--LEDE-->": (f"This site measures what covered-call funds earned once their distributions are counted. For "
                         f"each of {m['funds_in_category']} US funds it shows the total return, with every distribution "

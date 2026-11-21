@@ -1,0 +1,58 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Check the rules the figures depend on
+        run: python3 -I tests/test_monitor.py
+
+      - name: Reproduce published fund returns from the stored filings
+        run: python3 -I tests/test_published.py
+
+      - name: Build the page and the data files
+        run: |
+          python3 -I build.py
+          test -s _site/index.html
+          python3 -I -c "import json; d=json.load(open('_site/data.json')); assert d['funds'] and d['detail'] and d['meta']['funds_in_category'] > 50; print('reports to', d['meta']['reports_to'])"
+
+      - name: The data files in api/ are the ones the build produces
+        run: git diff --exit-code -- api
+
+      - name: Hand the built page to GitHub Pages
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site/
+
+  publish:
+    needs: check
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish the page
+        id: deployment
+        uses: actions/deploy-pages@v5

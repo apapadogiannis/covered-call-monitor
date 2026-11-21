@@ -3,8 +3,6 @@ name: update
 on:
   schedule:
     - cron: "17 5 6 * *"   # sixth of each month; does nothing unless the SEC has posted a new quarter
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -34,6 +32,7 @@ jobs:
         if: always()
         run: |
           python3 -I tests/test_monitor.py
+          python3 -I tests/test_published.py
           python3 -I build.py
           test -s _site/index.html
 
