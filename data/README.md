@@ -51,3 +51,10 @@ stored: it is about 450 MB per quarter and can be downloaded again from the SEC.
 - **Share classes.** Where a report lists several classes, the first class identifier is used.
 - **A fund's identity can change.** The Invesco QQQ Trust has no series identifier before it was
   reorganised and a new one after. Benchmarks are therefore matched by name as well.
+
+## Tickers
+
+`tickers.csv` (series, share class, ticker) is cut from the SEC's list of mutual fund and ETF
+tickers, `https://www.sec.gov/files/company_tickers_mf.json`, at each update, for the funds on file.
+It is a convenience for finding a fund: no figure depends on it. The list has no entry for
+closed-end funds or for funds that are no longer listed.

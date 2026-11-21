@@ -48,7 +48,7 @@
      {
       "name": "ticker",
       "type": "string",
-      "description": "Ticker symbol; given only for the five funds shown in detail and the benchmarks"
+      "description": "Ticker symbol of the fund, or of its first share class, from the SEC's list of fund tickers; empty where that list has none (closed-end funds, and funds no longer listed)"
      },
      {
       "name": "name",
@@ -171,7 +171,7 @@
     },
     {
      "name": "ticker",
-     "description": "Ticker symbol; given only for the five funds shown in detail and the benchmarks, otherwise null. Find other funds by name"
+     "description": "Ticker symbol of the fund, or of its first share class, from the SEC's list of fund tickers; null where that list has none (closed-end funds, and funds no longer listed). Find those by name"
     },
     {
      "name": "role",

@@ -32,7 +32,7 @@ ARTICLE = {"citation": "Papadogiannis, A. (2026). High Yield, Capped Gains: Mech
 
 MONTHLY_FIELDS = [
     ("id", "string", "SEC series identifier of the fund (S followed by nine digits). A few funds, mostly closed-end, have none; their id is the fund name as filed"),
-    ("ticker", "string", "Ticker symbol; given only for the five funds shown in detail and the benchmarks"),
+    ("ticker", "string", "Ticker symbol of the fund, or of its first share class, from the SEC's list of fund tickers; empty where that list has none (closed-end funds, and funds no longer listed)"),
     ("name", "string", "Fund name as filed in its latest report"),
     ("month", "yearmonth", "Calendar month, YYYY-MM"),
     ("total_return_pct", "number", "Total return on net asset value for the month in per cent, distributions reinvested, to the precision filed; empty if not filed or if the month is before the fund's first full month"),
@@ -57,7 +57,7 @@ REPORT_FIELDS = [
 FUND_FIELDS = [   # funds.json, one record per fund
     ("id", "As in the CSV files: the SEC series identifier, or the fund name where the fund has none"),
     ("name", "Fund name as filed in its latest report"),
-    ("ticker", "Ticker symbol; given only for the five funds shown in detail and the benchmarks, otherwise null. Find other funds by name"),
+    ("ticker", "Ticker symbol of the fund, or of its first share class, from the SEC's list of fund tickers; null where that list has none (closed-end funds, and funds no longer listed). Find those by name"),
     ("role", "fund, or benchmark for the three index funds used for comparison"),
     ("name_type", "Which of the three words the fund's name uses: Covered call, Buy-write or Premium income"),
     ("benchmark", "Ticker of the index fund the page sets beside this fund; null where no index fund applies"),
@@ -102,8 +102,20 @@ def table(header: list[str], rows: list[list]) -> str:
     return buf.getvalue()
 
 
+def listed_tickers() -> dict[str, str]:
+    """Series -> ticker of its first share class, from data/tickers.csv (the SEC's list of fund
+    tickers, stored by the update). Empty until that file exists."""
+    path = Path(__file__).resolve().parent.parent / "data" / "tickers.csv"
+    out: dict[str, str] = {}
+    if path.exists():
+        for row in sorted(csv.DictReader(path.open(encoding="utf-8")), key=lambda r: r["class_id"], reverse=True):
+            out[row["series_id"]] = row["ticker"]
+    return out
+
+
 def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> list[dict]:
-    tick = {d["series"]: d["ticker"] for d in cfg["detail"]}
+    tick = listed_tickers()
+    tick.update({d["series"]: d["ticker"] for d in cfg["detail"]})
     tick.update({"benchmark:" + b["ticker"]: b["ticker"] for b in cfg["benchmark"]})
     bench_of = {d["series"]: d["benchmark"] for d in cfg["detail"]}
 
@@ -156,6 +168,8 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
     for f in funds:
         if f["role"] == "fund":
             counts[f["month_order"]["order"]] = counts.get(f["month_order"]["order"], 0) + 1
+    n_funds = sum(1 for f in funds if f["role"] == "fund")
+    n_tick = sum(1 for f in funds if f["role"] == "fund" and f["ticker"])
     cite = (f"Papadogiannis, A. (2026). Covered-Call Monitor, data to {meta['reports_to']}. Zenodo. "
             f"https://doi.org/{DOI}")
     credit = {"licence": LICENCE, "cite_as": cite, "doi": f"https://doi.org/{DOI}", "site": SITE, "code": REPO,
@@ -237,7 +251,8 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
   files and every field of funds.json.
 
 All files are at {SITE} (for example {SITE}funds.json). In the repository the same
-files are under api/, except data.json, which exists only on the site.
+files are under api/. Every file of one build states the same latest report date; if two files
+you fetched disagree on it, one is a cached copy, so fetch again.
 
 ## How to read the figures
 
@@ -246,10 +261,11 @@ files are under api/, except data.json, which exists only on the site.
   trade well away from net asset value, it is not what a shareholder earned.
 - A month is the calendar month, written YYYY-MM. Returns compound: multiply (1 + r/100).
 - `id` is the SEC series identifier. A few funds have none and use the fund name. Fund names are
-  as filed. Tickers are given only for the five funds shown in detail and the three benchmarks, so
-  find other funds by name, and check the name in full: "JPMorgan Equity Premium Income ETF" and
-  "JPMorgan Equity Premium Income Fund" are different funds. For a mutual fund the figures are those
-  of the first share class listed.
+  as filed. {n_tick} of the {n_funds} funds carry a ticker; tickers come from the SEC's list of fund
+  tickers, which has none for closed-end funds and for funds no longer listed. Find the others by
+  name, and check a name in full:
+  "JPMorgan Equity Premium Income ETF" and "JPMorgan Equity Premium Income Fund" are different
+  funds. For a mutual fund the figures and the ticker are those of the first share class listed.
 - Returns over whole reports (3, 12, 36, 60 months ending at a report date) do not depend on the
   month order. Use them for any fund. Use single months only where month_order is "as filed" or
   "reversed".

@@ -29,6 +29,8 @@ from monitor.extract import extract
 ROOT = Path(__file__).resolve().parent.parent
 STORE = ROOT / "data" / "nport"
 SOURCES = ROOT / "data" / "sources.json"
+TICKERS = ROOT / "data" / "tickers.csv"
+TICKER_LIST = "https://www.sec.gov/files/company_tickers_mf.json"   # series, share class, ticker
 PAUSE = 5          # seconds between requests
 ATTEMPTS = 4
 
@@ -91,12 +93,38 @@ def published(cfg: dict) -> dict[str, str]:
     return found
 
 
+def tickers() -> None:
+    """Stores the ticker of each share class of the funds on file, from the SEC's list of fund tickers.
+
+    A convenience for finding a fund: no figure depends on it. If the list cannot be read or has
+    changed its layout, the stored file is left as it is and the update goes on.
+    """
+    try:
+        wanted = set()
+        for funds in STORE.glob("*/funds.csv"):
+            with funds.open(encoding="utf-8") as f:
+                head = f.readline().rstrip("\n").split(",")
+                i = head.index("series_id")
+                wanted.update(line.split(",")[i] for line in f)
+        doc = json.loads(fetch(TICKER_LIST).decode("utf-8"))
+        col = {name: k for k, name in enumerate(doc["fields"])}
+        rows = sorted({(r[col["seriesId"]], r[col["classId"]], str(r[col["symbol"]]).upper())
+                       for r in doc["data"] if r[col["seriesId"]] in wanted and r[col["symbol"]]})
+        if not rows:
+            raise ValueError("no ticker found for any stored fund")
+        TICKERS.write_text("series_id,class_id,ticker\n" + "".join(",".join(r) + "\n" for r in rows), encoding="utf-8")
+        print(f"Tickers: {len(rows)} share classes of {len({r[0] for r in rows})} funds.", flush=True)
+    except Exception as e:
+        print(f"Tickers not updated ({e!r}); the stored list is kept.", flush=True)
+
+
 def main() -> int:
     cfg = tomllib.loads((ROOT / "config" / "funds.toml").read_text(encoding="utf-8"))
     wanted = quarters_since(cfg["source"]["first_quarter"], date.today())
     missing = [q for q in wanted if not (STORE / q / "funds.csv").exists()]
     if not missing:
         print("Nothing to download: every wanted quarter is stored.")
+        tickers()
         return 0
 
     listing = published(cfg)
@@ -127,6 +155,7 @@ def main() -> int:
         sources["quarters"] = dict(sorted(sources["quarters"].items()))
         SOURCES.write_text(json.dumps(sources, indent=2) + "\n", encoding="utf-8")
     print(f"Loaded {loaded} quarter(s).")
+    tickers()
     return 0
 
 

@@ -463,7 +463,8 @@ def build(out: Path) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     from monitor.publish import publish          # the files written for programs and AI agents
     data["meta"]["files"] = publish(cfg, by_fund, series, orders, data, cutoff, [ROOT / "api", out])
-    (out / "data.json").write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")
+    for d in (ROOT / "api", out):
+        (d / "data.json").write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")
     template = (ROOT / "site" / "template.html").read_text(encoding="utf-8")
     ld = {"@context": "https://schema.org", "@type": "Dataset", "name": "Covered-Call Monitor",
           "description": "Total returns, written call positions, structured notes and net flows of US-registered "

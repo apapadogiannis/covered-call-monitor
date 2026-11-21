@@ -19,6 +19,7 @@ SEC files, which file to use for what, and what not to use it for. The data are 
 | `api/funds.json` | one record per fund: identity, status, latest figures, and whether its monthly figures can be trusted month by month |
 | `api/monthly.csv` | monthly total return and net flow for every fund and benchmark, from 2019 |
 | `api/reports.csv` | one row per quarterly report: net assets, 3-month return, written calls, notes |
+| `api/data.json` | what the page draws from; the same file the page serves |
 | `api/datapackage.json` | the licence, the citation and the meaning of every column of the CSV files |
 | `api/llms.txt` | the guide |
 

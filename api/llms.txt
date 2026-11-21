@@ -50,7 +50,8 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
   files and every field of funds.json.
 
 All files are at https://apapadogiannis.github.io/covered-call-monitor/ (for example https://apapadogiannis.github.io/covered-call-monitor/funds.json). In the repository the same
-files are under api/, except data.json, which exists only on the site.
+files are under api/. Every file of one build states the same latest report date; if two files
+you fetched disagree on it, one is a cached copy, so fetch again.
 
 ## How to read the figures
 
@@ -59,10 +60,11 @@ files are under api/, except data.json, which exists only on the site.
   trade well away from net asset value, it is not what a shareholder earned.
 - A month is the calendar month, written YYYY-MM. Returns compound: multiply (1 + r/100).
 - `id` is the SEC series identifier. A few funds have none and use the fund name. Fund names are
-  as filed. Tickers are given only for the five funds shown in detail and the three benchmarks, so
-  find other funds by name, and check the name in full: "JPMorgan Equity Premium Income ETF" and
-  "JPMorgan Equity Premium Income Fund" are different funds. For a mutual fund the figures are those
-  of the first share class listed.
+  as filed. 5 of the 109 funds carry a ticker; tickers come from the SEC's list of fund
+  tickers, which has none for closed-end funds and for funds no longer listed. Find the others by
+  name, and check a name in full:
+  "JPMorgan Equity Premium Income ETF" and "JPMorgan Equity Premium Income Fund" are different
+  funds. For a mutual fund the figures and the ticker are those of the first share class listed.
 - Returns over whole reports (3, 12, 36, 60 months ending at a report date) do not depend on the
   month order. Use them for any fund. Use single months only where month_order is "as filed" or
   "reversed".
