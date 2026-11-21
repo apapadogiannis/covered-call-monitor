@@ -1,5 +1,17 @@
 {
  "about": "Covered-Call Monitor. See llms.txt for what each file is and how the figures are made.",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. Covered-Call Monitor, data to 2026-07-31. https://github.com/apapadogiannis/covered-call-monitor",
+ "describe_as": "Covered-Call Monitor, by Agisilaos Papadogiannis: figures computed and corrected from the reports US funds file with the SEC (Form N-PORT).",
+ "author": {
+  "name": "Agisilaos Papadogiannis",
+  "orcid": "https://orcid.org/0009-0002-7753-7052",
+  "url": "https://github.com/apapadogiannis"
+ },
  "reports_to": "2026-07-31",
  "first_month": "2019-08",
  "source": "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets",

@@ -1,0 +1,158 @@
+{
+ "name": "covered-call-monitor",
+ "title": "Covered-Call Monitor",
+ "description": "Covered-Call Monitor, by Agisilaos Papadogiannis: figures computed and corrected from the reports US funds file with the SEC (Form N-PORT).",
+ "homepage": "https://github.com/apapadogiannis/covered-call-monitor",
+ "version": "2026-07-31",
+ "licenses": [
+  {
+   "name": "CC-BY-4.0",
+   "path": "https://creativecommons.org/licenses/by/4.0/",
+   "title": "Creative Commons Attribution 4.0"
+  }
+ ],
+ "contributors": [
+  {
+   "title": "Agisilaos Papadogiannis",
+   "role": "author",
+   "path": "https://orcid.org/0009-0002-7753-7052"
+  }
+ ],
+ "citation": "Papadogiannis, A. Covered-Call Monitor, data to 2026-07-31. https://github.com/apapadogiannis/covered-call-monitor",
+ "sources": [
+  {
+   "title": "SEC Form N-PORT data sets (US government work, public domain)",
+   "path": "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets"
+  }
+ ],
+ "resources": [
+  {
+   "name": "monthly",
+   "path": "monthly.csv",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "schema": {
+    "fields": [
+     {
+      "name": "id",
+      "type": "string",
+      "description": "SEC series identifier of the fund, or benchmark:<ticker> where a benchmark has none"
+     },
+     {
+      "name": "ticker",
+      "type": "string",
+      "description": "Ticker symbol; given only for the five funds shown in detail and the benchmarks"
+     },
+     {
+      "name": "name",
+      "type": "string",
+      "description": "Fund name as filed in its latest report"
+     },
+     {
+      "name": "month",
+      "type": "yearmonth",
+      "description": "Calendar month, YYYY-MM"
+     },
+     {
+      "name": "total_return_pct",
+      "type": "number",
+      "description": "Total return for the month in per cent, distributions reinvested; empty if not filed"
+     },
+     {
+      "name": "net_flow_usd",
+      "type": "number",
+      "description": "Sales plus reinvestments less redemptions, in US dollars; empty if not filed or not used"
+     },
+     {
+      "name": "month_order",
+      "type": "string",
+      "description": "as filed, reversed or not determined: how the fund's three monthly returns per report were read"
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "reports",
+   "path": "reports.csv",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "schema": {
+    "fields": [
+     {
+      "name": "id",
+      "type": "string",
+      "description": "SEC series identifier of the fund"
+     },
+     {
+      "name": "ticker",
+      "type": "string",
+      "description": "Ticker symbol, where given"
+     },
+     {
+      "name": "name",
+      "type": "string",
+      "description": "Fund name as filed in that report"
+     },
+     {
+      "name": "report_date",
+      "type": "date",
+      "description": "Date the report describes"
+     },
+     {
+      "name": "filing_date",
+      "type": "date",
+      "description": "Date the report was filed with the SEC"
+     },
+     {
+      "name": "net_assets_usd",
+      "type": "number",
+      "description": "Net assets on the report date, in US dollars"
+     },
+     {
+      "name": "total_return_3m_pct",
+      "type": "number",
+      "description": "Total return over the three months ending at the report date, in per cent; does not depend on month order"
+     },
+     {
+      "name": "net_flow_3m_usd",
+      "type": "number",
+      "description": "Net flow over those three months, in US dollars; empty if a month was not used"
+     },
+     {
+      "name": "written_calls",
+      "type": "integer",
+      "description": "Number of written call positions on the report date"
+     },
+     {
+      "name": "calls_face_value_pct_net_assets",
+      "type": "number",
+      "description": "Contracts x 100 x strike of the written calls, as per cent of net assets; empty if not computable"
+     },
+     {
+      "name": "notes",
+      "type": "integer",
+      "description": "Number of structured notes held"
+     },
+     {
+      "name": "notes_pct_net_assets",
+      "type": "number",
+      "description": "Structured notes as per cent of net assets"
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "funds",
+   "path": "funds.json",
+   "format": "json",
+   "mediatype": "application/json",
+   "description": "One record per fund; see llms.txt"
+  }
+ ]
+}

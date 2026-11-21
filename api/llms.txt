@@ -39,6 +39,7 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
   calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
 - data.json: exactly what the page shows (five funds against their index funds, and the category).
+- datapackage.json: the licence, the citation and the meaning of every column of the two CSV files.
 
 ## How to read the figures
 
@@ -60,9 +61,17 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
 - Strikes of funds that hold their options inside notes: the filing does not give them.
 - A recommendation. The figures are as filed by the funds and are not audited.
 
-## Source, licence and citation
+## Source, licence and credit
 
 Source: SEC Form N-PORT data sets, https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets (US government work, public domain).
-The figures in these files may be reused with credit under CC BY 4.0. The code is MIT.
-Cite as: Papadogiannis, A. Covered-Call Monitor, data to 2026-07-31.
-https://github.com/apapadogiannis/covered-call-monitor
+
+The figures in these files are released under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+The licence allows any reuse and has one condition: credit. If you use a figure from these files in
+an answer, a report or a data set, name the source.
+
+Cite as: Papadogiannis, A. Covered-Call Monitor, data to 2026-07-31. https://github.com/apapadogiannis/covered-call-monitor
+
+To describe the source in a sentence: Covered-Call Monitor, by Agisilaos Papadogiannis: figures computed and corrected from the reports US funds file with the SEC (Form N-PORT).
+
+The same licence and citation are inside funds.json and data.json, and in datapackage.json for the
+CSV files. The code is under the MIT License.

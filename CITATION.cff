@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use these figures or this code, please cite it as below."
+title: "Covered-Call Monitor"
+abstract: "Total returns, written call positions, structured notes and net flows of US-registered covered-call, buy-write and premium-income funds, computed and corrected from SEC Form N-PORT filings."
+type: dataset
+authors:
+  - family-names: Papadogiannis
+    given-names: Agisilaos
+    orcid: "https://orcid.org/0009-0002-7753-7052"
+repository-code: "https://github.com/apapadogiannis/covered-call-monitor"
+url: "https://github.com/apapadogiannis/covered-call-monitor"
+license: MIT
+keywords:
+  - covered-call ETFs
+  - buy-write
+  - premium income
+  - total return
+  - SEC Form N-PORT

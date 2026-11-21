@@ -78,6 +78,15 @@ with tempfile.TemporaryDirectory() as tmp:
     jepi = {r["month"]: float(r["total_return_pct"]) for r in rows if r["ticker"] == "JEPI" and r["total_return_pct"]}
     page = {m["month"]: m["fund"] for f in d["detail"] if f["ticker"] == "JEPI" for m in f["months"]}
     assert all(abs(jepi[m] - v) < 1e-5 for m, v in page.items())
+    # Credit travels with the data: licence and citation are inside the JSON files and the data package.
+    doc = json.loads((Path(tmp) / "funds.json").read_text(encoding="utf-8"))
+    pkg = json.loads((Path(tmp) / "datapackage.json").read_text(encoding="utf-8"))
+    assert doc["licence"]["name"] == "CC-BY-4.0" and "Papadogiannis" in doc["cite_as"] == pkg["citation"]
+    assert d["meta"]["credit"]["cite_as"] == doc["cite_as"] and doc["cite_as"] in (Path(tmp) / "llms.txt").read_text(encoding="utf-8")
+    header = (Path(tmp) / "monthly.csv").open(encoding="utf-8").readline().strip().split(",")
+    assert header == [f["name"] for f in pkg["resources"][0]["schema"]["fields"]]
+    header = (Path(tmp) / "reports.csv").open(encoding="utf-8").readline().strip().split(",")
+    assert header == [f["name"] for f in pkg["resources"][1]["schema"]["fields"]]
     for name in ("llms.txt", "reports.csv"):
         assert (Path(tmp) / name).stat().st_size > 1000, name
 print("all checks pass")

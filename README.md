@@ -16,6 +16,7 @@ SEC files, which file to use for what, and what not to use it for. The data are 
 | `api/funds.json` | one record per fund: identity, status, latest figures, and whether its monthly figures can be trusted month by month |
 | `api/monthly.csv` | monthly total return and net flow for every fund and benchmark, from 2019 |
 | `api/reports.csv` | one row per quarterly report: net assets, 3-month return, written calls, notes |
+| `api/datapackage.json` | the licence, the citation and the meaning of every column of the CSV files |
 | `api/llms.txt` | the guide |
 
 These files are rebuilt from `data/` by `build.py` and checked by the tests. Do not edit them by hand.
@@ -38,7 +39,7 @@ monitor/update.py     the only code that uses the network: downloads the SEC's q
 monitor/extract.py    cuts one quarterly data set down to the followed funds
 monitor/build.py      joins the quarters and computes everything the page shows
 monitor/publish.py    writes the files for programs and AI agents (api/)
-api/                  those files: funds.json, monthly.csv, reports.csv, llms.txt
+api/                  those files: funds.json, monthly.csv, reports.csv, datapackage.json, llms.txt
 site/template.html    the page; the numbers are embedded at build time
 data/nport/<quarter>/ the stored extracts (five small CSV files per quarter)
 data/sources.json     what was downloaded, when, its size and checksum
@@ -64,7 +65,9 @@ Source: US Securities and Exchange Commission, Form N-PORT data sets
 government in the public domain. `data/README.md` describes the stored files and the known quirks of
 the source. Figures are as filed by the funds and are not audited or corrected here.
 
-Code: MIT. Extracted tables: public domain, as their source.
+Code: MIT. Extracted tables in `data/`: public domain, as their source. The computed figures in
+`api/` and on the page: CC BY 4.0, which allows any reuse with credit. Cite as given in
+`CITATION.cff` and in `api/llms.txt`.
 
 ## Disclaimer
 

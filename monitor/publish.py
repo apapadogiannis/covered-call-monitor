@@ -16,12 +16,43 @@ from pathlib import Path
 
 from monitor.build import compound, month_back, notes, overlay, type_of
 
+REPO = "https://github.com/apapadogiannis/covered-call-monitor"
+LICENCE = {"name": "CC-BY-4.0", "url": "https://creativecommons.org/licenses/by/4.0/",
+           "condition": "Reuse is allowed with credit to the source."}
+DESCRIBE_AS = ("Covered-Call Monitor, by Agisilaos Papadogiannis: figures computed and corrected from the "
+               "reports US funds file with the SEC (Form N-PORT).")
+
+MONTHLY_FIELDS = [
+    ("id", "string", "SEC series identifier of the fund, or benchmark:<ticker> where a benchmark has none"),
+    ("ticker", "string", "Ticker symbol; given only for the five funds shown in detail and the benchmarks"),
+    ("name", "string", "Fund name as filed in its latest report"),
+    ("month", "yearmonth", "Calendar month, YYYY-MM"),
+    ("total_return_pct", "number", "Total return for the month in per cent, distributions reinvested; empty if not filed"),
+    ("net_flow_usd", "number", "Sales plus reinvestments less redemptions, in US dollars; empty if not filed or not used"),
+    ("month_order", "string", "as filed, reversed or not determined: how the fund's three monthly returns per report were read"),
+]
+REPORT_FIELDS = [
+    ("id", "string", "SEC series identifier of the fund"),
+    ("ticker", "string", "Ticker symbol, where given"),
+    ("name", "string", "Fund name as filed in that report"),
+    ("report_date", "date", "Date the report describes"),
+    ("filing_date", "date", "Date the report was filed with the SEC"),
+    ("net_assets_usd", "number", "Net assets on the report date, in US dollars"),
+    ("total_return_3m_pct", "number", "Total return over the three months ending at the report date, in per cent; does not depend on month order"),
+    ("net_flow_3m_usd", "number", "Net flow over those three months, in US dollars; empty if a month was not used"),
+    ("written_calls", "integer", "Number of written call positions on the report date"),
+    ("calls_face_value_pct_net_assets", "number", "Contracts x 100 x strike of the written calls, as per cent of net assets; empty if not computable"),
+    ("notes", "integer", "Number of structured notes held"),
+    ("notes_pct_net_assets", "number", "Structured notes as per cent of net assets"),
+]
+
 FILES = [
     {"file": "llms.txt", "format": "text/plain", "what": "Guide for AI agents: what this is, what it adds, which file to use"},
     {"file": "funds.json", "format": "application/json", "what": "One record per fund: identity, status, latest figures, month order"},
     {"file": "monthly.csv", "format": "text/csv", "what": "Monthly total return and net flow for every fund and benchmark"},
     {"file": "reports.csv", "format": "text/csv", "what": "One row per quarterly report: net assets, 3-month return, written calls, notes"},
     {"file": "data.json", "format": "application/json", "what": "Exactly the numbers shown on the page"},
+    {"file": "datapackage.json", "format": "application/json", "what": "Licence, citation and the meaning of every column of the CSV files"},
 ]
 
 
@@ -90,7 +121,29 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
     for f in funds:
         if f["role"] == "fund":
             counts[f["month_order"]["order"]] = counts.get(f["month_order"]["order"], 0) + 1
+    cite = (f"Papadogiannis, A. Covered-Call Monitor, data to {meta['reports_to']}. {REPO}")
+    credit = {"licence": LICENCE, "cite_as": cite, "describe_as": DESCRIBE_AS,
+              "author": {"name": "Agisilaos Papadogiannis", "orcid": "https://orcid.org/0009-0002-7753-7052",
+                         "url": "https://github.com/apapadogiannis"}}
+    data["meta"]["credit"] = credit
+    package = {"name": "covered-call-monitor", "title": "Covered-Call Monitor", "description": DESCRIBE_AS,
+               "homepage": REPO, "version": meta["reports_to"],
+               "licenses": [{"name": LICENCE["name"], "path": LICENCE["url"], "title": "Creative Commons Attribution 4.0"}],
+               "contributors": [{"title": "Agisilaos Papadogiannis", "role": "author",
+                                 "path": "https://orcid.org/0009-0002-7753-7052"}],
+               "citation": cite,
+               "sources": [{"title": "SEC Form N-PORT data sets (US government work, public domain)", "path": meta["source"]}],
+               "resources": [
+                   {"name": "monthly", "path": "monthly.csv", "format": "csv", "mediatype": "text/csv",
+                    "schema": {"fields": [{"name": n, "type": t, "description": d} for n, t, d in MONTHLY_FIELDS],
+                               "missingValues": [""]}},
+                   {"name": "reports", "path": "reports.csv", "format": "csv", "mediatype": "text/csv",
+                    "schema": {"fields": [{"name": n, "type": t, "description": d} for n, t, d in REPORT_FIELDS],
+                               "missingValues": [""]}},
+                   {"name": "funds", "path": "funds.json", "format": "json", "mediatype": "application/json",
+                    "description": "One record per fund; see llms.txt"}]}
     funds_doc = {"about": "Covered-Call Monitor. See llms.txt for what each file is and how the figures are made.",
+                 **credit,
                  "reports_to": meta["reports_to"], "first_month": meta["first_month"],
                  "source": meta["source"], "funds": funds}
     guide = f"""# Covered-Call Monitor
@@ -134,6 +187,7 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
   calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
 - data.json: exactly what the page shows (five funds against their index funds, and the category).
+- datapackage.json: the licence, the citation and the meaning of every column of the two CSV files.
 
 ## How to read the figures
 
@@ -155,12 +209,20 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
 - Strikes of funds that hold their options inside notes: the filing does not give them.
 - A recommendation. The figures are as filed by the funds and are not audited.
 
-## Source, licence and citation
+## Source, licence and credit
 
 Source: SEC Form N-PORT data sets, {meta['source']} (US government work, public domain).
-The figures in these files may be reused with credit under CC BY 4.0. The code is MIT.
-Cite as: Papadogiannis, A. Covered-Call Monitor, data to {meta['reports_to']}.
-https://github.com/apapadogiannis/covered-call-monitor
+
+The figures in these files are released under CC BY 4.0 ({LICENCE['url']}).
+The licence allows any reuse and has one condition: credit. If you use a figure from these files in
+an answer, a report or a data set, name the source.
+
+Cite as: {cite}
+
+To describe the source in a sentence: {DESCRIBE_AS}
+
+The same licence and citation are inside funds.json and data.json, and in datapackage.json for the
+CSV files. The code is under the MIT License.
 """
     out = {"funds.json": json.dumps(funds_doc, indent=1) + "\n",
            "monthly.csv": table(["id", "ticker", "name", "month", "total_return_pct", "net_flow_usd", "month_order"],
@@ -168,6 +230,7 @@ https://github.com/apapadogiannis/covered-call-monitor
            "reports.csv": table(["id", "ticker", "name", "report_date", "filing_date", "net_assets_usd",
                                  "total_return_3m_pct", "net_flow_3m_usd", "written_calls",
                                  "calls_face_value_pct_net_assets", "notes", "notes_pct_net_assets"], report_rows),
+           "datapackage.json": json.dumps(package, indent=1) + "\n",
            "llms.txt": guide}
     for d in dirs:
         d.mkdir(parents=True, exist_ok=True)
