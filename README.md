@@ -6,6 +6,20 @@ the options it had actually written on its last report date, and the money movin
 
 Status: first version, private until reviewed.
 
+## For AI agents and programs
+
+Read [`api/llms.txt`](api/llms.txt) first. It says what this data set is, what it adds over the raw
+SEC files, which file to use for what, and what not to use it for. The data are in `api/`:
+
+| File | Content |
+|---|---|
+| `api/funds.json` | one record per fund: identity, status, latest figures, and whether its monthly figures can be trusted month by month |
+| `api/monthly.csv` | monthly total return and net flow for every fund and benchmark, from 2019 |
+| `api/reports.csv` | one row per quarterly report: net assets, 3-month return, written calls, notes |
+| `api/llms.txt` | the guide |
+
+These files are rebuilt from `data/` by `build.py` and checked by the tests. Do not edit them by hand.
+
 ## What it shows
 
 - **Five funds in detail** (QYLD, XYLD, RYLD, JEPI, JEPQ), each against its index fund (QQQ, IVV, IWM):
@@ -23,6 +37,8 @@ config/funds.toml     which funds are followed, the benchmarks, the first quarte
 monitor/update.py     the only code that uses the network: downloads the SEC's quarterly data set
 monitor/extract.py    cuts one quarterly data set down to the followed funds
 monitor/build.py      joins the quarters and computes everything the page shows
+monitor/publish.py    writes the files for programs and AI agents (api/)
+api/                  those files: funds.json, monthly.csv, reports.csv, llms.txt
 site/template.html    the page; the numbers are embedded at build time
 data/nport/<quarter>/ the stored extracts (five small CSV files per quarter)
 data/sources.json     what was downloaded, when, its size and checksum

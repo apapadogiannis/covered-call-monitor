@@ -67,4 +67,17 @@ with tempfile.TemporaryDirectory() as tmp:
         months = [m["month"] for m in f["months"]]
         assert months == sorted(months) and all(month_back(b, 1) == a for a, b in zip(months, months[1:]))
     assert json.dumps(d, separators=(",", ":")) in (Path(tmp) / "index.html").read_text(encoding="utf-8")
+    # The files for programs and AI agents are written, agree with the page, and say how months are ordered.
+    funds = json.loads((Path(tmp) / "funds.json").read_text(encoding="utf-8"))["funds"]
+    assert sum(1 for f in funds if f["role"] == "fund" and f["still_reporting"]) == d["meta"]["funds_in_category"]
+    assert {f["month_order"]["order"] for f in funds} <= {"as filed", "reversed", "not determined"}
+    reversed_funds = [f["name"] for f in funds if f["month_order"]["order"] == "reversed"]
+    assert reversed_funds and all(n.startswith("Global X") for n in reversed_funds), reversed_funds
+    import csv  # noqa: E402
+    rows = list(csv.DictReader((Path(tmp) / "monthly.csv").open(encoding="utf-8")))
+    jepi = {r["month"]: float(r["total_return_pct"]) for r in rows if r["ticker"] == "JEPI" and r["total_return_pct"]}
+    page = {m["month"]: m["fund"] for f in d["detail"] if f["ticker"] == "JEPI" for m in f["months"]}
+    assert all(abs(jepi[m] - v) < 1e-5 for m, v in page.items())
+    for name in ("llms.txt", "reports.csv"):
+        assert (Path(tmp) / name).stat().st_size > 1000, name
 print("all checks pass")

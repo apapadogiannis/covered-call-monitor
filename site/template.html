@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Covered-Call Monitor: returns, overlays and flows from SEC filings</title>
 <meta name="description" content="What covered-call, buy-write and premium-income funds earn, give up and hold, measured each quarter from public SEC filings.">
+<link rel="alternate" type="application/json" href="data.json" title="The numbers on this page">
+<link rel="alternate" type="text/plain" href="llms.txt" title="Guide for AI agents">
+<script type="application/ld+json">/*LD*/</script>
 <style>
 :root{
   color-scheme:light;
@@ -285,7 +288,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
       <h2>How the figures are made</h2>
       <ul class="note">
         <li><b>Monthly returns are joined across reports.</b> Each public report carries the three months that end at its date. Reports of successive quarters give an unbroken monthly series.</li>
-        <li><b>The order of the three months is checked.</b> The form asks for the three monthly returns oldest first. Some fund families file them newest first. For the five funds shown in detail, both readings are compared with the index fund month by month over all reports, and the fund is read newest first when that at least halves the misfit. <span id="order-note"></span> Returns over whole reports, such as the 12-month figures in the category table, do not depend on the order.</li>
+        <li><b>The order of the three months is checked.</b> The form asks for the three monthly returns oldest first. Some fund families file them newest first. For the five funds shown in detail, both readings are compared with the index fund month by month over all reports, and the fund is read newest first when that at least halves the misfit. <span id="order-note"></span> Every other fund is tested the same way against the three index funds, and the result for each is in funds.json. Returns over whole reports, such as the 12-month figures in the category table, do not depend on the order.</li>
         <li><b>Months before a fund existed are dropped,</b> together with the part month in which it started.</li>
         <li><b>The comparison uses the months both funds have on file.</b> Fund families report on different cycles, so the last month of a comparison can be earlier than the fund's latest report.</li>
         <li><b>Calls written</b> is the number of contracts written, times 100 shares, times the strike, as a share of the fund's net assets. Near 100% means calls were written against the whole portfolio.</li>
@@ -379,7 +382,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
   <footer>
     <p>Source and method: every figure is computed from the Form N-PORT reports that US-registered funds file with the Securities and Exchange Commission, as published in the SEC's quarterly <a id="src" target="_blank" rel="noopener">Form N-PORT data sets</a>. Figures are as filed by the funds and are not audited or corrected here. Background on the strategy: A. Papadogiannis (2026), "High Yield, Capped Gains: Mechanics, Trade-Offs, and Practical Diagnostics for Covered-Call ETFs", <i>The Journal of Beta Investment Strategies</i> 17(2), <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">doi.org/10.3905/jbis.2026.001</a>. The explanations on this site are written for it and do not reproduce the article.</p>
     <p id="asof"></p>
-    <p>Data: SEC Form N-PORT data sets, a work of the US government in the public domain. Fund names are those filed with the SEC; ticker symbols are added by hand for the five funds shown in detail and their index funds. The numbers on this site are also published as <a href="data.json" target="_blank" rel="noopener">data.json</a>.</p>
+    <p>Data: SEC Form N-PORT data sets, a work of the US government in the public domain. Fund names are those filed with the SEC; ticker symbols are added by hand for the five funds shown in detail and their index funds. The numbers on this site are also published as <a href="data.json" target="_blank" rel="noopener">data.json</a>. For programs and AI agents there is a fuller set: every fund's monthly history as <a href="monthly.csv" target="_blank" rel="noopener">monthly.csv</a>, every quarterly report as <a href="reports.csv" target="_blank" rel="noopener">reports.csv</a>, one record per fund as <a href="funds.json" target="_blank" rel="noopener">funds.json</a>, and a guide to them as <a href="llms.txt" target="_blank" rel="noopener">llms.txt</a>.</p>
     <p>Built and maintained by <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a>, whose other research, with its data and code, is listed on that page.</p>
     <p>© <span id="copy-year">2026</span> Agisilaos Papadogiannis. The text, charts and numbers of this site, including <a href="data.json" target="_blank" rel="noopener">data.json</a>, may be reused with credit under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. The code is under the <a href="https://github.com/apapadogiannis/covered-call-monitor/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>. The source data are in the public domain.</p>
     <p>Independent research, for informational and academic purposes only. Not financial, investment, tax or legal advice, and not a recommendation to buy or sell any financial instrument.</p>

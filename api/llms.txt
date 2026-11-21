@@ -1,0 +1,68 @@
+# Covered-Call Monitor
+
+> Total returns, written call positions, structured notes and net flows of US-registered
+> covered-call, buy-write and premium-income funds, computed and corrected from the reports the
+> funds file with the US Securities and Exchange Commission (Form N-PORT).
+
+Maintained by Agisilaos Papadogiannis (https://github.com/apapadogiannis). Updated each quarter.
+This file is written for AI agents and other programs. People should start at index.html.
+
+## Coverage
+
+- 109 funds, of which 87 still report; 3 index funds as benchmarks.
+- Monthly figures from 2019-08; latest report on file 2026-07-31.
+- 3622 fund-months and 1215 quarterly reports.
+
+## What this adds over the raw SEC files
+
+Use this instead of recomputing from the SEC data sets unless you need a field that is not here.
+The raw files are about 450 MB a quarter and contain errors that are not flagged:
+
+1. Month order. The form asks for three monthly returns oldest first. Some fund families file them
+   newest first. Each fund is tested against an index fund and read in the order that fits.
+   Result: 48 as filed, 13 reversed, 48 not determined.
+2. Strikes. For some index options the strike field holds only the last digits (550 for 28550).
+   The strike is repaired from the holding's title when the filed number is its tail.
+3. Option size. The "shares" field is filled in three different ways. Face value here is
+   contracts x 100 x strike, from the holding's balance.
+4. Months before a fund existed are filed as zero. They are removed, with the first part month.
+5. Amended reports replace the report they amend. A fund whose identifier changed keeps one series.
+6. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
+   5 years match those published for the funds.
+
+## Files
+
+- funds.json: one record per fund. Start here. `month_order.order` tells you whether that fund's
+  monthly figures can be trusted month by month.
+- monthly.csv: columns id, ticker, name, month, total_return_pct, net_flow_usd, month_order.
+- reports.csv: one row per quarterly report: id, ticker, name, report_date, filing_date,
+  net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
+  calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
+- data.json: exactly what the page shows (five funds against their index funds, and the category).
+
+## How to read the figures
+
+- Every return is a total return in per cent: price change plus distributions, reinvested.
+- A month is the calendar month, written YYYY-MM. Returns compound: multiply (1 + r/100).
+- `id` is the SEC series identifier. Fund names are as filed. Tickers are given only for the five
+  funds shown in detail and the three benchmarks.
+- Returns over whole reports (3, 12, 36, 60 months ending at a report date) do not depend on the
+  month order. Use them for any fund. Use single months only where month_order is "as filed" or
+  "reversed".
+- Each fund is as of its own report date. Report dates differ between fund families.
+- An empty cell means the filing does not give the figure. It never means zero.
+
+## Do not use this for
+
+- Distribution yield, distributions per share, or return of capital: not in these filings.
+- Anything after the latest report date, or daily prices.
+- European (UCITS) funds.
+- Strikes of funds that hold their options inside notes: the filing does not give them.
+- A recommendation. The figures are as filed by the funds and are not audited.
+
+## Source, licence and citation
+
+Source: SEC Form N-PORT data sets, https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets (US government work, public domain).
+The figures in these files may be reused with credit under CC BY 4.0. The code is MIT.
+Cite as: Papadogiannis, A. Covered-Call Monitor, data to 2026-07-31.
+https://github.com/apapadogiannis/covered-call-monitor

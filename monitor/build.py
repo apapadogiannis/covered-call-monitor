@@ -116,6 +116,28 @@ def filed_newest_first(reps: list[dict], bench: dict[str, float]) -> dict:
             "misfit_as_filed": round(fwd, 1), "misfit_reversed": round(rev, 1)}
 
 
+def month_order(reps: list[dict], benches: dict[str, dict[str, float]]) -> dict:
+    """How a fund orders its three monthly returns: "as filed", "reversed" or "not determined".
+
+    The fund is compared with each benchmark in turn (see filed_newest_first) and the benchmark it
+    tracks most closely decides. One reading must at least halve the misfit of the other over four
+    or more reports; otherwise the order is not determined and the months are left as filed.
+    """
+    best = None
+    for ticker, bench in benches.items():
+        r = filed_newest_first(reps, bench)
+        if r["reports_compared"] >= 4 and (best is None or min(r["misfit_as_filed"], r["misfit_reversed"])
+                                           < min(best["misfit_as_filed"], best["misfit_reversed"])):
+            best = {**r, "compared_with": ticker}
+    if best is None:
+        return {"order": "not determined", "compared_with": None, "reports_compared": 0,
+                "misfit_as_filed": None, "misfit_reversed": None}
+    f, r = best["misfit_as_filed"], best["misfit_reversed"]
+    order = "reversed" if r < 0.5 * f else "as filed" if f < 0.5 * r else "not determined"
+    return {"order": order, "compared_with": best["compared_with"], "reports_compared": best["reports_compared"],
+            "misfit_as_filed": f, "misfit_reversed": r}
+
+
 def monthly(reps: list[dict], newest_first: bool = False) -> tuple[dict[str, float], dict[str, float | None], list[str]]:
     """Monthly total return (%) and net flow, by month, joined across a fund's reports.
 
@@ -242,13 +264,28 @@ def build(out: Path) -> dict:
     by_fund = load(cfg)
     series = {k: monthly(v) for k, v in by_fund.items()}
     bench = {b["ticker"]: b for b in cfg["benchmark"]}
+    benches = {b["ticker"]: series["benchmark:" + b["ticker"]][0] for b in cfg["benchmark"]
+               if "benchmark:" + b["ticker"] in series}
+    orders = {}
+    for k, v in by_fund.items():
+        if k.startswith("benchmark:"):
+            orders[k] = {"order": "as filed", "compared_with": None, "reports_compared": 0,
+                         "misfit_as_filed": None, "misfit_reversed": None}
+            continue
+        orders[k] = month_order(v, benches)
+        if orders[k]["order"] == "reversed":
+            series[k] = monthly(v, newest_first=True)
     order = {}
     for d in cfg["detail"]:
         if d["series"] in by_fund:
             order[d["series"]] = filed_newest_first(by_fund[d["series"]],
                                                     series.get("benchmark:" + d["benchmark"], ({},))[0])
-            if order[d["series"]]["newest_first"]:
-                series[d["series"]] = monthly(by_fund[d["series"]], newest_first=True)
+            series[d["series"]] = monthly(by_fund[d["series"]], newest_first=order[d["series"]]["newest_first"])
+            orders[d["series"]] = {"order": "reversed" if order[d["series"]]["newest_first"] else "as filed",
+                                   "compared_with": d["benchmark"],
+                                   "reports_compared": order[d["series"]]["reports_compared"],
+                                   "misfit_as_filed": order[d["series"]]["misfit_as_filed"],
+                                   "misfit_reversed": order[d["series"]]["misfit_reversed"]}
 
     detail = []
     for d in cfg["detail"]:
@@ -332,10 +369,24 @@ def build(out: Path) -> dict:
             "detail": detail, "types": types, "category": category}
 
     out.mkdir(parents=True, exist_ok=True)
+    from monitor.publish import publish          # the files written for programs and AI agents
+    data["meta"]["files"] = publish(cfg, by_fund, series, orders, data, cutoff, [ROOT / "api", out])
     (out / "data.json").write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")
     template = (ROOT / "site" / "template.html").read_text(encoding="utf-8")
-    (out / "index.html").write_text(template.replace("/*DATA*/null", json.dumps(data, separators=(",", ":"))),
-                                    encoding="utf-8")
+    ld = {"@context": "https://schema.org", "@type": "Dataset", "name": "Covered-Call Monitor",
+          "description": "Total returns, written call positions, structured notes and net flows of US-registered "
+                         "covered-call, buy-write and premium-income funds, computed and corrected from SEC Form "
+                         "N-PORT filings.",
+          "creator": {"@type": "Person", "name": "Agisilaos Papadogiannis", "url": "https://github.com/apapadogiannis",
+                      "identifier": "https://orcid.org/0009-0002-7753-7052"},
+          "license": "https://creativecommons.org/licenses/by/4.0/", "isAccessibleForFree": True,
+          "temporalCoverage": f"{data['meta']['first_month']}/{data['meta']['reports_to']}",
+          "dateModified": data["meta"]["reports_to"], "isBasedOn": cfg["source"]["page"],
+          "distribution": [{"@type": "DataDownload", "encodingFormat": f["format"], "contentUrl": f["file"],
+                            "description": f["what"]} for f in data["meta"]["files"]]}
+    html = (template.replace("/*DATA*/null", json.dumps(data, separators=(",", ":")))
+            .replace("/*LD*/", json.dumps(ld, separators=(",", ":"))))
+    (out / "index.html").write_text(html, encoding="utf-8")
     return data
 
 
