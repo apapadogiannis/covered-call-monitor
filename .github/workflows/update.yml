@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: update
+  group: pages
   cancel-in-progress: false
 
 jobs:
@@ -37,11 +37,9 @@ jobs:
           python3 -I build.py
           test -s _site/index.html
 
-      - name: Keep the built page with the run
-        if: always()
-        uses: actions/upload-artifact@v7
+      - name: Hand the built page to GitHub Pages
+        uses: actions/upload-pages-artifact@v5
         with:
-          name: page
           path: _site/
 
       - name: Store the new data in the repository
@@ -54,3 +52,19 @@ jobs:
           git commit -m "Data: quarters to $(ls data/nport | sort | tail -1)"
           git pull --rebase
           git push
+
+  publish:
+    needs: update
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish the page
+        id: deployment
+        uses: actions/deploy-pages@v5
