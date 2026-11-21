@@ -4,8 +4,6 @@
 from public SEC filings: each fund's total return beside the index fund that holds the same shares,
 the options it had actually written on its last report date, and the money moving in and out.
 
-Status: first version, private until reviewed.
-
 ## For AI agents and programs
 
 Read [`api/llms.txt`](api/llms.txt) first. It says what this data set is, what it adds over the raw
