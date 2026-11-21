@@ -259,6 +259,51 @@ def median(xs: list[float]):
     return None if not n else xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2
 
 
+MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+          "November", "December"]
+
+
+def static_text(data: dict) -> dict[str, str]:
+    """The sentences and the summary table written into the page itself, so that a reader without
+    JavaScript (a search engine, a program, an AI agent that does not run scripts) still gets them."""
+    from html import escape
+    m = data["meta"]
+    day = lambda d: f"{int(d[8:10])} {MONTHS[int(d[5:7]) - 1]} {d[:4]}"
+    mon = lambda d: f"{MONTHS[int(d[5:7]) - 1][:3]} {d[:4]}"
+    pct = lambda x: "" if x is None else f"{'+' if x > 0 else '−' if x < 0 else ''}{abs(x):.1f}%"
+    bn = f"${m['category_net_assets'] / 1e9:.1f} billion"
+    rows = []
+    for f in data["detail"]:
+        w = f["window"]
+        g3 = b3 = None
+        if len(f["months"]) >= 36:
+            g3 = b3 = 1.0
+            for x in f["months"][-36:]:
+                g3 *= 1 + x["fund"] / 100
+                b3 *= 1 + x["benchmark"] / 100
+        rows.append(f"<tr><td>{escape(f['ticker'])}: {escape(f['name'])}</td><td>{escape(f['benchmark'])}</td>"
+                    f"<td>{pct(None if g3 is None else (g3 - 1) * 100)}</td><td>{pct(None if b3 is None else (b3 - 1) * 100)}</td>"
+                    f"<td>{mon(w['from'])} to {mon(w['to'])}</td><td>{pct(w['fund'])}</td><td>{pct(w['benchmark'])}</td></tr>")
+    table = ("<table><thead><tr><th>Fund</th><th>Index fund</th><th>Fund, total return, 3 years</th>"
+             "<th>Index fund, total return, 3 years</th><th>Longest period on file</th><th>Fund, total return</th>"
+             "<th>Index fund, total return</th></tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
+             "<p class=\"note\">Total return with every distribution reinvested. Three years to "
+             f"{mon(data['detail'][0]['months'][-1]['month'])}.</p>")
+    return {
+        "<!--LEDE-->": (f"This site measures what covered-call funds earned once their distributions are counted. For "
+                        f"each of {m['funds_in_category']} US funds it shows the total return, with every distribution "
+                        "reinvested, the options the fund had written on its last report date, and the money moving in "
+                        "and out. Where a fund follows a well-known index, its return is set beside an index fund on the "
+                        "same market, so the cost of the option strategy can be read off directly."),
+        "<!--STAMP-->": f"{m['funds_in_category']} funds · reports to {day(m['reports_to'])} · updated quarterly",
+        "<!--LEDECAT-->": (f"Every US-registered fund whose name says covered call, buy-write or premium income: "
+                           f"{m['funds_in_category']} funds with {bn} in net assets. Funds built around buffers, "
+                           f"barriers or written puts are left out, as are {m['funds_no_longer_reporting']} funds that "
+                           "have stopped reporting."),
+        "<!--STATIC-->": table,
+    }
+
+
 def build(out: Path) -> dict:
     cfg = tomllib.loads((ROOT / "config" / "funds.toml").read_text(encoding="utf-8"))
     by_fund = load(cfg)
@@ -431,6 +476,8 @@ def build(out: Path) -> dict:
                             "description": f["what"]} for f in data["meta"]["files"]]}
     html = (template.replace("/*DATA*/null", json.dumps(data, separators=(",", ":")))
             .replace("/*LD*/", json.dumps(ld, separators=(",", ":"))))
+    for mark, text in static_text(data).items():        # readable without JavaScript
+        html = html.replace(mark, text)
     (out / "index.html").write_text(html, encoding="utf-8")
     return data
 

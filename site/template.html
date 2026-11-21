@@ -284,8 +284,8 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
   <!-- ================= FUNDS ================= -->
   <div class="view" id="view-funds">
   <h1>What does the yield cost?</h1>
-  <p class="lede" id="lede-funds"></p>
-  <div class="stamp" id="stamp"></div>
+  <p class="lede" id="lede-funds"><!--LEDE--></p>
+  <div class="stamp" id="stamp"><!--STAMP--></div>
   <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Background: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
 
   <nav class="tabs" role="tablist" aria-label="Sections">
@@ -294,6 +294,13 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
     <button type="button" role="tab" data-tab="notes">Data and notes</button>
   </nav>
 
+  <noscript>
+    <div class="card">
+      <h2>This page needs JavaScript for its charts and tables</h2>
+      <p class="sub">The figures below are a summary. The full data are in <a href="funds.json">funds.json</a>, <a href="monthly.csv">monthly.csv</a> and <a href="reports.csv">reports.csv</a>, described in <a href="llms.txt">llms.txt</a>.</p>
+      <!--STATIC-->
+    </div>
+  </noscript>
   <div class="pane" id="pane-overview">
     <div class="tiles" id="tiles"></div>
     <div class="card">
@@ -433,8 +440,8 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
   <!-- ================= CATEGORY ================= -->
   <div class="view" id="view-category">
   <h1>The category</h1>
-  <p class="lede" id="lede-cat"></p>
-  <div class="stamp" id="cat-stamp"></div>
+  <p class="lede" id="lede-cat"><!--LEDECAT--></p>
+  <div class="stamp" id="cat-stamp"><!--STAMP--></div>
   <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Background: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
   <div class="tiles" id="cat-tiles"></div>
   <div class="card">
@@ -479,12 +486,11 @@ const NS = "http://www.w3.org/2000/svg";
 
 /* ---------- headings and footer ---------- */
 $("src").href = D.meta.source;
-$("lede-funds").textContent = `This site measures what covered-call funds earned once their distributions are counted. For each of ${D.meta.funds_in_category} US funds it shows the total return, with every distribution reinvested, the options the fund had written on its last report date, and the money moving in and out. Where a fund follows a well-known index, its return is set beside an index fund on the same market, so the cost of the option strategy can be read off directly.`;
 { const nf = D.detail.filter(f => f.returns_order.newest_first).map(f => f.ticker), of = D.detail.filter(f => !f.returns_order.newest_first).map(f => f.ticker);
   $("order-note").textContent = (nf.length ? `Read newest first: ${nf.join(", ")}. ` : "") + (of.length ? `Read as filed: ${of.join(", ")}.` : ""); }
 $("copy-year").textContent = D.meta.reports_to.slice(0, 4);
 const stampText = `${D.meta.funds_in_category} funds · reports to ${dmy(D.meta.reports_to)} · updated quarterly`;
-$("stamp").textContent = stampText; $("cat-stamp").textContent = stampText;
+void stampText;
 $("asof").textContent = `Dates of the data: ${D.meta.quarters.length} quarterly data sets, ${D.meta.quarters[0].replace("q", " Q")} to ${D.meta.quarters[D.meta.quarters.length - 1].replace("q", " Q")}; fund reports dated ${dmy(D.meta.reports_from)} to ${dmy(D.meta.reports_to)}. The SEC makes a report public about two months after its date, and only for the last month of each fund's fiscal quarter, so each fund is shown as of its own latest report.`;
 
 /* ---------- periods ---------- */
@@ -702,7 +708,6 @@ const pi = D.types.find(t => t.type === "Premium income");
 $("types-note").textContent = `Counted from the latest report of each of the ${D.meta.funds_in_category} funds. Funds named premium income hold ${(pi.net_assets / D.meta.category_net_assets * 100).toFixed(0)}% of the category's net assets. "Calls written, median" is among the funds that had a written call on their report date.`;
 
 /* ---------- category ---------- */
-$("lede-cat").textContent = `Every US-registered fund whose name says covered call, buy-write or premium income: ${D.meta.funds_in_category} funds with ${usd(D.meta.category_net_assets).replace("bn", " billion")} in net assets. Funds built around buffers, barriers or written puts are left out, as are ${D.meta.funds_no_longer_reporting} funds that have stopped reporting.`;
 D.types.forEach(t => $("cat-tiles").append(el("div", {class: "tile"}, `<div class="k">${t.type}</div><div class="v">${t.funds}</div><div class="n">funds<span class="lg">,</span><span class="sm"><br></span> ${usd(t.net_assets)}<span class="lg"> in net assets</span></div>`)));
 let cType = "All", cQ = "", cAll = false, sortKey = "net_assets", sortDir = -1;
 ["All", ...D.types.map(t => t.type)].forEach(t => { const b = el("button", {type: "button", "aria-pressed": t === "All"}, t); b.onclick = () => { cType = t; cAll = false; [...$("cat-type").children].forEach(c => c.setAttribute("aria-pressed", c === b)); cat(); }; $("cat-type").append(b); });

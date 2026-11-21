@@ -66,7 +66,12 @@ with tempfile.TemporaryDirectory() as tmp:
         assert f["window"]["months"] >= 12, f["ticker"]
         months = [m["month"] for m in f["months"]]
         assert months == sorted(months) and all(month_back(b, 1) == a for a, b in zip(months, months[1:]))
-    assert json.dumps(d, separators=(",", ":")) in (Path(tmp) / "index.html").read_text(encoding="utf-8")
+    page = (Path(tmp) / "index.html").read_text(encoding="utf-8")
+    assert json.dumps(d, separators=(",", ":")) in page
+    # The page says what it is, and gives a summary, without JavaScript; no placeholder is left behind.
+    assert "<!--" not in page.split("<script>")[0].replace("<!-- =", "") and "/*LD*/" not in page
+    assert f"each of {d['meta']['funds_in_category']} US funds" in page and "<noscript>" in page
+    assert all(f["ticker"] + ": " in page for f in d["detail"])
     # The files for programs and AI agents are written, agree with the page, and say how months are ordered.
     funds = json.loads((Path(tmp) / "funds.json").read_text(encoding="utf-8"))["funds"]
     assert sum(1 for f in funds if f["role"] == "fund" and f["still_reporting"]) == d["meta"]["funds_in_category"]
