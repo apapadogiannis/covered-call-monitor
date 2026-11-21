@@ -1,6 +1,7 @@
 # Covered-call monitor
 
 [![check](https://github.com/apapadogiannis/covered-call-monitor/actions/workflows/check.yml/badge.svg)](https://github.com/apapadogiannis/covered-call-monitor/actions/workflows/check.yml)
+[![Zenodo](https://img.shields.io/badge/Zenodo-10.5281%2Fzenodo.24418592-007ec6)](https://doi.org/10.5281/zenodo.24418592)
 
 Live at https://apapadogiannis.github.io/covered-call-monitor/
 
@@ -96,6 +97,13 @@ the source. Figures are as filed by the funds and are not audited or corrected h
 Code: MIT. Extracted tables in `data/`: public domain, as their source. The computed figures in
 `api/` and on the page: CC BY 4.0, which allows any reuse with credit. Cite as given in
 `CITATION.cff` and in `api/llms.txt`.
+
+## Citation
+
+Papadogiannis, A. (2026). *Covered-Call Monitor*. Zenodo. [doi:10.5281/zenodo.24418592](https://doi.org/10.5281/zenodo.24418592)
+
+That DOI covers all versions and always resolves to the latest release. The citation with the date
+of the data is in `api/llms.txt` and inside the JSON data files.
 
 ## Related article
 

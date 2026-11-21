@@ -17,6 +17,8 @@ from pathlib import Path
 from monitor.build import compound, month_back, notes, overlay, type_of
 
 REPO = "https://github.com/apapadogiannis/covered-call-monitor"
+SITE = "https://apapadogiannis.github.io/covered-call-monitor/"
+DOI = "10.5281/zenodo.24418592"          # all versions; always resolves to the latest release
 LICENCE = {"name": "CC-BY-4.0", "url": "https://creativecommons.org/licenses/by/4.0/",
            "condition": "Reuse is allowed with credit to the source."}
 DESCRIBE_AS = ("Covered-Call Monitor, by Agisilaos Papadogiannis: figures computed and corrected from the "
@@ -127,14 +129,16 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
     for f in funds:
         if f["role"] == "fund":
             counts[f["month_order"]["order"]] = counts.get(f["month_order"]["order"], 0) + 1
-    cite = (f"Papadogiannis, A. Covered-Call Monitor, data to {meta['reports_to']}. {REPO}")
-    credit = {"licence": LICENCE, "cite_as": cite, "describe_as": DESCRIBE_AS,
+    cite = (f"Papadogiannis, A. (2026). Covered-Call Monitor, data to {meta['reports_to']}. Zenodo. "
+            f"https://doi.org/{DOI}")
+    credit = {"licence": LICENCE, "cite_as": cite, "doi": f"https://doi.org/{DOI}", "site": SITE, "code": REPO,
+              "describe_as": DESCRIBE_AS,
               "author": {"name": "Agisilaos Papadogiannis", "orcid": "https://orcid.org/0009-0002-7753-7052",
                          "url": "https://github.com/apapadogiannis"},
               "related_article": ARTICLE}
     data["meta"]["credit"] = credit
     package = {"name": "covered-call-monitor", "title": "Covered-Call Monitor", "description": DESCRIBE_AS,
-               "homepage": REPO, "version": meta["reports_to"],
+               "homepage": SITE, "repository": REPO, "doi": f"https://doi.org/{DOI}", "version": meta["reports_to"],
                "licenses": [{"name": LICENCE["name"], "path": LICENCE["url"], "title": "Creative Commons Attribution 4.0"}],
                "contributors": [{"title": "Agisilaos Papadogiannis", "role": "author",
                                  "path": "https://orcid.org/0009-0002-7753-7052"}],
@@ -160,7 +164,8 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
 > funds file with the US Securities and Exchange Commission (Form N-PORT).
 
 Maintained by Agisilaos Papadogiannis (https://github.com/apapadogiannis). Updated each quarter.
-This file is written for AI agents and other programs. People should start at index.html.
+Page: {SITE}  Code: {REPO}  Archive: https://doi.org/{DOI}
+This file is written for AI agents and other programs. People should start at the page.
 
 ## Coverage
 

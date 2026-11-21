@@ -472,6 +472,8 @@ def build(out: Path) -> dict:
           "creator": {"@type": "Person", "name": "Agisilaos Papadogiannis", "url": "https://github.com/apapadogiannis",
                       "identifier": "https://orcid.org/0009-0002-7753-7052"},
           "license": "https://creativecommons.org/licenses/by/4.0/", "isAccessibleForFree": True,
+          "identifier": "https://doi.org/10.5281/zenodo.24418592",
+          "url": "https://apapadogiannis.github.io/covered-call-monitor/",
           "temporalCoverage": f"{data['meta']['first_month']}/{data['meta']['reports_to']}",
           "dateModified": data["meta"]["reports_to"], "isBasedOn": cfg["source"]["page"],
           "distribution": [{"@type": "DataDownload", "encodingFormat": f["format"], "contentUrl": f["file"],

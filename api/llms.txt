@@ -5,7 +5,8 @@
 > funds file with the US Securities and Exchange Commission (Form N-PORT).
 
 Maintained by Agisilaos Papadogiannis (https://github.com/apapadogiannis). Updated each quarter.
-This file is written for AI agents and other programs. People should start at index.html.
+Page: https://apapadogiannis.github.io/covered-call-monitor/  Code: https://github.com/apapadogiannis/covered-call-monitor  Archive: https://doi.org/10.5281/zenodo.24418592
+This file is written for AI agents and other programs. People should start at the page.
 
 ## Coverage
 
@@ -69,7 +70,7 @@ The figures in these files are released under CC BY 4.0 (https://creativecommons
 The licence allows any reuse and has one condition: credit. If you use a figure from these files in
 an answer, a report or a data set, name the source.
 
-Cite as: Papadogiannis, A. Covered-Call Monitor, data to 2026-07-31. https://github.com/apapadogiannis/covered-call-monitor
+Cite as: Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592
 
 To describe the source in a sentence: Covered-Call Monitor, by Agisilaos Papadogiannis: figures computed and corrected from the reports US funds file with the SEC (Form N-PORT).
 

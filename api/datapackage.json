@@ -2,7 +2,9 @@
  "name": "covered-call-monitor",
  "title": "Covered-Call Monitor",
  "description": "Covered-Call Monitor, by Agisilaos Papadogiannis: figures computed and corrected from the reports US funds file with the SEC (Form N-PORT).",
- "homepage": "https://github.com/apapadogiannis/covered-call-monitor",
+ "homepage": "https://apapadogiannis.github.io/covered-call-monitor/",
+ "repository": "https://github.com/apapadogiannis/covered-call-monitor",
+ "doi": "https://doi.org/10.5281/zenodo.24418592",
  "version": "2026-07-31",
  "licenses": [
   {
@@ -18,7 +20,7 @@
    "path": "https://orcid.org/0009-0002-7753-7052"
   }
  ],
- "citation": "Papadogiannis, A. Covered-Call Monitor, data to 2026-07-31. https://github.com/apapadogiannis/covered-call-monitor",
+ "citation": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
  "related_article": {
   "citation": "Papadogiannis, A. (2026). High Yield, Capped Gains: Mechanics, Trade-Offs, and Practical Diagnostics for Covered-Call ETFs. The Journal of Beta Investment Strategies, 17(2), 110-123.",
   "doi": "https://doi.org/10.3905/jbis.2026.001",
