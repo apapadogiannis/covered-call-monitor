@@ -37,6 +37,15 @@ stored: it is about 450 MB per quarter and can be downloaded again from the SEC.
   assets is not shown.
 - **Negative sales or redemptions** appear in a few reports. Such a month's net flow is not used and
   the page says so.
+- **Monthly returns filed newest first.** The form asks for the three months oldest first. The
+  Global X funds file them the other way round. For the funds shown in detail, `build.py` compares
+  both readings with the fund's index fund over all reports and uses the one that fits (see
+  `filed_newest_first`). With the correction, QYLD's 1-month, 3-month, 1-year, 3-year and 5-year
+  returns to 30 June 2026 match those published for the fund.
+- **Months before a fund existed** are filed as zero in its first report. They are dropped, with the
+  part month in which the fund started.
+- **Funds that stop reporting.** A fund whose latest report is more than six months older than the
+  newest report on file is no longer listed in the category.
 - **Several reports for one date.** An amended report replaces the earlier one for the same fund and
   report date.
 - **Share classes.** Where a report lists several classes, the first class identifier is used.

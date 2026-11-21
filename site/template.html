@@ -202,6 +202,13 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
 #cat td:first-child{white-space:normal;min-width:230px}
 .term p{max-width:none}
 @media (max-width:640px){.filters input[type=search]{min-width:0;flex:1}.cw{width:44px}}
+.pr{display:grid;grid-template-columns:64px 1fr;gap:4px 12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);max-width:820px}
+.pr:last-child{border-bottom:0}
+.pr>b{font-weight:650;grid-row:span 2}
+.pr .bar{display:flex;align-items:center;gap:8px;font-size:13px;font-variant-numeric:tabular-nums}
+.pr .bar i{display:block;height:12px;border-radius:0 4px 4px 0;min-width:2px}
+.pr .bar span{color:var(--ink2);white-space:nowrap}
+.pr .bar span b{color:var(--ink);font-weight:600}
 </style>
 </head>
 <body>
@@ -229,13 +236,16 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
     <div class="card">
       <h2>Five large funds beside their index fund</h2>
       <p class="sub">Total return: the change in the fund's value with every distribution reinvested, as each fund reports it to the SEC month by month. The index fund holds the same market without selling calls on it. The difference is what the option strategy cost, or earned, over the period.</p>
-      <div class="scroll"><table class="now" id="t-over"></table></div>
+      <div class="filters"><span>Period</span><div class="seg range" role="group" aria-label="Period"></div><span class="hint rangehint"></span></div>
+      <div class="legend"><span><i style="background:var(--blue)"></i>Covered-call fund</span><span><i style="background:var(--orange)"></i>Its index fund</span></div>
+      <div id="pairs"></div>
+      <div class="scroll" style="margin-top:14px"><table class="now" id="t-over"></table></div>
       <p class="note" id="over-note"></p>
     </div>
   </div>
 
   <div class="pane" id="pane-fund">
-    <div class="filters"><span>Fund</span><div class="seg" id="pick" role="group" aria-label="Fund"></div></div>
+    <div class="filters"><span>Fund</span><div class="seg" id="pick" role="group" aria-label="Fund"></div><span>Period</span><div class="seg range" role="group" aria-label="Period"></div></div>
     <div class="tiles" id="ftiles"></div>
     <div class="card">
       <h2 id="chart-title"></h2>
@@ -272,6 +282,8 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
       <h2>How the figures are made</h2>
       <ul class="note">
         <li><b>Monthly returns are joined across reports.</b> Each public report carries the three months that end at its date. Reports of successive quarters give an unbroken monthly series.</li>
+        <li><b>The order of the three months is checked.</b> The form asks for the three monthly returns oldest first. Some fund families file them newest first. For the five funds shown in detail, both readings are compared with the index fund month by month over all reports, and the fund is read newest first when that at least halves the misfit. <span id="order-note"></span> Returns over whole reports, such as the 12-month figures in the category table, do not depend on the order.</li>
+        <li><b>Months before a fund existed are dropped,</b> together with the part month in which it started.</li>
         <li><b>The comparison uses the months both funds have on file.</b> Fund families report on different cycles, so the last month of a comparison can be earlier than the fund's latest report.</li>
         <li><b>Calls written</b> is the number of contracts written, times 100 shares, times the strike, as a share of the fund's net assets. Near 100% means calls were written against the whole portfolio.</li>
         <li><b>Strikes are checked against the holding's name.</b> For some index options the strike field of the SEC data set holds only the last digits. Where the filed number is the tail of the strike in the holding's name, the name is used and the table marks it.</li>
@@ -391,42 +403,84 @@ const NS = "http://www.w3.org/2000/svg";
 
 /* ---------- headings and footer ---------- */
 $("src").href = D.meta.source;
+{ const nf = D.detail.filter(f => f.returns_order.newest_first).map(f => f.ticker), of = D.detail.filter(f => !f.returns_order.newest_first).map(f => f.ticker);
+  $("order-note").textContent = (nf.length ? `Read newest first: ${nf.join(", ")}. ` : "") + (of.length ? `Read as filed: ${of.join(", ")}.` : ""); }
 $("copy-year").textContent = D.meta.reports_to.slice(0, 4);
-const big = [...D.detail].sort((a, b) => b.net_assets - a.net_assets)[0];
-$("lede-funds").innerHTML = `Over the ${big.window.months} months to ${ymLong(big.window.to)}, ${big.ticker}, the largest covered-call fund, returned ${plain(big.window.fund)} with its distributions reinvested. An index fund on the same market returned ${plain(big.window.benchmark)}. Across the five funds followed here, the gap runs from ${Math.min(...D.detail.map(f => -f.window.gap)).toFixed(0)} to ${Math.max(...D.detail.map(f => -f.window.gap)).toFixed(0)} percentage points.`;
 const stampText = `${D.meta.funds_in_category} funds · reports to ${dmy(D.meta.reports_to)} · updated quarterly`;
 $("stamp").textContent = stampText; $("cat-stamp").textContent = stampText;
 $("asof").textContent = `Dates of the data: ${D.meta.quarters.length} quarterly data sets, ${D.meta.quarters[0].replace("q", " Q")} to ${D.meta.quarters[D.meta.quarters.length - 1].replace("q", " Q")}; fund reports dated ${dmy(D.meta.reports_from)} to ${dmy(D.meta.reports_to)}. The SEC makes a report public about two months after its date, and only for the last month of each fund's fiscal quarter, so each fund is shown as of its own latest report.`;
 
+/* ---------- periods ---------- */
+const RANGES = [["1 year", 12], ["3 years", 36], ["5 years", 60], ["Longest on file", 0]];
+let range = 36;
+// The last n months of a fund's comparison (all of them when n is 0), with returns compounded from its start.
+function span(f, n) {
+  if (n && f.months.length < n) return null;
+  const ms = n ? f.months.slice(-n) : f.months;
+  let gf = 1, gb = 1;
+  const path = ms.map(m => { gf *= 1 + m.fund / 100; gb *= 1 + m.benchmark / 100; return {month: m.month, fund: m.fund, benchmark: m.benchmark, fund_cum: (gf - 1) * 100, benchmark_cum: (gb - 1) * 100}; });
+  const yrs = ms.length / 12, ann = g => (Math.pow(g, 1 / yrs) - 1) * 100;
+  return {months: path, n: ms.length, from: ms[0].month, to: ms[ms.length - 1].month, fund: (gf - 1) * 100, benchmark: (gb - 1) * 100, gap: (gf - gb) * 100,
+          fund_pa: ms.length > 12 ? ann(gf) : null, benchmark_pa: ms.length > 12 ? ann(gb) : null};
+}
+if (!D.detail.some(f => span(f, range))) range = 0;
+document.querySelectorAll(".seg.range").forEach(seg => RANGES.forEach(([label, n]) => {
+  if (n && !D.detail.some(f => span(f, n))) return;
+  const b = el("button", {type: "button", "data-n": n}, label);
+  b.onclick = () => { range = n; overview(); fund(); };
+  seg.append(b);
+}));
+const words = n => n === 12 ? "year" : n === 36 ? "three years" : n === 60 ? "five years" : null;
+
 /* ---------- overview ---------- */
 $("tiles").append(
-  el("div", {class: "tile"}, `<div class="k">${big.ticker}, ${big.window.months} months</div><div class="v">${pct(big.window.fund)}</div><div class="n">total return to ${ym(big.window.to)}</div>`),
-  el("div", {class: "tile"}, `<div class="k">${big.benchmark}, same months</div><div class="v">${pct(big.window.benchmark)}</div><div class="n">index fund on the ${esc(big.benchmark_index)}</div>`),
-  el("div", {class: "tile"}, `<div class="k">Difference</div><div class="v">${pts(big.window.gap)}</div><div class="n">percentage points</div>`),
-  el("div", {class: "tile"}, `<div class="k">Funds in the category</div><div class="v">${D.meta.funds_in_category}</div><div class="n">${usd(D.meta.category_net_assets)} in net assets</div>`));
-$("t-over").innerHTML = `<thead><tr><th>Fund</th><th>Net assets</th><th>Period</th><th>Fund</th><th>Index fund</th><th>Difference, points</th><th>Last 12 months: fund</th><th>index fund</th></tr></thead><tbody>` +
-  D.detail.map((f, i) => `<tr><td><a href="#fund" data-f="${i}"><b>${f.ticker}</b></a><small>${esc(f.name)}</small></td><td>${usd(f.net_assets)}</td><td>${ym(f.window.from)} to ${ym(f.window.to)}</td><td>${pct(f.window.fund)}</td><td>${pct(f.window.benchmark)}<small>${f.benchmark}</small></td><td>${pts(f.window.gap)}</td><td>${f.last12 ? pct(f.last12.fund) : NA}</td><td>${f.last12 ? pct(f.last12.benchmark) : NA}</td></tr>`).join("") + "</tbody>";
-$("over-note").textContent = "Each comparison runs over the months that both the fund and its index fund have on file, so periods can differ by a month between funds.";
-$("t-over").querySelectorAll("a[data-f]").forEach(a => a.addEventListener("click", () => { cur = +a.dataset.f; fund(); }));
+  el("div", {class: "tile"}, `<div class="k">Funds in the category</div><div class="v">${D.meta.funds_in_category}</div><div class="n">covered-call, buy-write and premium-income</div>`),
+  el("div", {class: "tile"}, `<div class="k">Their net assets</div><div class="v">${usd(D.meta.category_net_assets)}</div><div class="n">each at its latest report date</div>`),
+  el("div", {class: "tile"}, `<div class="k">Monthly history on file</div><div class="v" style="font-size:22px;line-height:1.6">from ${ym(D.meta.first_month)}</div><div class="n">${D.meta.quarters.length} quarterly SEC data sets</div>`),
+  el("div", {class: "tile"}, `<div class="k">Latest report on file</div><div class="v" style="font-size:22px;line-height:1.6">${dmy(D.meta.reports_to)}</div><div class="n">published about two months later</div>`));
+
+function overview() {
+  document.querySelectorAll(".seg.range button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.n === range));
+  const rows = D.detail.map(f => ({f, s: span(f, range)}));
+  const have = rows.filter(r => r.s);
+  const mx = Math.max(1, ...have.flatMap(r => [r.s.fund, r.s.benchmark]));
+  const w = v => Math.max(0, v) / mx * 78;
+  $("pairs").innerHTML = rows.map(({f, s}) => `<div class="pr"><b>${f.ticker}</b>` + (s
+    ? `<div class="bar"><i style="width:${w(s.fund)}%;background:var(--blue)"></i><span><b>${pct(s.fund)}</b> ${f.ticker}</span></div><div class="bar"><i style="width:${w(s.benchmark)}%;background:var(--orange)"></i><span><b>${pct(s.benchmark)}</b> ${f.benchmark}, index fund on the ${esc(f.benchmark_index)}</span></div>`
+    : `<div class="bar" style="grid-row:span 2"><span>On file for ${f.months.length} months only</span></div>`) + `</div>`).join("");
+  const long = range !== 12;
+  $("t-over").innerHTML = `<thead><tr><th>Fund</th><th>Net assets</th><th>Period</th><th>Fund</th><th>Index fund</th><th>Difference, points</th>${long ? "<th>A year: fund</th><th>index fund</th>" : ""}</tr></thead><tbody>` +
+    rows.map(({f, s}, i) => `<tr><td><a href="#fund" data-f="${i}"><b>${f.ticker}</b></a><small>${esc(f.name)}</small></td><td>${usd(f.net_assets)}</td>` + (s
+      ? `<td>${ym(s.from)} to ${ym(s.to)}</td><td>${pct(s.fund)}</td><td>${pct(s.benchmark)}<small>${f.benchmark}</small></td><td>${pts(s.gap)}</td>${long ? `<td>${pct(s.fund_pa)}</td><td>${pct(s.benchmark_pa)}</td>` : ""}`
+      : `<td>${NA}</td><td>${NA}</td><td>${NA}<small>${f.benchmark}</small></td><td>${NA}</td>${long ? `<td>${NA}</td><td>${NA}</td>` : ""}`) + "</tr>").join("") + "</tbody>";
+  $("t-over").querySelectorAll("a[data-f]").forEach(a => a.addEventListener("click", () => { cur = +a.dataset.f; }));
+  $("over-note").textContent = (range ? "" : "Each fund is measured over every month that it and its index fund both have on file, so the periods differ. ") + (long ? '"A year" is the same return expressed as a yearly rate.' : "");
+  document.querySelectorAll(".rangehint").forEach(h => h.textContent = have.length < rows.length ? `${rows.length - have.length} of the ${rows.length} funds has less history than this` : "");
+  if (have.length) {
+    const lo = a => Math.min(...a).toFixed(0), hi = a => Math.max(...a).toFixed(0), fs = have.map(r => r.s.fund), bs = have.map(r => r.s.benchmark), gs = have.map(r => -r.s.gap);
+    const when = words(range) ? `Over the ${words(range)} to ${ymLong(have[0].s.to)}` : `Over the longest period on file, to ${ymLong(have[0].s.to)}`;
+    $("lede-funds").textContent = `${when}, ${have.length === rows.length ? "five" : have.length} large covered-call funds returned between ${lo(fs)}% and ${hi(fs)}% with their distributions reinvested. The index funds on the same markets returned between ${lo(bs)}% and ${hi(bs)}%. The gap runs from ${lo(gs)} to ${hi(gs)} percentage points.`;
+  }
+}
 
 /* ---------- fund by fund ---------- */
 let cur = 0;
 D.detail.forEach((f, i) => { const b = el("button", {type: "button"}, f.ticker); b.onclick = () => { cur = i; fund(); }; $("pick").append(b); });
 
 function fund() {
-  const f = D.detail[cur], w = f.window;
+  const f = D.detail[cur], w = span(f, range) || span(f, 0);
   [...$("pick").children].forEach((c, j) => c.setAttribute("aria-pressed", j === cur));
   $("ftiles").innerHTML = "";
   $("ftiles").append(
     el("div", {class: "tile"}, `<div class="k">${f.ticker}, ${ym(w.from)} to ${ym(w.to)}</div><div class="v">${pct(w.fund)}</div><div class="n">${esc(f.name)}</div>`),
     el("div", {class: "tile"}, `<div class="k">${f.benchmark}, same months</div><div class="v">${pct(w.benchmark)}</div><div class="n">index fund on the ${esc(f.benchmark_index)}</div>`),
-    el("div", {class: "tile"}, `<div class="k">Difference</div><div class="v">${pts(w.gap)}</div><div class="n">percentage points over ${w.months} months</div>`),
+    el("div", {class: "tile"}, `<div class="k">Difference</div><div class="v">${pts(w.gap)}</div><div class="n">percentage points over ${w.n} months</div>`),
     el("div", {class: "tile"}, `<div class="k">Net assets</div><div class="v">${usd(f.net_assets)}</div><div class="n">on ${dmy(f.report_date)}</div>`));
   $("chart-title").textContent = `Cumulative total return: ${f.ticker} and ${f.benchmark}`;
   $("legend").innerHTML = `<span><i class="ln" style="border-color:var(--blue)"></i>${f.ticker}, total return</span><span><i class="ln" style="border-color:var(--orange)"></i>${f.benchmark}, index fund on the ${esc(f.benchmark_index)}, total return</span>`;
-  draw(f);
+  draw(f, w);
   $("mtable").innerHTML = `<table><thead><tr><th>Month</th><th>${f.ticker}</th><th>${f.benchmark}</th><th>${f.ticker}, cumulative</th><th>${f.benchmark}, cumulative</th></tr></thead><tbody>` +
-    f.months.map(m => `<tr><td>${ym(m.month)}</td><td>${pct(m.fund, 2)}</td><td>${pct(m.benchmark, 2)}</td><td>${pct(m.fund_cum)}</td><td>${pct(m.benchmark_cum)}</td></tr>`).join("") + "</tbody></table>";
+    w.months.map(m => `<tr><td>${ym(m.month)}</td><td>${pct(m.fund, 2)}</td><td>${pct(m.benchmark, 2)}</td><td>${pct(m.fund_cum)}</td><td>${pct(m.benchmark_cum)}</td></tr>`).join("") + "</tbody></table>";
 
   const o = f.overlay, n = f.notes;
   let t = esc(f.overlay_kind) + ". ";
@@ -488,12 +542,12 @@ function lineChart(box, tip, series, labels, xlab, fmtTip, opts = {}) {
   hit.addEventListener("pointerleave", () => { xh.style.display = "none"; dots.forEach(d => d.style.display = "none"); tip.style.display = "none"; });
 }
 
-function draw(f) {
-  const p = [{month: null, fund_cum: 0, benchmark_cum: 0}, ...f.months];
+function draw(f, w) {
+  const p = [{month: null, fund_cum: 0, benchmark_cum: 0}, ...w.months];
   const every = Math.ceil((p.length - 1) / 8), xl = [];
   p.forEach((m, i) => { if (i && (p.length - 1 - i) % every === 0) xl.push([i, ym(m.month)]); });
   lineChart($("chart"), $("tip"), [{c: "blue", v: p.map(m => m.fund_cum)}, {c: "orange", v: p.map(m => m.benchmark_cum)}], [f.ticker, f.benchmark], xl,
-    i => `<div class="t">${ym(p[i].month)}, total return since ${ym(f.months[0].month)}</div><div class="r"><span><i style="border-color:var(--blue)"></i>${f.ticker}</span><b>${pct(p[i].fund_cum)}</b></div><div class="r"><span><i style="border-color:var(--orange)"></i>${f.benchmark}</span><b>${pct(p[i].benchmark_cum)}</b></div><div class="t" style="margin:4px 0 0">In the month: ${pct(p[i].fund, 2)} and ${pct(p[i].benchmark, 2)}</div>`,
+    i => `<div class="t">${ym(p[i].month)}, total return since ${ym(w.months[0].month)}</div><div class="r"><span><i style="border-color:var(--blue)"></i>${f.ticker}</span><b>${pct(p[i].fund_cum)}</b></div><div class="r"><span><i style="border-color:var(--orange)"></i>${f.benchmark}</span><b>${pct(p[i].benchmark_cum)}</b></div><div class="t" style="margin:4px 0 0">In the month: ${pct(p[i].fund, 2)} and ${pct(p[i].benchmark, 2)}</div>`,
     {first: 1, label: `Cumulative total return of ${f.ticker} and ${f.benchmark}`});
 }
 
@@ -517,7 +571,7 @@ const pi = D.types.find(t => t.type === "Premium income");
 $("types-note").textContent = `Counted from the latest report of each of the ${D.meta.funds_in_category} funds. Funds named premium income hold ${(pi.net_assets / D.meta.category_net_assets * 100).toFixed(0)}% of the category's net assets. "Calls written, median" is among the funds that had a written call on their report date.`;
 
 /* ---------- category ---------- */
-$("lede-cat").textContent = `Every US-registered fund whose name says covered call, buy-write or premium income: ${D.meta.funds_in_category} funds with ${usd(D.meta.category_net_assets).replace("bn", " billion")} in net assets. Funds built around buffers, barriers or written puts are left out.`;
+$("lede-cat").textContent = `Every US-registered fund whose name says covered call, buy-write or premium income: ${D.meta.funds_in_category} funds with ${usd(D.meta.category_net_assets).replace("bn", " billion")} in net assets. Funds built around buffers, barriers or written puts are left out, as are ${D.meta.funds_no_longer_reporting} funds that have stopped reporting.`;
 D.types.forEach(t => $("cat-tiles").append(el("div", {class: "tile"}, `<div class="k">${t.type}</div><div class="v">${t.funds}</div><div class="n">funds, ${usd(t.net_assets)} in net assets</div>`)));
 let cType = "All", cQ = "", cAll = false, sortKey = "net_assets", sortDir = -1;
 ["All", ...D.types.map(t => t.type)].forEach(t => { const b = el("button", {type: "button", "aria-pressed": t === "All"}, t); b.onclick = () => { cType = t; cAll = false; [...$("cat-type").children].forEach(c => c.setAttribute("aria-pressed", c === b)); cat(); }; $("cat-type").append(b); });
@@ -551,7 +605,7 @@ function showTab() {
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => { if (location.hash.slice(1) !== b.dataset.tab) location.hash = b.dataset.tab; }));
 document.querySelectorAll(".site nav button").forEach(b => b.addEventListener("click", () => { const to = b.dataset.view === "funds" ? "overview" : b.dataset.view; if (location.hash.slice(1) !== to) location.hash = to; }));
 window.addEventListener("hashchange", () => { showTab(); window.scrollTo(0, 0); });
-cat(); showTab();
+cat(); overview(); showTab();
 let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(showTab, 120); });
 </script>
 </body>

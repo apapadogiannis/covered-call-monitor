@@ -87,23 +87,63 @@ def load(cfg: dict) -> dict:
     return by_fund
 
 
-def monthly(reps: list[dict]) -> tuple[dict[str, float], dict[str, float | None], list[str]]:
+def triple(rep: dict):
+    """The three monthly returns of a report as filed, for its first share class in sort order."""
+    return rep["returns"][min(rep["returns"])] if rep["returns"] else None
+
+
+def filed_newest_first(reps: list[dict], bench: dict[str, float]) -> dict:
+    """Whether a fund files its three monthly returns newest first instead of oldest first.
+
+    The form asks for the three months in order of time. Some fund families file them the other
+    way round. The two readings are told apart by which one tracks the fund's index fund more
+    closely, month by month, over all of the fund's reports: the sum of squared differences is
+    computed both ways, and the fund is read newest-first when that reading at least halves it.
+    """
+    fwd = rev = 0.0
+    n = 0
+    for r in reps:
+        v = triple(r)
+        end = r["report_date"][:7]
+        ms = [month_back(end, 2), month_back(end, 1), end]
+        if not v or None in v or any(m not in bench for m in ms):
+            continue
+        b = [bench[m] for m in ms]
+        fwd += sum((x - y) ** 2 for x, y in zip(v, b))
+        rev += sum((x - y) ** 2 for x, y in zip(v[::-1], b))
+        n += 1
+    return {"newest_first": bool(n) and rev < 0.5 * fwd, "reports_compared": n,
+            "misfit_as_filed": round(fwd, 1), "misfit_reversed": round(rev, 1)}
+
+
+def monthly(reps: list[dict], newest_first: bool = False) -> tuple[dict[str, float], dict[str, float | None], list[str]]:
     """Monthly total return (%) and net flow, by month, joined across a fund's reports.
 
     Each report carries the three months that end at its report date. A later report overrides an
     earlier one for the same month. Where a report lists several share classes, the first class
     identifier in sort order is used; a fund whose identifier changes (as when a trust is
     reorganised) therefore keeps one unbroken series.
+
+    A fund's first report can cover months before it existed, filed as zero, and the month in
+    which it started, which is not a full month. Those months are dropped.
     """
     ret: dict[str, float] = {}
     flow: dict[str, float | None] = {}
     odd: list[str] = []
-    for r in reps:
+    for k, r in enumerate(reps):
         end = r["report_date"][:7]
-        vals = r["returns"][min(r["returns"])] if r["returns"] else None
+        vals = triple(r)
+        if vals and newest_first:
+            vals = vals[::-1]
+        start = 0
+        if k == 0 and vals:
+            while start < 3 and vals[start] in (0, 0.0, None):
+                start += 1
+            if 0 < start < 3:
+                start += 1          # the month the fund started in is a part month
         for i in range(3):
             ym = month_back(end, 2 - i)
-            if vals and vals[i] is not None:
+            if vals and i >= start and vals[i] is not None:
                 ret[ym] = vals[i]
             s, v, d = r["flows"][i]
             if None in (s, v, d):
@@ -127,6 +167,7 @@ def compound(ret: dict[str, float], months: list[str]):
 
 CONTRACT = 100   # shares per listed US option contract, equity and index alike
 FACE_LIMIT = 200  # per cent of net assets; above this the face value is not shown
+STILL_REPORTING = 6  # months; a fund whose last report is older than this is no longer listed
 
 
 def overlay(rep: dict) -> dict:
@@ -201,6 +242,13 @@ def build(out: Path) -> dict:
     by_fund = load(cfg)
     series = {k: monthly(v) for k, v in by_fund.items()}
     bench = {b["ticker"]: b for b in cfg["benchmark"]}
+    order = {}
+    for d in cfg["detail"]:
+        if d["series"] in by_fund:
+            order[d["series"]] = filed_newest_first(by_fund[d["series"]],
+                                                    series.get("benchmark:" + d["benchmark"], ({},))[0])
+            if order[d["series"]]["newest_first"]:
+                series[d["series"]] = monthly(by_fund[d["series"]], newest_first=True)
 
     detail = []
     for d in cfg["detail"]:
@@ -234,14 +282,20 @@ def build(out: Path) -> dict:
                        "fund": (gf - 1) * 100, "benchmark": (gb - 1) * 100,
                        "gap": (gf - gb) * 100} if run else None,
             "last12": {"fund": compound(ret, last12), "benchmark": compound(bret, last12)} if last12 else None,
+            "returns_order": order[d["series"]],
             "flows": [{"month": m, "net": flow[m]} for m in sorted(flow)],
             "flow_months_not_used": odd,
             "overlay": overlay(last), "notes": notes(last)})
 
-    category = []
+    latest = max(r["report_date"] for v in by_fund.values() for r in v)
+    cutoff = month_back(latest[:7], STILL_REPORTING)
+    category, gone = [], 0
     for key, reps in by_fund.items():
         last = reps[-1]
         if last["role"] != "category":
+            continue
+        if last["report_date"][:7] < cutoff:      # closed, merged or renamed out of the category
+            gone += 1
             continue
         ret, flow, odd = series[key]
         end = last["report_date"][:7]
@@ -269,8 +323,10 @@ def build(out: Path) -> dict:
 
     quarters = sorted(p.name for p in STORE.iterdir() if (p / "funds.csv").exists())
     dates = [r["report_date"] for v in by_fund.values() for r in v]
+    first_month = min((m for d in detail for m in (d["months"][:1])), key=lambda m: m["month"])["month"]
     data = {"meta": {"quarters": quarters, "reports_from": min(dates), "reports_to": max(dates),
-                     "funds_in_category": len(category),
+                     "first_month": first_month,
+                     "funds_in_category": len(category), "funds_no_longer_reporting": gone,
                      "category_net_assets": sum(r["net_assets"] or 0 for r in category),
                      "source": cfg["source"]["page"]},
             "detail": detail, "types": types, "category": category}

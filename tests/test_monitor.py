@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from monitor.build import build, compound, month_back, monthly, overlay, strike_from_title  # noqa: E402
+from monitor.build import build, compound, filed_newest_first, month_back, monthly, overlay, strike_from_title  # noqa: E402
 from monitor.update import quarters_since  # noqa: E402
 from datetime import date  # noqa: E402
 
@@ -31,6 +31,18 @@ _, flow, odd = monthly([report("2026-03-31", (1, 2, 3), flows=((-5.0, 0.0, 1.0),
 assert odd == ["2026-01"] and flow["2026-01"] is None and flow["2026-02"] == 1.0
 
 
+# A fund that files newest first is recognised from its index fund, and read the right way round.
+bench = {"2026-01": -5.0, "2026-02": 1.0, "2026-03": 8.0, "2026-04": 2.0, "2026-05": -6.0, "2026-06": 9.0}
+flipped = [report("2026-03-31", (3.0, 0.5, -4.0)), report("2026-06-30", (3.5, -5.0, 1.5))]
+assert filed_newest_first(flipped, bench)["newest_first"]
+assert monthly(flipped, newest_first=True)[0]["2026-01"] == -4.0
+straight = [report("2026-03-31", (-4.0, 0.5, 3.0)), report("2026-06-30", (1.5, -5.0, 3.5))]
+assert not filed_newest_first(straight, bench)["newest_first"]
+# Months before a fund existed (filed as zero) and its first part month are dropped.
+ret, _, _ = monthly([report("2026-03-31", (0, 2.0, 1.0)), report("2026-06-30", (0, 1.0, 1.0))])
+assert sorted(ret) == ["2026-03", "2026-04", "2026-05", "2026-06"] and ret["2026-04"] == 0
+
+
 def call(title, balance, strike, unit="NC"):
     return {"put_or_call": "Call", "written_or_purchased": "Written", "title": title, "balance": str(balance),
             "unit": unit, "strike_as_filed": str(strike), "expiration": "2026-08-21", "reference": "",
@@ -48,6 +60,8 @@ import json, tempfile  # noqa: E402
 with tempfile.TemporaryDirectory() as tmp:
     d = build(Path(tmp))
     assert len(d["detail"]) == 5 and d["meta"]["funds_in_category"] > 50
+    order = {f["ticker"]: f["returns_order"]["newest_first"] for f in d["detail"]}
+    assert order == {"QYLD": True, "XYLD": True, "RYLD": True, "JEPI": False, "JEPQ": False}, order
     for f in d["detail"]:
         assert f["window"]["months"] >= 12, f["ticker"]
         months = [m["month"] for m in f["months"]]
