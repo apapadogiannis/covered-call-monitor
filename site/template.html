@@ -415,6 +415,7 @@ const NS = "http://www.w3.org/2000/svg";
 
 /* ---------- headings and footer ---------- */
 $("src").href = D.meta.source;
+$("lede-funds").textContent = `This site measures what covered-call funds earned once their distributions are counted. For each of ${D.meta.funds_in_category} US funds it shows the total return, with every distribution reinvested, the options the fund had written on its last report date, and the money moving in and out. Where a fund follows a well-known index, its return is set beside an index fund on the same market, so the cost of the option strategy can be read off directly.`;
 { const nf = D.detail.filter(f => f.returns_order.newest_first).map(f => f.ticker), of = D.detail.filter(f => !f.returns_order.newest_first).map(f => f.ticker);
   $("order-note").textContent = (nf.length ? `Read newest first: ${nf.join(", ")}. ` : "") + (of.length ? `Read as filed: ${of.join(", ")}.` : ""); }
 $("copy-year").textContent = D.meta.reports_to.slice(0, 4);
@@ -481,11 +482,6 @@ function overview() {
     : `From ${ym(D.meta.first_month)}, the first month in the SEC's data sets, to ${ym(have[0].s.to)}: ${yearsText(Math.max(...have.map(r => r.s.n)))}.` + (late.length ? ` ${lateText}, the first full month after ${late.length === 1 ? "it" : "each"} started. Each fund is compared with its index fund over its own period.` : "");
   document.querySelectorAll("#pane-overview .rangehint").forEach(h => h.textContent = hint);
   $("over-all").innerHTML = `These five are the funds followed since the first version. All ${F.length} funds of the category can be opened under <a href="#fund">Fund by fund</a>, ${D.meta.funds_with_index_fund} of them beside an index fund.`;
-  if (have.length) {
-    const lo = a => Math.min(...a).toFixed(0), hi = a => Math.max(...a).toFixed(0), fs = have.map(r => r.s.fund), bs = have.map(r => r.s.benchmark), gs = have.map(r => -r.s.gap);
-    const when = words(range) ? `Over the ${words(range)} to ${ymLong(have[0].s.to)}` : `From ${ymLong(D.meta.first_month)}, or from their start if later, to ${ymLong(have[0].s.to)}`;
-    $("lede-funds").textContent = `${when}, ${have.length === rows.length ? "five" : have.length} large covered-call funds had a total return of between ${lo(fs)}% and ${hi(fs)}%, with every distribution reinvested. The index funds on the same markets had a total return of between ${lo(bs)}% and ${hi(bs)}%. The gap runs from ${lo(gs)} to ${hi(gs)} percentage points.`;
-  }
 }
 
 /* ---------- fund by fund ---------- */
