@@ -213,11 +213,48 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
 .pr .bar i{display:block;height:12px;border-radius:0 4px 4px 0;min-width:2px}
 .pr .bar span{color:var(--ink2);white-space:nowrap}
 .pr .bar span b{color:var(--ink);font-weight:600}
+.pr .bar span span{color:inherit}
 @media (max-width:640px){.pr{grid-template-columns:96px minmax(0,1fr)}.pr .bar{flex-wrap:wrap;gap:2px 8px;margin-bottom:4px}.pr .bar span{white-space:normal}}
 .filters select{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:6px 8px;max-width:min(100%,420px)}
 .filters select:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
 #cat td:first-child a{color:var(--ink);text-decoration:none}
 #cat td:first-child a:hover b{text-decoration:underline}
+.sm{display:none}
+.seg button{white-space:nowrap}
+@media (max-width:640px){
+  .lg{display:none !important}
+  .sm{display:inline}
+  th.sm,td.sm{display:table-cell}
+  .lede{font-size:14.5px}
+  .filters{gap:8px}
+  .filters>span:first-child{flex-basis:100%;margin-bottom:-4px}
+  .seg{display:flex;max-width:100%;overflow-x:auto;scrollbar-width:none}
+  .seg::-webkit-scrollbar{display:none}
+  .seg button{flex:1 0 auto;padding:9px 12px;font-size:13.5px}
+  .filters select,.filters input[type=search]{width:100%;max-width:none;min-height:40px;font-size:16px}
+  #cat-tiles{grid-template-columns:repeat(3,1fr)}
+  #cat-tiles .tile{padding:9px 10px}
+  #cat-tiles .tile .v{font-size:21px}
+  .pr{grid-template-columns:62px minmax(0,1fr);gap:3px 10px;padding:9px 0}
+  .pr>b small{font-size:11px}
+  .pr .bar{flex-wrap:nowrap;margin:0}
+  .pr .bar i{height:14px}
+  .pr .bar span{white-space:nowrap}
+  .scroll th:first-child,.scroll td:first-child{position:static;box-shadow:none}
+  #t-over td:first-child,#cat td:first-child{white-space:normal}
+  #cat td:first-child{min-width:0}
+  #cat td:first-child small{font-size:11.5px}
+  th button{padding:8px 0}
+  .sl{grid-template-columns:1fr 54px;row-gap:0}
+  .sl span{grid-column:1/-1}
+  .sl input{height:34px}
+  .result{position:sticky}
+  .result .cmp{display:none}
+  .cmp2{display:block;font-size:13.5px;color:var(--ink2);margin:10px 0 0}
+  .fb{grid-template-columns:66px 1fr 58px;gap:8px}
+  details summary{padding:8px 0}
+  footer{font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -321,6 +358,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
           <label class="sl"><span>Strike, above today's price</span><input type="range" id="s-k" min="0" max="15" step="0.5" value="3"><output id="o-k"></output></label></div>
         <div class="term"><h3>3. Collect the premium <span>the income</span></h3><p>The buyer pays for the option up front. This premium is the fund's to keep whatever happens. It is larger when markets are nervous and when the strike is close to today's price.</p>
           <label class="sl"><span>Premium received</span><input type="range" id="s-p" min="0.2" max="6" step="0.1" value="2"><output id="o-p"></output></label></div>
+        <p class="cmp2" id="r-text2"></p>
         <div class="term"><h3>4. Repeat</h3><p>When the option expires the fund sells the next one. Most funds do this every month, some every week or every day.</p></div>
       </div>
       <div class="result">
@@ -464,14 +502,14 @@ function overview() {
   const have = rows.filter(r => r.s);
   const mx = Math.max(1, ...have.flatMap(r => [r.s.fund, r.s.benchmark]));
   const w = v => Math.max(0, v) / mx * 78;
-  $("pairs").innerHTML = rows.map(({f, s}) => `<div class="pr"><b>${f.ticker}${s ? `<small>${ym(s.from)} to ${ym(s.to)}</small><small>${yearsText(s.n)}</small>` : ""}</b>` + (s
-    ? `<div class="bar"><i style="width:${w(s.fund)}%;background:var(--blue)"></i><span><b>${pct(s.fund)}</b> ${f.ticker}, total return</span></div><div class="bar"><i style="width:${w(s.benchmark)}%;background:var(--orange)"></i><span><b>${pct(s.benchmark)}</b> ${f.benchmark}, index fund on the ${esc(f.benchmark_index)}, total return</span></div>`
+  $("pairs").innerHTML = rows.map(({f, s}) => `<div class="pr"><b>${f.ticker}${s ? `<small class="lg">${ym(s.from)} to ${ym(s.to)}</small><small>${yearsText(s.n)}</small>` : ""}</b>` + (s
+    ? `<div class="bar"><i style="width:${w(s.fund)}%;background:var(--blue)"></i><span><b>${pct(s.fund)}</b> ${f.ticker}<span class="lg">, total return</span></span></div><div class="bar"><i style="width:${w(s.benchmark)}%;background:var(--orange)"></i><span><b>${pct(s.benchmark)}</b> ${f.benchmark}<span class="lg">, index fund on the ${esc(f.benchmark_index)}, total return</span></span></div>`
     : `<div class="bar" style="grid-row:span 2"><span>Started ${ym(f.months[0].month)}: ${yearsText(f.months.length)} on file, less than this period</span></div>`) + `</div>`).join("");
   const long = range !== 12;
-  $("t-over").innerHTML = `<thead><tr><th>Fund</th><th>Net assets</th><th>Period</th><th>Fund, total return</th><th>Index fund, total return</th><th>Difference, points</th>${long ? "<th>Total return a year: fund</th><th>index fund</th>" : ""}</tr></thead><tbody>` +
-    rows.map(({f, s}, i) => `<tr><td><a href="#fund" data-f="${F.findIndex(x => x.id === f.id)}"><b>${f.ticker}</b></a><small>${esc(f.name)}</small></td><td>${usd(f.net_assets)}</td>` + (s
-      ? `<td>${ym(s.from)} to ${ym(s.to)}</td><td>${pct(s.fund)}</td><td>${pct(s.benchmark)}<small>${f.benchmark}</small></td><td>${pts(s.gap)}</td>${long ? `<td>${pct(s.fund_pa)}</td><td>${pct(s.benchmark_pa)}</td>` : ""}`
-      : `<td>${NA}</td><td>${NA}</td><td>${NA}<small>${f.benchmark}</small></td><td>${NA}</td>${long ? `<td>${NA}</td><td>${NA}</td>` : ""}`) + "</tr>").join("") + "</tbody>";
+  $("t-over").innerHTML = `<thead><tr><th>Fund</th><th class="lg">Net assets</th><th class="lg">Period</th><th><span class="lg">Fund, total return</span><span class="sm">Fund</span></th><th><span class="lg">Index fund, total return</span><span class="sm">Index fund</span></th><th><span class="lg">Difference, points</span><span class="sm">Diff.</span></th>${long ? '<th><span class="lg">Total return a year: fund</span><span class="sm">A year</span></th><th class="lg">index fund</th>' : ""}</tr></thead><tbody>` +
+    rows.map(({f, s}, i) => `<tr><td><a href="#fund" data-f="${F.findIndex(x => x.id === f.id)}"><b>${f.ticker}</b></a><small class="lg">${esc(f.name)}</small></td><td class="lg">${usd(f.net_assets)}</td>` + (s
+      ? `<td class="lg">${ym(s.from)} to ${ym(s.to)}</td><td>${pct(s.fund)}</td><td>${pct(s.benchmark)}<small>${f.benchmark}</small></td><td>${pts(s.gap)}</td>${long ? `<td>${pct(s.fund_pa)}</td><td class="lg">${pct(s.benchmark_pa)}</td>` : ""}`
+      : `<td class="lg">${NA}</td><td>${NA}</td><td>${NA}<small>${f.benchmark}</small></td><td>${NA}</td>${long ? `<td>${NA}</td><td class="lg">${NA}</td>` : ""}`) + "</tr>").join("") + "</tbody>";
   $("t-over").querySelectorAll("a[data-f]").forEach(a => a.addEventListener("click", () => { cur = +a.dataset.f; }));
   $("over-note").textContent = long ? '"Total return a year" is the same total return expressed as a yearly rate.' : "";
   const late = D.detail.filter(f => f.months[0].month > D.meta.first_month);
@@ -540,7 +578,8 @@ function fund() {
 function lineChart(box, tip, series, labels, xlab, fmtTip, opts = {}) {
   box.querySelector("svg")?.remove();
   const n = series[0].v.length; if (n < 2) return;
-  const W = Math.max(300, box.clientWidth), H = opts.h || 300, L = 46, R = opts.r ?? 64, T = 14, B = 30;
+  const narrow = box.clientWidth < 500;
+  const W = Math.max(280, box.clientWidth), H = opts.h || (narrow ? 230 : 300), L = narrow ? 40 : 46, R = opts.r ?? (narrow ? 46 : 64), T = 14, B = 30;
   const all = series.flatMap(s => s.v);
   let lo = Math.min(0, ...all), hi = Math.max(0, ...all);
   const step = [1, 2, 5, 10, 20, 25, 50, 100].find(s => (hi - lo) / s <= 6) || 200;
@@ -577,8 +616,9 @@ function lineChart(box, tip, series, labels, xlab, fmtTip, opts = {}) {
 
 function draw(f, w) {
   const B = hasB(f), p = [{month: null, fund_cum: 0, benchmark_cum: 0}, ...w.months];
-  const every = Math.ceil((p.length - 1) / 8), xl = [];
-  p.forEach((m, i) => { if (i && (p.length - 1 - i) % every === 0) xl.push([i, ym(m.month)]); });
+  const narrow = $("chart").clientWidth < 500, every = Math.ceil((p.length - 1) / (narrow ? 3 : 8)), xl = [];
+  const tick = m => narrow ? MON[+m.slice(5, 7) - 1] + " " + m.slice(2, 4) : ym(m);
+  p.forEach((m, i) => { if (i && (p.length - 1 - i) % every === 0 && i >= every / 2) xl.push([i, tick(m.month)]); });
   const ser = [{c: "blue", v: p.map(m => m.fund_cum)}]; if (B) ser.push({c: "orange", v: p.map(m => m.benchmark_cum)});
   const what = f.step === 3 ? "In the three months" : "In the month";
   lineChart($("chart"), $("tip"), ser, B ? [f.ticker || "Fund", f.benchmark] : [f.ticker || "Fund"], xl,
@@ -593,10 +633,10 @@ function payoff() {
   const xs = []; for (let m = -20; m <= 20.001; m += 1) xs.push(m);
   const cc = xs.map(m => Math.min(m, k) + pr), sh = xs.map(m => m);
   $("r-cap").innerHTML = `+${(k + pr).toFixed(1)}%<small>strike ${k.toFixed(1)}% above, plus ${pr.toFixed(1)}% premium</small>`;
-  $("r-text").innerHTML = `If the shares rise 10%, the fund makes ${pct(Math.min(10, k) + pr)} and gives up ${Math.max(0, 10 - k - pr).toFixed(1)} points. If they fall 10%, it loses ${pct(-10 + pr)}: the premium is the only cushion. The fund comes out ahead of the shares alone whenever they rise less than ${(k + pr).toFixed(1)}%.`;
+  $("r-text2").innerHTML = $("r-text").innerHTML = `If the shares rise 10%, the fund makes ${pct(Math.min(10, k) + pr)} and gives up ${Math.max(0, 10 - k - pr).toFixed(1)} points. If they fall 10%, it loses ${pct(-10 + pr)}: the premium is the only cushion. The fund comes out ahead of the shares alone whenever they rise less than ${(k + pr).toFixed(1)}%.`;
   lineChart($("pchart"), $("ptip"), [{c: "blue", v: cc}, {c: "orange", v: sh}], null, [[0, "−20%"], [10, "−10%"], [20, "0%"], [30, "+10%"], [40, "+20%"]],
     i => `<div class="t">Shares ${pct(xs[i], 0)} over the month</div><div class="r"><span><i style="border-color:var(--blue)"></i>With the call sold</span><b>${pct(cc[i])}</b></div><div class="r"><span><i style="border-color:var(--orange)"></i>Shares alone</span><b>${pct(sh[i])}</b></div>`,
-    {h: 240, r: 12, label: "Return of shares alone and of shares with a call sold, by how far the shares move"});
+    {h: $("pchart").clientWidth < 500 ? 170 : 240, r: 12, label: "Return of shares alone and of shares with a call sold, by how far the shares move"});
 }
 $("s-k").addEventListener("input", payoff); $("s-p").addEventListener("input", payoff);
 
@@ -607,12 +647,12 @@ $("types-note").textContent = `Counted from the latest report of each of the ${D
 
 /* ---------- category ---------- */
 $("lede-cat").textContent = `Every US-registered fund whose name says covered call, buy-write or premium income: ${D.meta.funds_in_category} funds with ${usd(D.meta.category_net_assets).replace("bn", " billion")} in net assets. Funds built around buffers, barriers or written puts are left out, as are ${D.meta.funds_no_longer_reporting} funds that have stopped reporting.`;
-D.types.forEach(t => $("cat-tiles").append(el("div", {class: "tile"}, `<div class="k">${t.type}</div><div class="v">${t.funds}</div><div class="n">funds, ${usd(t.net_assets)} in net assets</div>`)));
+D.types.forEach(t => $("cat-tiles").append(el("div", {class: "tile"}, `<div class="k">${t.type}</div><div class="v">${t.funds}</div><div class="n">funds<span class="lg">,</span><span class="sm"><br></span> ${usd(t.net_assets)}<span class="lg"> in net assets</span></div>`)));
 let cType = "All", cQ = "", cAll = false, sortKey = "net_assets", sortDir = -1;
 ["All", ...D.types.map(t => t.type)].forEach(t => { const b = el("button", {type: "button", "aria-pressed": t === "All"}, t); b.onclick = () => { cType = t; cAll = false; [...$("cat-type").children].forEach(c => c.setAttribute("aria-pressed", c === b)); cat(); }; $("cat-type").append(b); });
 $("cat-q").addEventListener("input", e => { cQ = e.target.value.trim().toLowerCase(); cat(); });
 $("cat-more").onclick = () => { cAll = !cAll; cat(); };
-const COLS = [["name", "Fund"], ["net_assets", "Net assets"], ["return_12m", "Total return, 12 months"], ["notional_pct", "Calls written, % of net assets"], ["notes_pct", "In notes"]];
+const COLS = [["name", "Fund", "Fund", ""], ["net_assets", "Net assets", "Assets", ""], ["return_12m", "Total return, 12 months", "12 mo.", ""], ["notional_pct", "Calls written, % of net assets", "Calls", ""], ["notes_pct", "In notes", "", "lg"]];
 function cat() {
   let rows = D.category.filter(r => (cType === "All" || r.type === cType) && (!cQ || r.name.toLowerCase().includes(cQ)));
   rows.sort((a, b) => { const u = a[sortKey], v = b[sortKey]; if (u == null && v == null) return 0; if (u == null) return 1; if (v == null) return -1; return (typeof u === "string" ? u.localeCompare(v) : u - v) * sortDir; });
@@ -621,8 +661,8 @@ function cat() {
   if (!cAll && !cQ) rows = rows.slice(0, LIM);
   $("cat-more").style.display = total > LIM && !cQ ? "" : "none";
   $("cat-more").textContent = cAll ? `Show the ${LIM} largest` : `Show all ${total}`;
-  $("cat").innerHTML = "<thead><tr>" + COLS.map(c => `<th ${c[0] === sortKey ? `aria-sort="${sortDir > 0 ? "ascending" : "descending"}"` : ""}><button type="button" data-k="${c[0]}">${c[1]}</button></th>`).join("") + "</tr></thead><tbody>" +
-    rows.map(r => { const fi = F.findIndex(f => f.id === r.series_id || f.name === r.name); return `<tr><td>${fi < 0 ? "" : `<a href="#fund" data-f="${fi}">`}<b style="font-weight:600">${esc(r.name)}</b>${fi < 0 ? "" : "</a>"}<small>${r.type} · as of ${ym(r.report_date)}</small></td><td>${usd(r.net_assets)}</td><td>${pct(r.return_12m)}</td><td>${r.notional_pct == null ? NA : `<span class="cw"><i style="width:${Math.min(100, r.notional_pct / 1.5)}%"></i></span>${plain(r.notional_pct, 0)}`}</td><td>${r.notes_count ? plain(r.notes_pct) : NA}</td></tr>`; }).join("") + "</tbody>";
+  $("cat").innerHTML = "<thead><tr>" + COLS.map(c => `<th class="${c[3]}" ${c[0] === sortKey ? `aria-sort="${sortDir > 0 ? "ascending" : "descending"}"` : ""}><button type="button" data-k="${c[0]}"><span class="lg">${c[1]}</span><span class="sm">${c[2]}</span></button></th>`).join("") + "</tr></thead><tbody>" +
+    rows.map(r => { const fi = F.findIndex(f => f.id === r.series_id || f.name === r.name); return `<tr><td>${fi < 0 ? "" : `<a href="#fund" data-f="${fi}">`}<b style="font-weight:600">${esc(r.name)}</b>${fi < 0 ? "" : "</a>"}<small>${r.type} · as of ${ym(r.report_date)}</small></td><td>${usd(r.net_assets)}</td><td>${pct(r.return_12m)}</td><td>${r.notional_pct == null ? NA : `<span class="cw lg"><i style="width:${Math.min(100, r.notional_pct / 1.5)}%"></i></span>${plain(r.notional_pct, 0)}`}</td><td class="lg">${r.notes_count ? plain(r.notes_pct) : NA}</td></tr>`; }).join("") + "</tbody>";
   $("cat").querySelectorAll("a[data-f]").forEach(a => a.addEventListener("click", () => { cur = +a.dataset.f; }));
   $("cat").querySelectorAll("th button").forEach(b => b.onclick = () => { const k = b.dataset.k; if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = k === "name" ? 1 : -1; } cat(); });
 }
