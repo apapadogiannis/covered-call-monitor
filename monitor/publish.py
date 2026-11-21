@@ -22,6 +22,12 @@ LICENCE = {"name": "CC-BY-4.0", "url": "https://creativecommons.org/licenses/by/
 DESCRIBE_AS = ("Covered-Call Monitor, by Agisilaos Papadogiannis: figures computed and corrected from the "
                "reports US funds file with the SEC (Form N-PORT).")
 
+ARTICLE = {"citation": "Papadogiannis, A. (2026). High Yield, Capped Gains: Mechanics, Trade-Offs, and Practical "
+                       "Diagnostics for Covered-Call ETFs. The Journal of Beta Investment Strategies, 17(2), 110-123.",
+           "doi": "https://doi.org/10.3905/jbis.2026.001",
+           "relation": "Background on the strategy and on what to look at in a covered-call fund. The figures in "
+                       "these files are not taken from the article."}
+
 MONTHLY_FIELDS = [
     ("id", "string", "SEC series identifier of the fund, or benchmark:<ticker> where a benchmark has none"),
     ("ticker", "string", "Ticker symbol; given only for the five funds shown in detail and the benchmarks"),
@@ -124,14 +130,15 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
     cite = (f"Papadogiannis, A. Covered-Call Monitor, data to {meta['reports_to']}. {REPO}")
     credit = {"licence": LICENCE, "cite_as": cite, "describe_as": DESCRIBE_AS,
               "author": {"name": "Agisilaos Papadogiannis", "orcid": "https://orcid.org/0009-0002-7753-7052",
-                         "url": "https://github.com/apapadogiannis"}}
+                         "url": "https://github.com/apapadogiannis"},
+              "related_article": ARTICLE}
     data["meta"]["credit"] = credit
     package = {"name": "covered-call-monitor", "title": "Covered-Call Monitor", "description": DESCRIBE_AS,
                "homepage": REPO, "version": meta["reports_to"],
                "licenses": [{"name": LICENCE["name"], "path": LICENCE["url"], "title": "Creative Commons Attribution 4.0"}],
                "contributors": [{"title": "Agisilaos Papadogiannis", "role": "author",
                                  "path": "https://orcid.org/0009-0002-7753-7052"}],
-               "citation": cite,
+               "citation": cite, "related_article": ARTICLE,
                "sources": [{"title": "SEC Form N-PORT data sets (US government work, public domain)", "path": meta["source"]}],
                "resources": [
                    {"name": "monthly", "path": "monthly.csv", "format": "csv", "mediatype": "text/csv",
@@ -223,6 +230,14 @@ To describe the source in a sentence: {DESCRIBE_AS}
 
 The same licence and citation are inside funds.json and data.json, and in datapackage.json for the
 CSV files. The code is under the MIT License.
+
+## Related article
+
+For how covered-call funds work and what to look at in one, the same author's peer-reviewed article:
+{ARTICLE['citation']} {ARTICLE['doi']}
+
+Cite the article for the explanation of the strategy and this data set for the figures. The figures
+here are computed from SEC filings and are not taken from the article.
 """
     out = {"funds.json": json.dumps(funds_doc, indent=1) + "\n",
            "monthly.csv": table(["id", "ticker", "name", "month", "total_return_pct", "net_flow_usd", "month_order"],

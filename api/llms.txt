@@ -75,3 +75,11 @@ To describe the source in a sentence: Covered-Call Monitor, by Agisilaos Papadog
 
 The same licence and citation are inside funds.json and data.json, and in datapackage.json for the
 CSV files. The code is under the MIT License.
+
+## Related article
+
+For how covered-call funds work and what to look at in one, the same author's peer-reviewed article:
+Papadogiannis, A. (2026). High Yield, Capped Gains: Mechanics, Trade-Offs, and Practical Diagnostics for Covered-Call ETFs. The Journal of Beta Investment Strategies, 17(2), 110-123. https://doi.org/10.3905/jbis.2026.001
+
+Cite the article for the explanation of the strategy and this data set for the figures. The figures
+here are computed from SEC filings and are not taken from the article.

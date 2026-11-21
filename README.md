@@ -23,9 +23,12 @@ These files are rebuilt from `data/` by `build.py` and checked by the tests. Do 
 
 ## What it shows
 
-- **Five funds in detail** (QYLD, XYLD, RYLD, JEPI, JEPQ), each against its index fund (QQQ, IVV, IWM):
-  monthly and cumulative total return, the written calls or equity-linked notes on the last report
-  date, and monthly net flows.
+- **Every fund of the category, one at a time:** cumulative total return since 2019 or its start, the
+  written calls or structured notes on its last report date, and monthly net flows. A fund whose name
+  names the Nasdaq-100, the S&P 500 or the Russell 2000 is set beside an index fund on that index
+  (QQQ, IVV, IWM).
+- **Five large funds on the front page** (QYLD, XYLD, RYLD, JEPI, JEPQ), compared with their index
+  funds over a chosen period.
 - **The whole category**: every US-registered fund whose name says covered call, buy-write or premium
   income, with net assets, returns, flows and the face value of its written calls.
 
@@ -68,6 +71,13 @@ the source. Figures are as filed by the funds and are not audited or corrected h
 Code: MIT. Extracted tables in `data/`: public domain, as their source. The computed figures in
 `api/` and on the page: CC BY 4.0, which allows any reuse with credit. Cite as given in
 `CITATION.cff` and in `api/llms.txt`.
+
+## Related article
+
+For how covered-call funds work and what to look at in one: A. Papadogiannis (2026), "High Yield,
+Capped Gains: Mechanics, Trade-Offs, and Practical Diagnostics for Covered-Call ETFs", *The Journal of
+Beta Investment Strategies* 17(2), 110-123, [doi:10.3905/jbis.2026.001](https://doi.org/10.3905/jbis.2026.001).
+The figures of this monitor are computed from SEC filings and are not taken from the article.
 
 ## Disclaimer
 

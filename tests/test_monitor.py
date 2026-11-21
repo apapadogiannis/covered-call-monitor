@@ -87,6 +87,11 @@ with tempfile.TemporaryDirectory() as tmp:
     assert header == [f["name"] for f in pkg["resources"][0]["schema"]["fields"]]
     header = (Path(tmp) / "reports.csv").open(encoding="utf-8").readline().strip().split(",")
     assert header == [f["name"] for f in pkg["resources"][1]["schema"]["fields"]]
+    # Every fund still reporting can be opened on the page, in steps that match what is known of its months.
+    assert len(d["funds"]) == d["meta"]["funds_in_category"] and all(f["months"] for f in d["funds"])
+    assert all(f["step"] == (1 if f["month_order"] in ("as filed", "reversed") else 3) for f in d["funds"])
+    assert all((f["benchmark"] is None) == (f["months"][0]["benchmark"] is None) for f in d["funds"])
+    assert "10.3905/jbis.2026.001" in doc["related_article"]["doi"]
     for name in ("llms.txt", "reports.csv"):
         assert (Path(tmp) / name).stat().st_size > 1000, name
 print("all checks pass")

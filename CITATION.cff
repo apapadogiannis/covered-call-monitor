@@ -16,3 +16,16 @@ keywords:
   - premium income
   - total return
   - SEC Form N-PORT
+references:
+  - type: article
+    title: "High yield, capped gains: Mechanics, trade-offs, and practical diagnostics for covered-call ETFs"
+    authors:
+      - family-names: Papadogiannis
+        given-names: Agisilaos
+    journal: "The Journal of Beta Investment Strategies"
+    volume: 17
+    issue: 2
+    start: 110
+    end: 123
+    year: 2026
+    doi: "10.3905/jbis.2026.001"

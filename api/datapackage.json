@@ -19,6 +19,11 @@
   }
  ],
  "citation": "Papadogiannis, A. Covered-Call Monitor, data to 2026-07-31. https://github.com/apapadogiannis/covered-call-monitor",
+ "related_article": {
+  "citation": "Papadogiannis, A. (2026). High Yield, Capped Gains: Mechanics, Trade-Offs, and Practical Diagnostics for Covered-Call ETFs. The Journal of Beta Investment Strategies, 17(2), 110-123.",
+  "doi": "https://doi.org/10.3905/jbis.2026.001",
+  "relation": "Background on the strategy and on what to look at in a covered-call fund. The figures in these files are not taken from the article."
+ },
  "sources": [
   {
    "title": "SEC Form N-PORT data sets (US government work, public domain)",

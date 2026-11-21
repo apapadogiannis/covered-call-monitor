@@ -214,6 +214,10 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
 .pr .bar span{color:var(--ink2);white-space:nowrap}
 .pr .bar span b{color:var(--ink);font-weight:600}
 @media (max-width:640px){.pr{grid-template-columns:96px minmax(0,1fr)}.pr .bar{flex-wrap:wrap;gap:2px 8px;margin-bottom:4px}.pr .bar span{white-space:normal}}
+.filters select{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:6px 8px;max-width:min(100%,420px)}
+.filters select:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+#cat td:first-child a{color:var(--ink);text-decoration:none}
+#cat td:first-child a:hover b{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -228,7 +232,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
   <h1>What does the yield cost?</h1>
   <p class="lede" id="lede-funds"></p>
   <div class="stamp" id="stamp"></div>
-  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
+  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Background: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
 
   <nav class="tabs" role="tablist" aria-label="Sections">
     <button type="button" role="tab" data-tab="overview">Overview</button>
@@ -247,15 +251,17 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
       <div id="pairs"></div>
       <div class="scroll" style="margin-top:14px"><table class="now" id="t-over"></table></div>
       <p class="note" id="over-note"></p>
+      <p class="note" id="over-all"></p>
     </div>
   </div>
 
   <div class="pane" id="pane-fund">
-    <div class="filters"><span>Fund</span><div class="seg" id="pick" role="group" aria-label="Fund"></div><span>Period</span><div class="seg range" role="group" aria-label="Period"></div></div>
+    <div class="filters"><span>Fund</span><div class="seg" id="pick" role="group" aria-label="Fund"></div><select id="pick-all" aria-label="Any fund in the category"></select></div>
+    <div class="filters"><span>Period</span><div class="seg range" role="group" aria-label="Period"></div></div>
     <div class="tiles" id="ftiles"></div>
     <div class="card">
       <h2 id="chart-title"></h2>
-      <p class="sub">Growth of the fund and of its index fund from the same starting month, in per cent, with every distribution reinvested. Not the share price, and not the yield.</p>
+      <p class="sub" id="chart-sub"></p>
       <div class="legend" id="legend"></div>
       <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
       <details><summary>Monthly figures as a table</summary><div class="scroll" id="mtable"></div></details>
@@ -304,7 +310,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
   <div class="view" id="view-explained">
   <h1>How a covered-call fund works</h1>
   <p class="lede">It owns shares and sells someone else the right to their gains above a set price. The payment it receives for that right is what funds the high distribution. The gains it signed away are the cost.</p>
-  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
+  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Background: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
 
   <div class="card">
     <h2>The trade, one month at a time</h2>
@@ -365,7 +371,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
   <h1>The category</h1>
   <p class="lede" id="lede-cat"></p>
   <div class="stamp" id="cat-stamp"></div>
-  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
+  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Background: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
   <div class="tiles" id="cat-tiles"></div>
   <div class="card">
     <div class="filters">
@@ -375,7 +381,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
     </div>
     <div class="scroll"><table class="now" id="cat"></table></div>
     <p style="margin:12px 0 4px"><button type="button" class="more" id="cat-more"></button></p>
-    <p class="note">The 12-month return ends at each fund's own report date, shown under its name, so funds with different dates are not directly comparable. "Calls written" is the face value of the written calls at their strike as a share of net assets. A dash means the filing does not give the figure: the fund is too new, had no written call on that date, or holds its options inside notes.</p>
+    <p class="note">Click a fund to open its history. The 12-month return ends at each fund's own report date, shown under its name, so funds with different dates are not directly comparable. "Calls written" is the face value of the written calls at their strike as a share of net assets. A dash means the filing does not give the figure: the fund is too new, had no written call on that date, or holds its options inside notes.</p>
   </div>
   </div>
 
@@ -420,15 +426,20 @@ $("asof").textContent = `Dates of the data: ${D.meta.quarters.length} quarterly 
 const RANGES = [["1 year", 12], ["3 years", 36], ["5 years", 60], ["Since " + ym(D.meta.first_month), 0]];
 const yearsText = n => { const y = Math.floor(n / 12), m = n % 12; return (y ? y + (y === 1 ? " year" : " years") : "") + (y && m ? " " : "") + (m ? m + (m === 1 ? " month" : " months") : ""); };
 let range = 36;
-// The last n months of a fund's comparison (all of them when n is 0), with returns compounded from its start.
+// The last n months of a fund (all of them when n is 0), with returns compounded from its start.
+// A fund given in three-month steps has one point per quarter. A fund with no index fund has no benchmark figures.
+const F = D.funds, label = f => f.ticker || f.name, hasB = f => f.benchmark != null;
 function span(f, n) {
-  if (n && f.months.length < n) return null;
-  const ms = n ? f.months.slice(-n) : f.months;
+  const st = f.step, total = f.months.length * st;
+  if (n && total < n) return null;
+  const ms = n ? f.months.slice(-Math.floor(n / st)) : f.months;
   let gf = 1, gb = 1;
-  const path = ms.map(m => { gf *= 1 + m.fund / 100; gb *= 1 + m.benchmark / 100; return {month: m.month, fund: m.fund, benchmark: m.benchmark, fund_cum: (gf - 1) * 100, benchmark_cum: (gb - 1) * 100}; });
-  const yrs = ms.length / 12, ann = g => (Math.pow(g, 1 / yrs) - 1) * 100;
-  return {months: path, n: ms.length, from: ms[0].month, to: ms[ms.length - 1].month, fund: (gf - 1) * 100, benchmark: (gb - 1) * 100, gap: (gf - gb) * 100,
-          fund_pa: ms.length > 12 ? ann(gf) : null, benchmark_pa: ms.length > 12 ? ann(gb) : null};
+  const path = ms.map(m => { gf *= 1 + m.fund / 100; if (hasB(f)) gb *= 1 + m.benchmark / 100; return {month: m.month, fund: m.fund, benchmark: m.benchmark, fund_cum: (gf - 1) * 100, benchmark_cum: hasB(f) ? (gb - 1) * 100 : null}; });
+  const nm = ms.length * st, yrs = nm / 12, ann = g => (Math.pow(g, 1 / yrs) - 1) * 100;
+  const first = ms[0].month, y0 = +first.slice(0, 4) * 12 + (+first.slice(5, 7) - 1) - (st - 1);
+  return {months: path, n: nm, from: `${String(Math.floor(y0 / 12)).padStart(4, "0")}-${String(y0 % 12 + 1).padStart(2, "0")}`, to: ms[ms.length - 1].month, fund: (gf - 1) * 100,
+          benchmark: hasB(f) ? (gb - 1) * 100 : null, gap: hasB(f) ? (gf - gb) * 100 : null,
+          fund_pa: nm > 12 ? ann(gf) : null, benchmark_pa: nm > 12 && hasB(f) ? ann(gb) : null};
 }
 if (!D.detail.some(f => span(f, range))) range = 0;
 document.querySelectorAll(".seg.range").forEach(seg => RANGES.forEach(([label, n]) => {
@@ -457,7 +468,7 @@ function overview() {
     : `<div class="bar" style="grid-row:span 2"><span>Started ${ym(f.months[0].month)}: ${yearsText(f.months.length)} on file, less than this period</span></div>`) + `</div>`).join("");
   const long = range !== 12;
   $("t-over").innerHTML = `<thead><tr><th>Fund</th><th>Net assets</th><th>Period</th><th>Fund, total return</th><th>Index fund, total return</th><th>Difference, points</th>${long ? "<th>Total return a year: fund</th><th>index fund</th>" : ""}</tr></thead><tbody>` +
-    rows.map(({f, s}, i) => `<tr><td><a href="#fund" data-f="${i}"><b>${f.ticker}</b></a><small>${esc(f.name)}</small></td><td>${usd(f.net_assets)}</td>` + (s
+    rows.map(({f, s}, i) => `<tr><td><a href="#fund" data-f="${F.findIndex(x => x.id === f.id)}"><b>${f.ticker}</b></a><small>${esc(f.name)}</small></td><td>${usd(f.net_assets)}</td>` + (s
       ? `<td>${ym(s.from)} to ${ym(s.to)}</td><td>${pct(s.fund)}</td><td>${pct(s.benchmark)}<small>${f.benchmark}</small></td><td>${pts(s.gap)}</td>${long ? `<td>${pct(s.fund_pa)}</td><td>${pct(s.benchmark_pa)}</td>` : ""}`
       : `<td>${NA}</td><td>${NA}</td><td>${NA}<small>${f.benchmark}</small></td><td>${NA}</td>${long ? `<td>${NA}</td><td>${NA}</td>` : ""}`) + "</tr>").join("") + "</tbody>";
   $("t-over").querySelectorAll("a[data-f]").forEach(a => a.addEventListener("click", () => { cur = +a.dataset.f; }));
@@ -468,7 +479,8 @@ function overview() {
   if (have.length) hint = range
     ? `${ym(have[0].s.from)} to ${ym(have[0].s.to)}.` + (have.length < rows.length ? ` ${rows.filter(r => !r.s).map(r => r.f.ticker).join(" and ")} started later and ${rows.length - have.length === 1 ? "has" : "have"} less history than this.` : "")
     : `From ${ym(D.meta.first_month)}, the first month in the SEC's data sets, to ${ym(have[0].s.to)}: ${yearsText(Math.max(...have.map(r => r.s.n)))}.` + (late.length ? ` ${lateText}, the first full month after ${late.length === 1 ? "it" : "each"} started. Each fund is compared with its index fund over its own period.` : "");
-  document.querySelectorAll(".rangehint").forEach(h => h.textContent = hint);
+  document.querySelectorAll("#pane-overview .rangehint").forEach(h => h.textContent = hint);
+  $("over-all").innerHTML = `These five are the funds followed since the first version. All ${F.length} funds of the category can be opened under <a href="#fund">Fund by fund</a>, ${D.meta.funds_with_index_fund} of them beside an index fund.`;
   if (have.length) {
     const lo = a => Math.min(...a).toFixed(0), hi = a => Math.max(...a).toFixed(0), fs = have.map(r => r.s.fund), bs = have.map(r => r.s.benchmark), gs = have.map(r => -r.s.gap);
     const when = words(range) ? `Over the ${words(range)} to ${ymLong(have[0].s.to)}` : `From ${ymLong(D.meta.first_month)}, or from their start if later, to ${ymLong(have[0].s.to)}`;
@@ -477,29 +489,41 @@ function overview() {
 }
 
 /* ---------- fund by fund ---------- */
-let cur = 0;
-D.detail.forEach((f, i) => { const b = el("button", {type: "button"}, f.ticker); b.onclick = () => { cur = i; fund(); }; $("pick").append(b); });
+let cur = Math.max(0, F.findIndex(f => f.id === D.detail[0].id));
+D.detail.forEach(d => { const i = F.findIndex(f => f.id === d.id); const b = el("button", {type: "button", "data-i": i}, d.ticker); b.onclick = () => { cur = i; fund(); }; $("pick").append(b); });
+$("pick-all").innerHTML = D.types.map(t => `<optgroup label="${t.type}">` + F.map((f, i) => f.type === t.type ? `<option value="${i}">${esc(f.name)}${f.ticker ? " (" + f.ticker + ")" : ""}</option>` : "").join("") + "</optgroup>").join("");
+$("pick-all").addEventListener("change", e => { cur = +e.target.value; fund(); });
 
 function fund() {
-  const f = D.detail[cur], w = span(f, range) || span(f, 0);
-  [...$("pick").children].forEach((c, j) => c.setAttribute("aria-pressed", j === cur));
+  const f = F[cur], w = span(f, range) || span(f, 0), B = hasB(f), L = f.ticker || "The fund";
+  [...$("pick").children].forEach(c => c.setAttribute("aria-pressed", +c.dataset.i === cur));
+  $("pick-all").value = cur;
+  document.querySelectorAll("#pane-fund .seg.range button").forEach(b => { const n = +b.dataset.n; b.disabled = !!n && !span(f, n); b.style.opacity = b.disabled ? .4 : 1; b.setAttribute("aria-pressed", n === (span(f, range) ? range : 0)); });
   $("ftiles").innerHTML = "";
-  $("ftiles").append(
-    el("div", {class: "tile"}, `<div class="k">${f.ticker}, total return</div><div class="v">${pct(w.fund)}</div><div class="n">${ym(w.from)} to ${ym(w.to)}, distributions reinvested</div>`),
+  $("ftiles").append(el("div", {class: "tile"}, `<div class="k">${f.ticker || "Fund"}, total return</div><div class="v">${pct(w.fund)}</div><div class="n">${ym(w.from)} to ${ym(w.to)}, distributions reinvested</div>`));
+  if (B) $("ftiles").append(
     el("div", {class: "tile"}, `<div class="k">${f.benchmark}, total return</div><div class="v">${pct(w.benchmark)}</div><div class="n">index fund on the ${esc(f.benchmark_index)}, same months</div>`),
-    el("div", {class: "tile"}, `<div class="k">Difference</div><div class="v">${pts(w.gap)}</div><div class="n">percentage points over ${yearsText(w.n)}</div>`),
-    el("div", {class: "tile"}, `<div class="k">Net assets</div><div class="v">${usd(f.net_assets)}</div><div class="n">on ${dmy(f.report_date)}</div>`));
-  $("chart-title").textContent = `Cumulative total return: ${f.ticker} and ${f.benchmark}`;
-  $("legend").innerHTML = `<span><i class="ln" style="border-color:var(--blue)"></i>${f.ticker}, total return</span><span><i class="ln" style="border-color:var(--orange)"></i>${f.benchmark}, index fund on the ${esc(f.benchmark_index)}, total return</span>`;
+    el("div", {class: "tile"}, `<div class="k">Difference</div><div class="v">${pts(w.gap)}</div><div class="n">percentage points over ${yearsText(w.n)}</div>`));
+  else $("ftiles").append(
+    el("div", {class: "tile"}, `<div class="k">Total return a year</div><div class="v">${w.fund_pa == null ? pct(w.fund) : pct(w.fund_pa)}</div><div class="n">over ${yearsText(w.n)}</div>`),
+    el("div", {class: "tile"}, `<div class="k">Calls written</div><div class="v">${plain(f.overlay.notional_pct, 0)}</div><div class="n">face value at strike, % of net assets</div>`));
+  $("ftiles").append(el("div", {class: "tile"}, `<div class="k">Net assets</div><div class="v">${usd(f.net_assets)}</div><div class="n">on ${dmy(f.report_date)}</div>`));
+  $("chart-title").textContent = B ? `Cumulative total return: ${label(f)} and ${f.benchmark}` : `Cumulative total return: ${f.name}`;
+  $("chart-sub").innerHTML = `<b>${esc(f.name)}</b> · ${f.type}. ` + (B ? "Growth of the fund and of its index fund from the same starting month, in per cent, with every distribution reinvested. Not the share price, and not the yield."
+      : "Growth of the fund in per cent, with every distribution reinvested. Not the share price, and not the yield. No index fund is set beside this fund: its name does not name the Nasdaq-100, the S&P 500 or the Russell 2000.")
+    + (f.step === 3 ? " Shown in three-month steps ending at the fund's report dates, because the order of the months within its reports could not be determined." : "");
+  $("legend").innerHTML = `<span><i class="ln" style="border-color:var(--blue)"></i>${esc(label(f))}, total return</span>` + (B ? `<span><i class="ln" style="border-color:var(--orange)"></i>${f.benchmark}, index fund on the ${esc(f.benchmark_index)}, total return</span>` : "");
   draw(f, w);
-  $("mtable").innerHTML = `<table><thead><tr><th>Month</th><th>${f.ticker}</th><th>${f.benchmark}</th><th>${f.ticker}, cumulative</th><th>${f.benchmark}, cumulative</th></tr></thead><tbody>` +
-    w.months.map(m => `<tr><td>${ym(m.month)}</td><td>${pct(m.fund, 2)}</td><td>${pct(m.benchmark, 2)}</td><td>${pct(m.fund_cum)}</td><td>${pct(m.benchmark_cum)}</td></tr>`).join("") + "</tbody></table>";
+  const per = f.step === 3 ? "Three months to" : "Month";
+  $("mtable").innerHTML = `<table><thead><tr><th>${per}</th><th>${esc(L)}</th>${B ? `<th>${f.benchmark}</th>` : ""}<th>${esc(L)}, cumulative</th>${B ? `<th>${f.benchmark}, cumulative</th>` : ""}</tr></thead><tbody>` +
+    w.months.map(m => `<tr><td>${ym(m.month)}</td><td>${pct(m.fund, 2)}</td>${B ? `<td>${pct(m.benchmark, 2)}</td>` : ""}<td>${pct(m.fund_cum)}</td>${B ? `<td>${pct(m.benchmark_cum)}</td>` : ""}</tr>`).join("") + "</tbody></table>";
 
   const o = f.overlay, n = f.notes;
   let t = esc(f.overlay_kind) + ". ";
   if (o.written_calls) t += `On ${dmy(f.report_date)} the fund had ${o.written_calls} written call position${o.written_calls > 1 ? "s" : ""}` +
     (o.notional_pct != null ? `, with a face value at strike of ${plain(o.notional_pct, 0)} of net assets` : "") + ".";
-  if (n.count) t += ` On ${dmy(f.report_date)} it held ${n.count} equity-linked notes worth ${plain(n.pct)} of net assets, issued by ${n.issuers.length} banks. The filing gives no strike for the options inside them.`;
+  if (!o.written_calls && !n.count) t += `The report of ${dmy(f.report_date)} lists no written call. Funds that sell options lasting a day, or that had just let an option expire, show none on the report date.`;
+  if (n.count) t += ` On ${dmy(f.report_date)} it held ${n.count} equity-linked notes worth ${plain(n.pct)} of net assets, issued by ${n.issuers.length} bank${n.issuers.length === 1 ? "" : "s"}. The filing gives no strike for the options inside them.`;
   $("ovtext").innerHTML = t;
   let h = "";
   if (o.positions.length) h += `<table class="now"><thead><tr><th>Written call</th><th>Strike</th><th>Expires</th><th>Value, % of net assets</th></tr></thead><tbody>` +
@@ -534,9 +558,9 @@ function lineChart(box, tip, series, labels, xlab, fmtTip, opts = {}) {
   xlab.forEach(([i, t]) => g += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11.5" fill="var(--mut)">${t}</text>`);
   [...series].reverse().forEach(sr => g += `<path d="${sr.v.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join("")}" fill="none" stroke="var(--${sr.c})" stroke-width="2" stroke-linejoin="round"/>`);
   if (labels) {
-    let ya = y(series[0].v[n - 1]), yb = y(series[1].v[n - 1]);
-    if (Math.abs(ya - yb) < 14) { const m = (ya + yb) / 2, up = ya < yb; ya = m + (up ? -7 : 7); yb = m + (up ? 7 : -7); }
-    g += `<text x="${W - R + 8}" y="${ya + 4}" font-size="12" font-weight="600" fill="var(--ink)">${labels[0]}</text><text x="${W - R + 8}" y="${yb + 4}" font-size="12" font-weight="600" fill="var(--ink)">${labels[1]}</text>`;
+    let ya = y(series[0].v[n - 1]), yb = series[1] ? y(series[1].v[n - 1]) : null;
+    if (yb != null && Math.abs(ya - yb) < 14) { const m = (ya + yb) / 2, up = ya < yb; ya = m + (up ? -7 : 7); yb = m + (up ? 7 : -7); }
+    g += `<text x="${W - R + 8}" y="${ya + 4}" font-size="12" font-weight="600" fill="var(--ink)">${labels[0]}</text>` + (yb != null ? `<text x="${W - R + 8}" y="${yb + 4}" font-size="12" font-weight="600" fill="var(--ink)">${labels[1]}</text>` : "");
   }
   g += `<line class="xh" y1="${T}" y2="${H - B}" stroke="var(--axis)" style="display:none"/>` + series.map(sr => `<circle class="dot" r="4.5" fill="var(--${sr.c})" stroke="var(--surface)" stroke-width="2" style="display:none"/>`).join("");
   g += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" class="hit"/>`;
@@ -556,12 +580,14 @@ function lineChart(box, tip, series, labels, xlab, fmtTip, opts = {}) {
 }
 
 function draw(f, w) {
-  const p = [{month: null, fund_cum: 0, benchmark_cum: 0}, ...w.months];
+  const B = hasB(f), p = [{month: null, fund_cum: 0, benchmark_cum: 0}, ...w.months];
   const every = Math.ceil((p.length - 1) / 8), xl = [];
   p.forEach((m, i) => { if (i && (p.length - 1 - i) % every === 0) xl.push([i, ym(m.month)]); });
-  lineChart($("chart"), $("tip"), [{c: "blue", v: p.map(m => m.fund_cum)}, {c: "orange", v: p.map(m => m.benchmark_cum)}], [f.ticker, f.benchmark], xl,
-    i => `<div class="t">${ym(p[i].month)}, total return since ${ym(w.months[0].month)}</div><div class="r"><span><i style="border-color:var(--blue)"></i>${f.ticker}</span><b>${pct(p[i].fund_cum)}</b></div><div class="r"><span><i style="border-color:var(--orange)"></i>${f.benchmark}</span><b>${pct(p[i].benchmark_cum)}</b></div><div class="t" style="margin:4px 0 0">In the month: ${pct(p[i].fund, 2)} and ${pct(p[i].benchmark, 2)}</div>`,
-    {first: 1, label: `Cumulative total return of ${f.ticker} and ${f.benchmark}`});
+  const ser = [{c: "blue", v: p.map(m => m.fund_cum)}]; if (B) ser.push({c: "orange", v: p.map(m => m.benchmark_cum)});
+  const what = f.step === 3 ? "In the three months" : "In the month";
+  lineChart($("chart"), $("tip"), ser, B ? [f.ticker || "Fund", f.benchmark] : [f.ticker || "Fund"], xl,
+    i => `<div class="t">${ym(p[i].month)}, total return since ${ym(w.from)}</div><div class="r"><span><i style="border-color:var(--blue)"></i>${esc(f.ticker || "Fund")}</span><b>${pct(p[i].fund_cum)}</b></div>` + (B ? `<div class="r"><span><i style="border-color:var(--orange)"></i>${f.benchmark}</span><b>${pct(p[i].benchmark_cum)}</b></div>` : "") + `<div class="t" style="margin:4px 0 0">${what}: ${pct(p[i].fund, 2)}${B ? " and " + pct(p[i].benchmark, 2) : ""}</div>`,
+    {first: 1, label: `Cumulative total return of ${label(f)}` + (B ? ` and ${f.benchmark}` : "")});
 }
 
 /* ---------- how it works ---------- */
@@ -600,7 +626,8 @@ function cat() {
   $("cat-more").style.display = total > LIM && !cQ ? "" : "none";
   $("cat-more").textContent = cAll ? `Show the ${LIM} largest` : `Show all ${total}`;
   $("cat").innerHTML = "<thead><tr>" + COLS.map(c => `<th ${c[0] === sortKey ? `aria-sort="${sortDir > 0 ? "ascending" : "descending"}"` : ""}><button type="button" data-k="${c[0]}">${c[1]}</button></th>`).join("") + "</tr></thead><tbody>" +
-    rows.map(r => `<tr><td><b style="font-weight:600">${esc(r.name)}</b><small>${r.type} · as of ${ym(r.report_date)}</small></td><td>${usd(r.net_assets)}</td><td>${pct(r.return_12m)}</td><td>${r.notional_pct == null ? NA : `<span class="cw"><i style="width:${Math.min(100, r.notional_pct / 1.5)}%"></i></span>${plain(r.notional_pct, 0)}`}</td><td>${r.notes_count ? plain(r.notes_pct) : NA}</td></tr>`).join("") + "</tbody>";
+    rows.map(r => { const fi = F.findIndex(f => f.id === r.series_id || f.name === r.name); return `<tr><td>${fi < 0 ? "" : `<a href="#fund" data-f="${fi}">`}<b style="font-weight:600">${esc(r.name)}</b>${fi < 0 ? "" : "</a>"}<small>${r.type} · as of ${ym(r.report_date)}</small></td><td>${usd(r.net_assets)}</td><td>${pct(r.return_12m)}</td><td>${r.notional_pct == null ? NA : `<span class="cw"><i style="width:${Math.min(100, r.notional_pct / 1.5)}%"></i></span>${plain(r.notional_pct, 0)}`}</td><td>${r.notes_count ? plain(r.notes_pct) : NA}</td></tr>`; }).join("") + "</tbody>";
+  $("cat").querySelectorAll("a[data-f]").forEach(a => a.addEventListener("click", () => { cur = +a.dataset.f; }));
   $("cat").querySelectorAll("th button").forEach(b => b.onclick = () => { const k = b.dataset.k; if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = k === "name" ? 1 : -1; } cat(); });
 }
 

@@ -40,18 +40,22 @@ overlay = "Equity-linked notes that carry the call exposure"
 
 # Benchmark funds. Matched by series identifier where one exists, otherwise by name as filed.
 [[benchmark]]
+# Funds set beside this index fund when no fund is named explicitly above: by a word in their name.
+funds = '(?i)nasdaq'
 ticker = "QQQ"
 index = "Nasdaq-100"
 series = ["S000101292"]
 name = '(?i)^invesco qqq trust'
 
 [[benchmark]]
+funds = '(?i)s&p 500'
 ticker = "IVV"
 index = "S&P 500"
 series = ["S000004310"]
 name = '(?i)^ishares core s&p 500 etf$'
 
 [[benchmark]]
+funds = '(?i)russell 2000'
 ticker = "IWM"
 index = "Russell 2000"
 series = ["S000004344"]

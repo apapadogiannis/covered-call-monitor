@@ -287,42 +287,73 @@ def build(out: Path) -> dict:
                                    "misfit_as_filed": order[d["series"]]["misfit_as_filed"],
                                    "misfit_reversed": order[d["series"]]["misfit_reversed"]}
 
-    detail = []
-    for d in cfg["detail"]:
-        reps = by_fund.get(d["series"])
-        if not reps:
-            continue
-        ret, flow, odd = series[d["series"]]
-        bret = series.get("benchmark:" + d["benchmark"], ({}, {}, []))[0]
-        common = sorted(set(ret) & set(bret))
-        # keep the longest unbroken run that ends at the latest common month
-        run = []
-        for m in reversed(common):
-            if run and month_back(run[0], 1) != m:
+    def record(key: str, ticker, bench_ticker, kind) -> dict:
+        """Everything the page shows for one fund, against its index fund where one is assigned.
+
+        A fund whose month order is known is given month by month. One whose order is not determined
+        is given in three-month steps ending at its report dates, which do not depend on the order.
+        """
+        reps = by_fund[key]
+        last = reps[-1]
+        ret, flow, odd = series[key]
+        bret = series.get("benchmark:" + bench_ticker, ({}, {}, []))[0] if bench_ticker else None
+        step = 1 if orders[key]["order"] in ("as filed", "reversed") else 3
+        if step == 1:
+            ends = sorted(ret)
+        else:
+            ends = sorted({r["report_date"][:7] for r in reps})
+        span_of = lambda e: [month_back(e, k) for k in range(step - 1, -1, -1)]
+        usable = [e for e in ends if all(m in ret for m in span_of(e))
+                  and (bret is None or all(m in bret for m in span_of(e)))]
+        run = []                                   # the longest unbroken run that ends at the latest period
+        for e in reversed(usable):
+            if run and month_back(run[0], step) != e:
                 break
-            run.insert(0, m)
+            run.insert(0, e)
         gf = gb = 1.0
         path = []
-        for m in run:
-            gf *= 1 + ret[m] / 100
-            gb *= 1 + bret[m] / 100
-            path.append({"month": m, "fund": ret[m], "benchmark": bret[m],
-                         "fund_cum": (gf - 1) * 100, "benchmark_cum": (gb - 1) * 100})
-        last = reps[-1]
-        last12 = run[-12:] if len(run) >= 12 else None
-        detail.append({
-            "ticker": d["ticker"], "name": last["name"], "overlay_kind": d["overlay"],
-            "benchmark": d["benchmark"], "benchmark_index": bench[d["benchmark"]]["index"],
+        for e in run:
+            rf = compound(ret, span_of(e))
+            rb = compound(bret, span_of(e)) if bret is not None else None
+            gf *= 1 + rf / 100
+            if rb is not None:
+                gb *= 1 + rb / 100
+            path.append({"month": e, "fund": rf, "benchmark": rb, "fund_cum": (gf - 1) * 100,
+                         "benchmark_cum": (gb - 1) * 100 if rb is not None else None})
+        ov, nt = overlay(last), notes(last)
+        if not kind:
+            kind = ("Holds equity-linked or other structured notes" if nt["count"] else
+                    "Had written calls on the report date" if ov["written_calls"] else
+                    "Had no written call on the report date")
+        n = len(run) * step
+        last12 = run[-(12 // step):] if n >= 12 else None
+        return {
+            "id": last["series_id"] or key, "ticker": ticker, "name": last["name"], "type": type_of(last["name"]),
+            "overlay_kind": kind, "benchmark": bench_ticker,
+            "benchmark_index": bench[bench_ticker]["index"] if bench_ticker else None,
             "report_date": last["report_date"], "filing_date": last["filing_date"],
-            "net_assets": last["net_assets"], "months": path,
-            "window": {"from": run[0], "to": run[-1], "months": len(run),
-                       "fund": (gf - 1) * 100, "benchmark": (gb - 1) * 100,
-                       "gap": (gf - gb) * 100} if run else None,
-            "last12": {"fund": compound(ret, last12), "benchmark": compound(bret, last12)} if last12 else None,
-            "returns_order": order[d["series"]],
+            "net_assets": last["net_assets"], "step": step, "months": path,
+            "window": {"from": month_back(run[0], step - 1), "to": run[-1], "months": n,
+                       "fund": (gf - 1) * 100, "benchmark": (gb - 1) * 100 if bret is not None else None,
+                       "gap": (gf - gb) * 100 if bret is not None else None} if run else None,
+            "last12": {"fund": compound(ret, [m for e in last12 for m in span_of(e)]),
+                       "benchmark": compound(bret, [m for e in last12 for m in span_of(e)]) if bret is not None else None}
+            if last12 else None,
+            "month_order": orders[key]["order"],
+            "returns_order": order.get(key),
             "flows": [{"month": m, "net": flow[m]} for m in sorted(flow)],
-            "flow_months_not_used": odd,
-            "overlay": overlay(last), "notes": notes(last)})
+            "flow_months_not_used": odd, "overlay": ov, "notes": nt}
+
+    detail = [record(d["series"], d["ticker"], d["benchmark"], d["overlay"])
+              for d in cfg["detail"] if d["series"] in by_fund]
+    featured = {d["series"]: d for d in cfg["detail"]}
+
+    def benchmark_for(name: str):
+        """The index fund a fund is set beside, from its name. None when the name names no such index."""
+        for b in cfg["benchmark"]:
+            if b.get("funds") and re.search(b["funds"], name):
+                return b["ticker"]
+        return None
 
     latest = max(r["report_date"] for v in by_fund.values() for r in v)
     cutoff = month_back(latest[:7], STILL_REPORTING)
@@ -349,6 +380,18 @@ def build(out: Path) -> dict:
             "strikes_repaired": ov["strikes_repaired"], "notes_pct": nt["pct"], "notes_count": nt["count"]})
     category.sort(key=lambda r: -(r["net_assets"] or 0))
 
+    funds = []
+    for key, reps in by_fund.items():
+        last = reps[-1]
+        if last["role"] != "category" or last["report_date"][:7] < cutoff:
+            continue
+        if key in featured:
+            funds.append(next(d for d in detail if d["id"] == (last["series_id"] or key)))
+        else:
+            funds.append(record(key, None, benchmark_for(last["name"]), None))
+    funds = [f for f in funds if f["months"]]
+    funds.sort(key=lambda f: -(f["net_assets"] or 0))
+
     types = []
     for label, _ in TYPES:
         rs = [r for r in category if r["type"] == label]
@@ -364,9 +407,11 @@ def build(out: Path) -> dict:
     data = {"meta": {"quarters": quarters, "reports_from": min(dates), "reports_to": max(dates),
                      "first_month": first_month,
                      "funds_in_category": len(category), "funds_no_longer_reporting": gone,
+                     "funds_with_index_fund": sum(1 for f in funds if f["benchmark"]),
+                     "funds_in_three_month_steps": sum(1 for f in funds if f["step"] == 3),
                      "category_net_assets": sum(r["net_assets"] or 0 for r in category),
                      "source": cfg["source"]["page"]},
-            "detail": detail, "types": types, "category": category}
+            "detail": detail, "funds": funds, "types": types, "category": category}
 
     out.mkdir(parents=True, exist_ok=True)
     from monitor.publish import publish          # the files written for programs and AI agents
