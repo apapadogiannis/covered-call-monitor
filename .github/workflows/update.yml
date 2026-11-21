@@ -1,0 +1,42 @@
+name: update
+
+on:
+  schedule:
+    - cron: "17 5 6 * *"   # sixth of each month; does nothing unless the SEC has posted a new quarter
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Download any quarter not yet stored
+        env:
+          SEC_CONTACT: ${{ vars.SEC_CONTACT }}
+        run: python3 update.py
+
+      - name: Store the new data in the repository
+        if: always()
+        run: |
+          git add data
+          if git diff --cached --quiet; then echo "No new data."; exit 0; fi
+          git config user.name "Agisilaos Papadogiannis"
+          git config user.email "apapadogiannis@gmail.com"
+          git commit -m "Data: quarters to $(ls data/nport | sort | tail -1)"
+          git pull --rebase
+          git push

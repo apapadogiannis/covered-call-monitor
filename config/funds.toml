@@ -1,0 +1,64 @@
+# Which funds the monitor follows, and how. Nothing here is written into the code.
+
+[category]
+# A fund belongs to the category when its name, as filed, matches `include` and not `exclude`.
+include = '(?i)covered[ -]call|buy-?write|premium income'
+# Defined-outcome products and put-writing funds use options differently and are left out.
+exclude = '(?i)buffer|barrier|put-?write'
+
+# Funds shown in detail, each against the index fund that holds what it holds.
+# `series` is the SEC series identifier, which does not change when a fund is renamed.
+[[detail]]
+ticker = "QYLD"
+series = "S000063352"
+benchmark = "QQQ"
+overlay = "Index calls written on the whole portfolio, monthly"
+
+[[detail]]
+ticker = "XYLD"
+series = "S000063353"
+benchmark = "IVV"
+overlay = "Index calls written on the whole portfolio, monthly"
+
+[[detail]]
+ticker = "RYLD"
+series = "S000065001"
+benchmark = "IWM"
+overlay = "Index calls written on the whole portfolio, monthly"
+
+[[detail]]
+ticker = "JEPI"
+series = "S000068402"
+benchmark = "IVV"
+overlay = "Equity-linked notes that carry the call exposure"
+
+[[detail]]
+ticker = "JEPQ"
+series = "S000076132"
+benchmark = "QQQ"
+overlay = "Equity-linked notes that carry the call exposure"
+
+# Benchmark funds. Matched by series identifier where one exists, otherwise by name as filed.
+[[benchmark]]
+ticker = "QQQ"
+index = "Nasdaq-100"
+series = ["S000101292"]
+name = '(?i)^invesco qqq trust'
+
+[[benchmark]]
+ticker = "IVV"
+index = "S&P 500"
+series = ["S000004310"]
+name = '(?i)^ishares core s&p 500 etf$'
+
+[[benchmark]]
+ticker = "IWM"
+index = "Russell 2000"
+series = ["S000004344"]
+name = '(?i)^ishares russell 2000 etf$'
+
+[source]
+# The SEC publishes one data set per calendar quarter. The monitor keeps this many, newest first.
+quarters_kept = 8
+page = "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets"
+file = "https://www.sec.gov/files/dera/data/form-n-port-data-sets/{quarter}_nport.zip"
