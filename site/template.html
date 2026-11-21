@@ -255,6 +255,23 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
   details summary{padding:8px 0}
   footer{font-size:12px}
 }
+.combo{position:relative;flex:1 1 320px;max-width:520px;min-width:0}
+#combo-btn{font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:8px 34px 8px 12px;width:100%;text-align:left;cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#combo-btn::after{content:"";position:absolute;right:13px;top:50%;width:7px;height:7px;border-right:2px solid var(--ink2);border-bottom:2px solid var(--ink2);transform:translateY(-70%) rotate(45deg)}
+#combo-btn small{font-weight:400;color:var(--mut);margin-left:8px;font-size:12.5px}
+#combo-btn:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.combo .panel{position:absolute;z-index:20;left:0;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--axis);border-radius:10px;box-shadow:0 10px 28px -12px rgba(0,0,0,.45);padding:8px}
+.combo .panel input{font:inherit;font-size:16px;color:var(--ink);background:var(--page);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.combo .panel input:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.combo ul{list-style:none;margin:8px 0 0;padding:0;max-height:min(52vh,420px);overflow-y:auto}
+.combo li.h{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);padding:10px 8px 4px}
+.combo li[role=option]{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:7px 8px;border-radius:7px;cursor:pointer;font-size:13.5px}
+.combo li[role=option] span{color:var(--mut);font-size:12px;grid-column:1}
+.combo li[role=option] em{font-style:normal;color:var(--ink2);font-variant-numeric:tabular-nums;grid-row:1;grid-column:2}
+.combo li[role=option]:hover,.combo li[role=option].act{background:var(--page)}
+.combo li[role=option][aria-selected=true] b{text-decoration:underline}
+.combo li.none{padding:10px 8px;color:var(--mut);font-size:13.5px}
+@media (max-width:640px){.combo{flex:0 0 100%;max-width:100%}#combo-btn{min-height:42px;font-size:15px}.combo ul{max-height:56vh}.combo li[role=option]{padding:10px 8px}}
 </style>
 </head>
 <body>
@@ -293,7 +310,16 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
   </div>
 
   <div class="pane" id="pane-fund">
-    <div class="filters"><span>Fund</span><div class="seg" id="pick" role="group" aria-label="Fund"></div><select id="pick-all" aria-label="Any fund in the category"></select></div>
+    <div class="filters"><span>Fund</span>
+      <div class="combo" id="combo">
+        <button type="button" id="combo-btn" aria-haspopup="listbox" aria-expanded="false"></button>
+        <div class="panel" id="combo-panel" hidden>
+          <input type="search" id="combo-q" placeholder="Type a name, a manager or a ticker" aria-label="Find a fund" autocomplete="off">
+          <ul id="combo-list" role="listbox" aria-label="Funds"></ul>
+        </div>
+      </div>
+      <span class="hint" id="combo-hint"></span>
+    </div>
     <div class="filters"><span>Period</span><div class="seg range" role="group" aria-label="Period"></div></div>
     <div class="tiles" id="ftiles"></div>
     <div class="card">
@@ -524,14 +550,44 @@ function overview() {
 
 /* ---------- fund by fund ---------- */
 let cur = Math.max(0, F.findIndex(f => f.id === D.detail[0].id));
-D.detail.forEach(d => { const i = F.findIndex(f => f.id === d.id); const b = el("button", {type: "button", "data-i": i}, d.ticker); b.onclick = () => { cur = i; fund(); }; $("pick").append(b); });
-$("pick-all").innerHTML = D.types.map(t => `<optgroup label="${t.type}">` + F.map((f, i) => f.type === t.type ? `<option value="${i}">${esc(f.name)}${f.ticker ? " (" + f.ticker + ")" : ""}</option>` : "").join("") + "</optgroup>").join("");
-$("pick-all").addEventListener("change", e => { cur = +e.target.value; fund(); });
+/* One control for all funds: a button that opens a searchable list. The five funds of the front page come first. */
+const FEAT = D.detail.map(d => F.findIndex(f => f.id === d.id)).filter(i => i >= 0);
+let comboAct = -1;
+function comboItems(q) {
+  q = q.trim().toLowerCase();
+  const hit = i => !q || (F[i].name + " " + (F[i].ticker || "")).toLowerCase().includes(q);
+  const row = i => `<li role="option" data-i="${i}" aria-selected="${i === cur}"><b>${esc(F[i].name)}${F[i].ticker ? " (" + F[i].ticker + ")" : ""}</b><em>${usd(F[i].net_assets)}</em><span>${F[i].type}${F[i].benchmark ? " · beside " + F[i].benchmark : ""}</span></li>`;
+  const feat = FEAT.filter(hit), rest = F.map((_, i) => i).filter(i => !FEAT.includes(i) && hit(i));
+  let h = "";
+  if (feat.length) h += `<li class="h">On the front page</li>` + feat.map(row).join("");
+  if (rest.length) h += `<li class="h">${q ? "Other funds" : "All other funds, largest first"}</li>` + rest.map(row).join("");
+  $("combo-list").innerHTML = h || `<li class="none">No fund matches "${esc(q)}".</li>`;
+  comboAct = -1;
+}
+function comboOpen(open) {
+  $("combo-panel").hidden = !open; $("combo-btn").setAttribute("aria-expanded", open);
+  if (open) { $("combo-q").value = ""; comboItems(""); $("combo-q").focus(); $("combo-list").querySelector('[aria-selected="true"]')?.scrollIntoView({block: "nearest"}); }
+}
+function comboPick(i) { cur = i; comboOpen(false); fund(); $("combo-btn").focus(); }
+$("combo-btn").addEventListener("click", () => comboOpen($("combo-panel").hidden));
+$("combo-q").addEventListener("input", e => comboItems(e.target.value));
+$("combo-list").addEventListener("click", e => { const li = e.target.closest("li[role=option]"); if (li) comboPick(+li.dataset.i); });
+$("combo").addEventListener("keydown", e => {
+  if ($("combo-panel").hidden) return;
+  const opts = [...$("combo-list").querySelectorAll("li[role=option]")];
+  if (e.key === "Escape") { comboOpen(false); $("combo-btn").focus(); }
+  else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault(); if (!opts.length) return;
+    comboAct = (comboAct + (e.key === "ArrowDown" ? 1 : -1) + opts.length) % opts.length;
+    opts.forEach((o, k) => o.classList.toggle("act", k === comboAct)); opts[comboAct].scrollIntoView({block: "nearest"});
+  } else if (e.key === "Enter") { e.preventDefault(); const o = opts[comboAct < 0 ? 0 : comboAct]; if (o) comboPick(+o.dataset.i); }
+});
+document.addEventListener("pointerdown", e => { if (!$("combo-panel").hidden && !$("combo").contains(e.target)) comboOpen(false); });
+$("combo-hint").textContent = `${F.length} funds`;
 
 function fund() {
   const f = F[cur], w = span(f, range) || span(f, 0), B = hasB(f), L = f.ticker || "The fund";
-  [...$("pick").children].forEach(c => c.setAttribute("aria-pressed", +c.dataset.i === cur));
-  $("pick-all").value = cur;
+  $("combo-btn").innerHTML = `${esc(f.name)}${f.ticker ? " (" + f.ticker + ")" : ""}<small>${f.type}</small>`;
   document.querySelectorAll("#pane-fund .seg.range button").forEach(b => { const n = +b.dataset.n; b.disabled = !!n && !span(f, n); b.style.opacity = b.disabled ? .4 : 1; b.setAttribute("aria-pressed", n === (span(f, range) ? range : 0)); });
   $("ftiles").innerHTML = "";
   $("ftiles").append(el("div", {class: "tile"}, `<div class="k">${f.ticker || "Fund"}, total return</div><div class="v">${pct(w.fund)}</div><div class="n">${ym(w.from)} to ${ym(w.to)}, distributions reinvested</div>`));
