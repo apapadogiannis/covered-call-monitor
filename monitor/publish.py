@@ -277,6 +277,9 @@ you fetched disagree on it, one is a cached copy, so fetch again.
 - Returns over whole reports (3, 12, 36, 60 months ending at a report date) do not depend on the
   month order. Use them for any fund. Use single months only where month_order is "as filed" or
   "reversed".
+- One single month is safe even where the order is "not determined": the middle month of a report
+  (the month before the report date's month), which is the same under either reading. The first
+  and third months of such a report are the ones that may be swapped.
 - Each fund is as of its own report date, and report dates differ between fund families. In
   funds.json `total_return_pct.to` gives the month each fund's returns end. A fund and an index
   fund whose `to` differ cover different months and cannot be set side by side. The category total
