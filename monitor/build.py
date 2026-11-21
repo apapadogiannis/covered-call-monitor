@@ -178,6 +178,24 @@ def notes(rep: dict) -> dict:
                         for k, v in sorted(by.items(), key=lambda kv: -kv[1][1])]}
 
 
+TYPES = [("Covered call", r"(?i)covered[ -]call"), ("Buy-write", r"(?i)buy-?write"),
+         ("Premium income", r"(?i)premium income")]
+
+
+def type_of(name: str) -> str:
+    """Which of the three names a fund carries. The first that matches, in the order above."""
+    for label, pat in TYPES:
+        if re.search(pat, name):
+            return label
+    return "Other"
+
+
+def median(xs: list[float]):
+    xs = sorted(xs)
+    n = len(xs)
+    return None if not n else xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2
+
+
 def build(out: Path) -> dict:
     cfg = tomllib.loads((ROOT / "config" / "funds.toml").read_text(encoding="utf-8"))
     by_fund = load(cfg)
@@ -232,12 +250,22 @@ def build(out: Path) -> dict:
         f3 = [flow.get(m) for m in m3]
         ov, nt = overlay(last), notes(last)
         category.append({
-            "name": last["name"], "series_id": last["series_id"], "report_date": last["report_date"],
+            "name": last["name"], "type": type_of(last["name"]), "series_id": last["series_id"],
+            "report_date": last["report_date"],
             "net_assets": last["net_assets"], "return_3m": compound(ret, m3), "return_12m": compound(ret, m12),
             "net_flow_3m": sum(f3) if all(f is not None for f in f3) else None,
             "written_calls": ov["written_calls"], "notional_pct": ov["notional_pct"],
             "strikes_repaired": ov["strikes_repaired"], "notes_pct": nt["pct"], "notes_count": nt["count"]})
     category.sort(key=lambda r: -(r["net_assets"] or 0))
+
+    types = []
+    for label, _ in TYPES:
+        rs = [r for r in category if r["type"] == label]
+        types.append({"type": label, "funds": len(rs), "net_assets": sum(r["net_assets"] or 0 for r in rs),
+                      "with_written_calls": sum(1 for r in rs if r["written_calls"]),
+                      "with_notes": sum(1 for r in rs if r["notes_count"]),
+                      "median_calls_written": median([r["notional_pct"] for r in rs if r["notional_pct"] is not None]),
+                      "median_return_12m": median([r["return_12m"] for r in rs if r["return_12m"] is not None])})
 
     quarters = sorted(p.name for p in STORE.iterdir() if (p / "funds.csv").exists())
     dates = [r["report_date"] for v in by_fund.values() for r in v]
@@ -245,7 +273,7 @@ def build(out: Path) -> dict:
                      "funds_in_category": len(category),
                      "category_net_assets": sum(r["net_assets"] or 0 for r in category),
                      "source": cfg["source"]["page"]},
-            "detail": detail, "category": category}
+            "detail": detail, "types": types, "category": category}
 
     out.mkdir(parents=True, exist_ok=True)
     (out / "data.json").write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")

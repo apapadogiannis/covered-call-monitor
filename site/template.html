@@ -3,128 +3,371 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Covered-call monitor: what the yield costs</title>
+<title>Covered-Call Monitor: returns, overlays and flows from SEC filings</title>
+<meta name="description" content="What covered-call, buy-write and premium-income funds earn, give up and hold, measured each quarter from public SEC filings.">
 <style>
 :root{
   color-scheme:light;
   --page:#f6f5f1;--surface:#fcfcfb;--line:#e1e0d9;--axis:#c3c2b7;
   --ink:#0b0b0b;--ink2:#52514e;--mut:#898781;
-  --blue:#2a78d6;--orange:#eb6834;
+  --blue:#2a78d6;--band:#cde2fb;--orange:#eb6834;--aqua:#1baf7a;--violet:#6250d6;--rf:#b9b8ae;--yellow:#eda100;--magenta:#e87ba4;--q1:#9ec5f4;--q2:#5598e7;--q3:#256abf;--q4:#104281;
 }
 @media (prefers-color-scheme:dark){
-  :root{
+  :root:where(:not([data-theme="light"])){
     color-scheme:dark;
     --page:#121211;--surface:#1a1a19;--line:#2e2e2b;--axis:#52514e;
     --ink:#f0efec;--ink2:#c3c2b7;--mut:#898781;
-    --blue:#3987e5;--orange:#d95926;
+    --blue:#3987e5;--band:#173a66;--orange:#d95926;--aqua:#199e70;--violet:#9085e9;--rf:#6b6a64;--yellow:#c98500;--magenta:#d55181;--q1:#1c5cab;--q2:#3987e5;--q3:#6da7ec;--q4:#b7d3f6;
   }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --page:#121211;--surface:#1a1a19;--line:#2e2e2b;--axis:#52514e;
+  --ink:#f0efec;--ink2:#c3c2b7;--mut:#898781;
+  --blue:#3987e5;--band:#173a66;--orange:#d95926;--aqua:#199e70;--violet:#9085e9;--rf:#6b6a64;--yellow:#c98500;--magenta:#d55181;--q1:#1c5cab;--q2:#3987e5;--q3:#6da7ec;--q4:#b7d3f6;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--page);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .wrap{max-width:1080px;margin:0 auto;padding:28px 18px 60px}
 h1{font-size:26px;line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
 h2{font-size:17px;margin:0 0 2px}
-h3{font-size:14.5px;margin:16px 0 4px}
-.lede{color:var(--ink2);max-width:740px;margin:0 0 6px}
+.lede{color:var(--ink2);max-width:720px;margin:0 0 6px}
 .stamp{display:inline-block;font-size:12.5px;color:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:8px 0 18px;background:var(--surface)}
-.sub{color:var(--ink2);font-size:13.5px;margin:0 0 10px;max-width:780px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 18px 14px;margin:0 0 16px}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:0 0 16px}
+.stale{display:none;border:1px solid #c98500;border-left-width:4px;border-radius:8px;padding:10px 14px;margin:0 0 16px;background:var(--surface);font-size:13.5px;max-width:760px}
+.sub{color:var(--ink2);font-size:13.5px;margin:0 0 10px;max-width:760px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 18px 12px;margin:0 0 16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 16px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .tile .k{font-size:12.5px;color:var(--ink2)}
-.tile .v{font-size:28px;font-weight:650;letter-spacing:-.02em;line-height:1.25;font-variant-numeric:tabular-nums}
+.tile .v{font-size:28px;font-weight:650;letter-spacing:-.02em;line-height:1.25}
 .tile .n{font-size:12.5px;color:var(--mut)}
-.site{display:flex;align-items:baseline;gap:6px 18px;flex-wrap:wrap;margin:0 0 22px;padding-bottom:12px;border-bottom:1px solid var(--line)}
-.site .brand{font-weight:700;font-size:15px}
+.site{display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap;margin:0 0 22px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.site .brand{font-weight:700;font-size:15px;letter-spacing:.01em}
 .site .brand small{font-weight:400;color:var(--mut);font-size:12.5px;margin-left:8px}
-.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--axis);border-radius:8px;overflow:hidden;background:var(--surface);margin:0 0 14px}
-.seg button{font:inherit;color:var(--ink2);background:none;border:0;padding:6px 16px;cursor:pointer}
+.site nav{display:flex;gap:4px;margin-left:auto}
+.site nav button{font:inherit;font-size:14px;color:var(--ink2);background:none;border:1px solid transparent;border-radius:999px;padding:5px 14px;cursor:pointer}
+.site nav button[aria-current="page"]{color:var(--surface);background:var(--ink)}
+.site nav button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.view{display:none}.view.on{display:block}
+.method{font-size:12.5px;color:var(--mut);margin:8px 0 18px}
+.method a{color:var(--ink2)}
+.stamp + .method{margin-top:-8px}
+.formula{font-size:19px;line-height:2.1;font-weight:600;margin:6px 0 2px}
+.formula span{white-space:nowrap;padding:5px 9px;border-radius:7px;border:1px solid var(--line);border-bottom-width:3px}
+.formula em{font-style:normal;color:var(--mut);font-weight:400;padding:0 3px}
+.lab2{display:grid;grid-template-columns:1fr 1fr;gap:18px 30px;align-items:start}
+@media (max-width:820px){.lab2{grid-template-columns:1fr}}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.presets button{font:inherit;font-size:13.5px;color:var(--ink2);background:var(--surface);border:1px solid var(--axis);border-radius:999px;padding:5px 12px;cursor:pointer}
+.presets button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.presets button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.term{border-left:3px solid var(--line);padding:2px 0 2px 14px;margin:0 0 18px}
+.term h3{margin:0 0 2px;font-size:15px}
+.term h3 span{font-weight:400;color:var(--mut);font-size:13px;margin-left:6px}
+.term p{margin:0 0 8px;font-size:13.5px;color:var(--ink2);max-width:520px}
+.term .calc{font-size:13.5px;font-variant-numeric:tabular-nums;color:var(--ink);margin:6px 0 0}
+.term .calc b{font-weight:650}
+.sl{display:grid;grid-template-columns:minmax(120px,1fr) minmax(110px,1.3fr) 64px;gap:10px;align-items:center;font-size:13.5px;margin:4px 0}
+.sl output{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.sl input{width:100%;accent-color:var(--ink)}
+.result{position:sticky;top:8px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--surface);z-index:2}
+@media (max-width:820px){.result{order:-1;top:0;border-radius:0 0 10px 10px;box-shadow:0 6px 14px -10px rgba(0,0,0,.45)}}
+.result .big{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.result .big small{font-size:13px;font-weight:400;color:var(--mut);margin-left:8px}
+.stack{display:flex;gap:2px;height:26px;margin:12px 0 10px;background:var(--line);border-radius:5px;overflow:hidden}
+.stack i{display:block;height:100%;min-width:0;transition:flex-basis .15s}
+.rrow{display:grid;grid-template-columns:14px 1fr auto;gap:8px;align-items:center;font-size:13.5px;padding:3px 0;font-variant-numeric:tabular-nums}
+.rrow i{width:10px;height:10px;border-radius:2px}
+.rrow b{font-weight:600}
+.cmp2{display:none;font-size:13px;color:var(--ink2);margin:0}
+@media (max-width:820px){.result{padding:10px 14px}.result .big{font-size:26px}.result .stack{height:18px;margin:8px 0 6px}.result #eqn-rows{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}.result .rrow{font-size:12.5px;padding:1px 0}.result .cmp{display:none}.cmp2{display:block}}
+.result .cmp{margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line);font-size:13px;color:var(--ink2)}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--axis);margin:0 0 16px}
+.tabs button{font:inherit;font-size:14.5px;color:var(--ink2);background:none;border:0;border-bottom:3px solid transparent;padding:9px 14px;margin-bottom:-1px;cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);font-weight:650;border-bottom-color:var(--ink)}
+.tabs button:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.pane{display:none}.pane.on{display:block}
+.filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;font-size:13.5px;color:var(--ink2)}
+.seg{display:inline-flex;border:1px solid var(--axis);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{font:inherit;color:var(--ink2);background:none;border:0;padding:6px 14px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
 .seg button:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
 .legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12.5px;color:var(--ink2);margin:2px 0 4px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{display:inline-block;width:14px;height:0;border-top:2.5px solid}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:2px}
+.legend i.cd{width:11px;height:11px;border-radius:50%}
+.legend i.ln{height:0;border-top:2.5px solid;border-radius:0}
+.legend i.dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--ink);background:var(--surface)}
 .chart{position:relative;width:100%}
 .chart svg{display:block;width:100%;overflow:visible}
-.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:7px 10px;font-size:12.5px;line-height:1.45;white-space:nowrap;display:none;font-variant-numeric:tabular-nums;box-shadow:0 4px 12px -6px rgba(0,0,0,.4)}
-.tip b{font-weight:650}
-.tip i{display:inline-block;width:10px;height:0;border-top:2.5px solid;margin-right:6px;vertical-align:middle}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:8px 22px}
+.mini h3{font-size:13.5px;margin:8px 0 0;font-weight:600}
+.mini p{font-size:12.5px;color:var(--mut);margin:0}
+
+.risk{border-top:1px solid var(--line);margin-top:18px;padding-top:16px}
+.risk>h3{font-size:16px;margin:0;display:flex;align-items:center;gap:4px 9px;flex-wrap:wrap}
+.risk>h3 i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.risk>h3 span{font-weight:400;color:var(--ink2);font-size:13.5px}
+@media (max-width:560px){.risk>h3 span{flex-basis:100%}}
+.risk>p{font-size:13.5px;color:var(--ink2);max-width:760px;margin:6px 0 8px}
+.eq{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:stretch;margin:10px 0 2px;font-variant-numeric:tabular-nums}
+.eq div{border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:104px}
+.eq div b{display:block;font-size:20px;font-weight:650}
+.eq div span{font-size:12.5px;color:var(--ink2);display:flex;align-items:center;gap:6px}
+.eq div span i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.eq div small{display:block;font-size:11.5px;color:var(--mut);margin-top:2px}
+.eq em{align-self:center;font-style:normal;color:var(--mut);font-size:18px}
+.facts{display:flex;flex-wrap:wrap;gap:8px 28px;margin:8px 0 6px}
+.facts div{max-width:300px}
+.facts div b{font-size:18px;font-weight:650;display:block}
+table.now td small,table.now th small{display:block;color:var(--mut);font-size:12px;font-weight:400}
+table.now td:first-child i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:7px}
+table.now td{vertical-align:top}
+.facts div span{font-size:12.5px;color:var(--ink2)}
+.mini p.sub{font-size:13.5px;color:var(--ink2);margin:8px 0 10px}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:8px 10px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.12);min-width:150px;z-index:5;display:none}
+.tip .t{color:var(--ink2);margin-bottom:4px}
+.tip .r{display:flex;align-items:center;gap:7px;justify-content:space-between;white-space:nowrap}
+.tip .r b{font-weight:650}
+.tip .r span{color:var(--ink2);display:inline-flex;align-items:center;gap:6px}
+.tip .r i{display:inline-block;width:12px;border-top:2.5px solid}
 table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
-th,td{text-align:right;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-th:first-child,td:first-child{text-align:left}
-td:not(:first-child){white-space:nowrap}
-th{font-weight:600;color:var(--ink2);font-size:12.5px;white-space:nowrap}
-th button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
-th button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-th[aria-sort="ascending"] button::after{content:" ↑"}
-th[aria-sort="descending"] button::after{content:" ↓"}
-td.l,th.l{text-align:left}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;white-space:nowrap}
+th{font-weight:600;color:var(--ink2);font-size:12.5px;vertical-align:bottom}
+td{white-space:nowrap}
+table.now td:first-child{white-space:normal}
+tr.tot td{font-weight:650;border-top:1.5px solid var(--axis)}
 .scroll{overflow-x:auto}
+.chart svg{touch-action:pan-y}
+.swipe{display:none}
+/* phones: the same content, laid out for a narrow screen. Nothing here applies above 640px. */
+@media (max-width:640px){
+  .wrap{padding:16px 12px 48px}
+  .card{padding:14px 14px 10px;border-radius:9px}
+  h1{font-size:23px}
+  .lede{font-size:15px}
+  .site{margin-bottom:16px;padding-bottom:10px;gap:8px}
+  .site .brand small{display:none}
+  .site nav{margin-left:0;width:100%;gap:2px}
+  .site nav button{flex:1;padding:6px 4px;font-size:13.5px;white-space:nowrap}
+  .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-left:-12px;margin-right:-12px;padding:0 12px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{white-space:nowrap;padding:9px 11px;flex:none}
+  .filters .hint{display:none}
+  .tiles{grid-template-columns:1fr 1fr;gap:8px}
+  .tile{padding:10px 12px}
+  .tile .v{font-size:23px}
+  .tile .k,.tile .n{font-size:12px}
+  .scroll{margin-right:-14px;padding-right:14px;-webkit-overflow-scrolling:touch}
+  .scroll table{font-size:12.5px}
+  .scroll th,.scroll td{padding:6px 5px}
+  #t-grave td:last-child{white-space:normal}
+  .scroll th:first-child,.scroll td:first-child{position:sticky;left:0;z-index:1;background:var(--surface);padding-left:2px}
+  #t-erp td:first-child,#t-size td:first-child,#t-cmp td:first-child,table.now td:first-child{white-space:normal;max-width:132px}
+  .scroll.more th:first-child,.scroll.more td:first-child{box-shadow:6px 0 6px -6px rgba(0,0,0,.28)}
+  .swipe{font-size:11.5px;color:var(--mut);margin:8px 0 2px;text-align:right}
+  .scroll.more + .swipe,.swipe.on{display:block}
+  .eq div{min-width:0;padding:7px 10px}
+  .formula{font-size:16px}
+}
+.note{font-size:13.5px;color:var(--ink2);max-width:760px}
+.note li{margin:0 0 6px}
+footer{font-size:12.5px;color:var(--mut);margin-top:22px;max-width:820px}
+footer a,.note a{color:var(--blue)}
+text{font-family:inherit}
+
+/* additions for this site */
+th button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+th button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+th[aria-sort="ascending"] button::after{content:" \2191"}
+th[aria-sort="descending"] button::after{content:" \2193"}
+table.now td a{color:var(--ink)}
+.filters input[type=search]{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:6px 10px;min-width:210px}
+.filters input[type=search]:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.filters .hint{color:var(--mut)}
+button.more{font:inherit;font-size:13.5px;color:var(--ink2);background:var(--surface);border:1px solid var(--axis);border-radius:999px;padding:5px 14px;cursor:pointer}
+button.more:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
 details{margin:8px 0 0}
 summary{cursor:pointer;font-size:13.5px;color:var(--ink2)}
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:0 28px}
-.note{font-size:12.5px;color:var(--mut);margin:6px 0 0;max-width:780px}
-ul.plain{margin:6px 0 0;padding-left:18px;font-size:13.5px;color:var(--ink2);max-width:780px}
-ul.plain li{margin:0 0 4px}
-footer{font-size:12.5px;color:var(--mut);margin-top:26px;border-top:1px solid var(--line);padding-top:12px;max-width:820px}
-footer a,.sub a,.note a{color:var(--ink2)}
-.na{color:var(--mut)}
+p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
+.card>.scroll+.scroll,.card table+table{margin-top:14px}
+.fb{display:grid;grid-template-columns:74px 1fr 74px;gap:10px;align-items:center;font-size:13px;font-variant-numeric:tabular-nums;padding:3px 0;max-width:640px}
+.fb span{color:var(--ink2)}
+.fb b{font-weight:600;text-align:right}
+.fb .track{position:relative;height:14px;border-left:0;background:linear-gradient(var(--axis),var(--axis)) 50% 0/1px 100% no-repeat}
+.fb .track i{position:absolute;top:1px;bottom:1px;background:var(--blue)}
+.cw{display:inline-block;width:72px;height:8px;background:var(--line);border-radius:4px;margin-right:8px;vertical-align:middle;overflow:hidden}
+.cw i{display:block;height:100%;background:var(--blue);border-radius:4px}
+#cat td:first-child{white-space:normal;min-width:230px}
+.term p{max-width:none}
+@media (max-width:640px){.filters input[type=search]{min-width:0;flex:1}.cw{width:44px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="site"><span class="brand">Covered-call monitor<small>from public SEC filings</small></span></div>
+  <header class="site">
+    <div class="brand">Covered-Call Monitor<small>returns, overlays and flows from SEC filings</small></div>
+    <nav aria-label="Sections"><button type="button" data-view="funds">Funds</button><button type="button" data-view="explained">How it works</button><button type="button" data-view="category">The category</button></nav>
+  </header>
 
+  <!-- ================= FUNDS ================= -->
+  <div class="view" id="view-funds">
   <h1>What does the yield cost?</h1>
-  <p class="lede">A covered-call fund pays a high distribution by selling away part of the upside of the shares it holds. This page measures what was given up: each fund's total return beside the index fund that holds the same shares, and the options the fund had actually written on its last report date.</p>
-  <span class="stamp" id="stamp"></span>
+  <p class="lede" id="lede-funds"></p>
+  <div class="stamp" id="stamp"></div>
+  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
 
-  <div class="tiles" id="tiles"></div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button type="button" role="tab" data-tab="overview">Overview</button>
+    <button type="button" role="tab" data-tab="fund">Fund by fund</button>
+    <button type="button" role="tab" data-tab="notes">Data and notes</button>
+  </nav>
+
+  <div class="pane" id="pane-overview">
+    <div class="tiles" id="tiles"></div>
+    <div class="card">
+      <h2>Five large funds beside their index fund</h2>
+      <p class="sub">Total return: the change in the fund's value with every distribution reinvested, as each fund reports it to the SEC month by month. The index fund holds the same market without selling calls on it. The difference is what the option strategy cost, or earned, over the period.</p>
+      <div class="scroll"><table class="now" id="t-over"></table></div>
+      <p class="note" id="over-note"></p>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-fund">
+    <div class="filters"><span>Fund</span><div class="seg" id="pick" role="group" aria-label="Fund"></div></div>
+    <div class="tiles" id="ftiles"></div>
+    <div class="card">
+      <h2 id="chart-title"></h2>
+      <p class="sub">Growth of the fund and of its index fund from the same starting month, in per cent, with every distribution reinvested. Not the share price, and not the yield.</p>
+      <div class="legend" id="legend"></div>
+      <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
+      <details><summary>Monthly figures as a table</summary><div class="scroll" id="mtable"></div></details>
+    </div>
+    <div class="card">
+      <h2>The overlay on the last report date</h2>
+      <p class="sub" id="ovtext"></p>
+      <div class="scroll" id="ovtable"></div>
+    </div>
+    <div class="card">
+      <h2>Money in and out</h2>
+      <p class="sub">New shares created less shares redeemed, month by month, in millions of dollars. A bar to the right is money coming in.</p>
+      <div id="flowbars"></div>
+      <p class="note" id="flownote"></p>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-notes">
+    <div class="card">
+      <h2>What this site does not show</h2>
+      <ul class="note">
+        <li><b>No distribution yield.</b> The filings used here do not carry distributions per share, and a current yield needs daily prices.</li>
+        <li><b>Nothing recent.</b> Funds report monthly, but the SEC makes only the report for the last month of each fiscal quarter public, about two months later. Each fund's figures are as of its own report date.</li>
+        <li><b>US-registered funds only.</b> European (UCITS) funds do not file this form.</li>
+        <li><b>No strike for funds that use notes.</b> Where the call exposure sits inside equity-linked notes, the filing names each note, its issuer and its size, not the option terms.</li>
+        <li><b>No judgement on any fund.</b> The site reports what was filed. It does not forecast and does not rank.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>How the figures are made</h2>
+      <ul class="note">
+        <li><b>Monthly returns are joined across reports.</b> Each public report carries the three months that end at its date. Reports of successive quarters give an unbroken monthly series.</li>
+        <li><b>The comparison uses the months both funds have on file.</b> Fund families report on different cycles, so the last month of a comparison can be earlier than the fund's latest report.</li>
+        <li><b>Calls written</b> is the number of contracts written, times 100 shares, times the strike, as a share of the fund's net assets. Near 100% means calls were written against the whole portfolio.</li>
+        <li><b>Strikes are checked against the holding's name.</b> For some index options the strike field of the SEC data set holds only the last digits. Where the filed number is the tail of the strike in the holding's name, the name is used and the table marks it.</li>
+        <li><b>Net flow</b> is sales plus reinvestments less redemptions. A month in which a filing reports a negative amount for one of these is left out and marked.</li>
+        <li><b>One share class per fund.</b> Where a report lists several classes, the first class identifier is used.</li>
+      </ul>
+    </div>
+  </div>
+  </div>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <div class="view" id="view-explained">
+  <h1>How a covered-call fund works</h1>
+  <p class="lede">It owns shares and sells someone else the right to their gains above a set price. The payment it receives for that right is what funds the high distribution. The gains it signed away are the cost.</p>
+  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
 
   <div class="card">
-    <h2>Five funds beside their index fund</h2>
-    <p class="sub">Total return with distributions reinvested, as each fund reports it to the SEC every month. The comparison runs over the months both funds have on file.</p>
-    <div class="seg" id="pick" role="group" aria-label="Fund"></div>
-    <div class="tiles" id="ftiles"></div>
-    <div class="legend" id="legend"></div>
-    <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
-    <details><summary>Monthly figures as a table</summary><div class="scroll" id="mtable"></div></details>
-
-    <div class="two">
+    <h2>The trade, one month at a time</h2>
+    <div class="lab2">
       <div>
-        <h3>The overlay on the last report date</h3>
-        <p class="sub" id="ovtext"></p>
-        <div class="scroll" id="ovtable"></div>
+        <div class="term"><h3>1. Own the shares</h3><p>The fund holds a portfolio of shares, often a whole index. Say it is worth 100 today.</p></div>
+        <div class="term"><h3>2. Sell a call on them <span>the strike</span></h3><p>The fund sells a call option: the buyer gets every gain above an agreed price, the strike, until the option expires. A strike at today's price gives away all the upside. A strike some way above keeps the first part of a rise.</p>
+          <label class="sl"><span>Strike, above today's price</span><input type="range" id="s-k" min="0" max="15" step="0.5" value="3"><output id="o-k"></output></label></div>
+        <div class="term"><h3>3. Collect the premium <span>the income</span></h3><p>The buyer pays for the option up front. This premium is the fund's to keep whatever happens. It is larger when markets are nervous and when the strike is close to today's price.</p>
+          <label class="sl"><span>Premium received</span><input type="range" id="s-p" min="0.2" max="6" step="0.1" value="2"><output id="o-p"></output></label></div>
+        <div class="term"><h3>4. Repeat</h3><p>When the option expires the fund sells the next one. Most funds do this every month, some every week or every day.</p></div>
       </div>
-      <div>
-        <h3>Money in and out</h3>
-        <p class="sub">Shares created less shares redeemed, by month, in millions of dollars.</p>
-        <div class="scroll" id="flowtable"></div>
+      <div class="result">
+        <div class="k" style="font-size:12.5px;color:var(--ink2)">The most the fund can make this month</div>
+        <div class="big" id="r-cap"></div>
+        <div class="legend" style="margin-top:10px"><span><i class="ln" style="border-color:var(--blue)"></i>Shares with the call sold</span><span><i class="ln" style="border-color:var(--orange)"></i>Shares alone</span></div>
+        <div class="chart" id="pchart"><div class="tip" id="ptip"></div></div>
+        <p class="cmp" id="r-text"></p>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <h2>The whole category</h2>
-    <p class="sub" id="cattext"></p>
-    <div class="scroll"><table id="cat"></table></div>
-    <p class="note">Returns are for the three and twelve months ending at each fund's own report date, so rows with different dates are not directly comparable. "Calls written" is the face value of the written calls at their strike, as a share of net assets. A dash means the filings do not give the figure.</p>
-  </div>
-
-  <div class="card">
-    <h2>What this page does not show</h2>
-    <ul class="plain">
-      <li><b>No distribution yield.</b> The filings used here do not carry distributions per share, and a current yield needs daily prices.</li>
-      <li><b>Nothing recent.</b> Funds report monthly, but the SEC makes only the report for the last month of each fiscal quarter public, about two months later. Each fund's figures are as of its own report date.</li>
-      <li><b>US-registered funds only.</b> European (UCITS) funds do not file this form.</li>
-      <li><b>No strike for funds that use notes.</b> Where the call exposure sits inside equity-linked notes, the filing names the note, its issuer and its size, not the option terms.</li>
-      <li><b>Strikes are checked against the holding's name.</b> For index options the strike field of the SEC data set can be cut short; where the name of the holding states a different strike, the name is used and the table says so.</li>
-      <li><b>One share class per fund.</b> For funds with several classes the first class identifier is used.</li>
+    <h2>What follows from it</h2>
+    <ul class="note">
+      <li><b>The yield is not the return.</b> The distribution is paid largely out of premiums. What the investor ends up with is the total return: the distributions plus the change in the fund's value. A fund can pay 10% a year and return much less, or much more, than that.</li>
+      <li><b>Rising markets are where the cost appears.</b> In a strong month the shares rise past the strike and the fund keeps only the premium and the rise up to the strike. Over a strong year, twelve capped months add up to a wide gap against the index.</li>
+      <li><b>Falling markets are only cushioned.</b> The premium offsets the first part of a fall and nothing more. The fund keeps almost all of the downside of the shares.</li>
+      <li><b>Sharp reversals hurt twice.</b> If shares fall and then recover within the life of a new option, the fund takes the fall and is capped on the recovery.</li>
+      <li><b>Quiet, flat markets are where it does best.</b> The shares go nowhere, the option expires worthless, and the premium is extra return.</li>
     </ul>
   </div>
 
+  <div class="card">
+    <h2>Three names, two ideas</h2>
+    <p class="sub">The funds on this site carry one of three names. Two of them mean the same trade. The third is a looser label.</p>
+    <div class="term"><h3>Covered call</h3><p>The trade described above: hold the shares, sell calls on them. "Covered" means the fund owns what it has promised, so it can always deliver.</p></div>
+    <div class="term"><h3>Buy-write</h3><p>The same trade under an older name: <i>buy</i> the shares and <i>write</i> (sell) the call. It is the term used by the index providers whose benchmarks many of these funds follow, so funds that track such an index tend to carry it.</p></div>
+    <div class="term"><h3>Premium income</h3><p>A description of the aim, income from option premiums, not of a particular trade. Funds with this name vary: some write calls on only part of the portfolio to keep more upside, some choose their own shares instead of an index, some hold notes issued by banks that carry the option inside them, and some sell options that last a single day.</p></div>
+    <div class="scroll"><table id="t-types"></table></div>
+    <p class="note" id="types-note"></p>
+  </div>
+
+  <div class="card">
+    <h2>What to look at in a fund</h2>
+    <ul class="note">
+      <li><b>Total return against the index fund</b> over a period with both rising and falling months. <a href="#fund">Fund by fund</a> shows it for five large funds.</li>
+      <li><b>How much of the portfolio is covered.</b> Calls written near 100% of net assets give up the most upside for the most income. <a href="#category">The category</a> lists the figure for every fund.</li>
+      <li><b>How far the strike sits above the market,</b> and how often the option is renewed.</li>
+      <li><b>Who stands behind the options.</b> A listed option is guaranteed by a clearing house. A note depends on the bank that issued it.</li>
+      <li><b>Where the distribution comes from.</b> Part of it can be a return of the investor's own capital. That is in each fund's annual report and is not on this site.</li>
+    </ul>
+  </div>
+  </div>
+
+  <!-- ================= CATEGORY ================= -->
+  <div class="view" id="view-category">
+  <h1>The category</h1>
+  <p class="lede" id="lede-cat"></p>
+  <div class="stamp" id="cat-stamp"></div>
+  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
+  <div class="tiles" id="cat-tiles"></div>
+  <div class="card">
+    <div class="filters">
+      <div class="seg" id="cat-type" role="group" aria-label="Name"></div>
+      <input type="search" id="cat-q" placeholder="Search a fund or manager" aria-label="Search a fund or manager">
+      <span class="hint" id="cat-count"></span>
+    </div>
+    <div class="scroll"><table class="now" id="cat"></table></div>
+    <p style="margin:12px 0 4px"><button type="button" class="more" id="cat-more"></button></p>
+    <p class="note">The 12-month return ends at each fund's own report date, shown under its name, so funds with different dates are not directly comparable. "Calls written" is the face value of the written calls at their strike as a share of net assets. A dash means the filing does not give the figure: the fund is too new, had no written call on that date, or holds its options inside notes.</p>
+  </div>
+  </div>
+
   <footer>
-    Source: US Securities and Exchange Commission, <a id="src" target="_blank" rel="noopener">Form N-PORT data sets</a>, a work of the US government in the public domain. Figures are as filed by the funds and are not audited or corrected here. This page reports and does not forecast. It is for information only and is not investment advice or a recommendation to buy or sell any fund.
+    <p>Source and method: every figure is computed from the Form N-PORT reports that US-registered funds file with the Securities and Exchange Commission, as published in the SEC's quarterly <a id="src" target="_blank" rel="noopener">Form N-PORT data sets</a>. Figures are as filed by the funds and are not audited or corrected here. Background on the strategy: A. Papadogiannis (2026), "High Yield, Capped Gains: Mechanics, Trade-Offs, and Practical Diagnostics for Covered-Call ETFs", <i>The Journal of Beta Investment Strategies</i> 17(2), <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">doi.org/10.3905/jbis.2026.001</a>. The explanations on this site are written for it and do not reproduce the article.</p>
+    <p id="asof"></p>
+    <p>Data: SEC Form N-PORT data sets, a work of the US government in the public domain. Fund names are those filed with the SEC; ticker symbols are added by hand for the five funds shown in detail and their index funds. The numbers on this site are also published as <a href="data.json" target="_blank" rel="noopener">data.json</a>.</p>
+    <p>Built and maintained by <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a>, whose other research, with its data and code, is listed on that page.</p>
+    <p>© <span id="copy-year">2026</span> Agisilaos Papadogiannis. The text, charts and numbers of this site, including <a href="data.json" target="_blank" rel="noopener">data.json</a>, may be reused with credit under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. The code is under the <a href="https://github.com/apapadogiannis/covered-call-monitor/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>. The source data are in the public domain.</p>
+    <p>Independent research, for informational and academic purposes only. Not financial, investment, tax or legal advice, and not a recommendation to buy or sell any financial instrument.</p>
   </footer>
 </div>
 
@@ -132,137 +375,184 @@ footer a,.sub a,.note a{color:var(--ink2)}
 const D = /*DATA*/null;
 const $ = id => document.getElementById(id);
 const el = (t, a = {}, h = "") => { const e = document.createElement(t); for (const k in a) e.setAttribute(k, a[k]); e.innerHTML = h; return e; };
-const pct = (x, d = 1) => x == null ? '<span class="na">–</span>' : (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(d) + "%";
-const plain = (x, d = 1) => x == null ? '<span class="na">–</span>' : x.toFixed(d) + "%";
-const usd = x => x == null ? '<span class="na">–</span>' : x >= 1e9 ? "$" + (x / 1e9).toFixed(1) + "bn" : "$" + (x / 1e6).toFixed(0) + "m";
-const musd = x => { if (x == null) return '<span class="na">not used</span>'; const m = Math.round(x / 1e6); return (m < 0 ? "−" : m > 0 ? "+" : "") + Math.abs(m).toLocaleString("en-US"); };
+const NA = '<span style="color:var(--mut)">–</span>';
+const pct = (x, d = 1) => x == null ? NA : (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(d) + "%";
+const pts = (x, d = 1) => x == null ? NA : (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(d);
+const plain = (x, d = 1) => x == null ? NA : x.toFixed(d) + "%";
+const usd = x => x == null ? NA : x >= 1e9 ? "$" + (x / 1e9).toFixed(1) + "bn" : "$" + (x / 1e6).toFixed(0) + "m";
+const musd = x => { const m = Math.round(x / 1e6); return (m < 0 ? "−" : m > 0 ? "+" : "") + Math.abs(m).toLocaleString("en-US"); };
 const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTH = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const ym = s => MON[+s.slice(5, 7) - 1] + " " + s.slice(0, 4);
-const dmy = s => s ? +s.slice(8, 10) + " " + MON[+s.slice(5, 7) - 1] + " " + s.slice(0, 4) : "";
+const ymLong = s => MONTH[+s.slice(5, 7) - 1] + " " + s.slice(0, 4);
+const dmy = s => s ? +s.slice(8, 10) + " " + MONTH[+s.slice(5, 7) - 1] + " " + s.slice(0, 4) : "";
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const NS = "http://www.w3.org/2000/svg";
 
+/* ---------- headings and footer ---------- */
 $("src").href = D.meta.source;
-$("stamp").textContent = "Reports dated " + dmy(D.meta.reports_from) + " to " + dmy(D.meta.reports_to) + " · " + D.meta.quarters.length + " quarterly SEC data sets";
-$("tiles").append(
-  el("div", {class: "tile"}, `<div class="k">Funds followed</div><div class="v">${D.meta.funds_in_category}</div><div class="n">covered-call, buy-write and premium-income funds</div>`),
-  el("div", {class: "tile"}, `<div class="k">Their net assets</div><div class="v">${usd(D.meta.category_net_assets)}</div><div class="n">each at its latest report date</div>`),
-  el("div", {class: "tile"}, `<div class="k">Latest report on file</div><div class="v" style="font-size:22px;line-height:1.6">${dmy(D.meta.reports_to)}</div><div class="n">the SEC publishes with a delay of about two months</div>`));
+$("copy-year").textContent = D.meta.reports_to.slice(0, 4);
+const big = [...D.detail].sort((a, b) => b.net_assets - a.net_assets)[0];
+$("lede-funds").innerHTML = `Over the ${big.window.months} months to ${ymLong(big.window.to)}, ${big.ticker}, the largest covered-call fund, returned ${plain(big.window.fund)} with its distributions reinvested. An index fund on the same market returned ${plain(big.window.benchmark)}. Across the five funds followed here, the gap runs from ${Math.min(...D.detail.map(f => -f.window.gap)).toFixed(0)} to ${Math.max(...D.detail.map(f => -f.window.gap)).toFixed(0)} percentage points.`;
+const stampText = `${D.meta.funds_in_category} funds · reports to ${dmy(D.meta.reports_to)} · updated quarterly`;
+$("stamp").textContent = stampText; $("cat-stamp").textContent = stampText;
+$("asof").textContent = `Dates of the data: ${D.meta.quarters.length} quarterly data sets, ${D.meta.quarters[0].replace("q", " Q")} to ${D.meta.quarters[D.meta.quarters.length - 1].replace("q", " Q")}; fund reports dated ${dmy(D.meta.reports_from)} to ${dmy(D.meta.reports_to)}. The SEC makes a report public about two months after its date, and only for the last month of each fund's fiscal quarter, so each fund is shown as of its own latest report.`;
 
-/* ---------- five funds ---------- */
+/* ---------- overview ---------- */
+$("tiles").append(
+  el("div", {class: "tile"}, `<div class="k">${big.ticker}, ${big.window.months} months</div><div class="v">${pct(big.window.fund)}</div><div class="n">total return to ${ym(big.window.to)}</div>`),
+  el("div", {class: "tile"}, `<div class="k">${big.benchmark}, same months</div><div class="v">${pct(big.window.benchmark)}</div><div class="n">index fund on the ${esc(big.benchmark_index)}</div>`),
+  el("div", {class: "tile"}, `<div class="k">Difference</div><div class="v">${pts(big.window.gap)}</div><div class="n">percentage points</div>`),
+  el("div", {class: "tile"}, `<div class="k">Funds in the category</div><div class="v">${D.meta.funds_in_category}</div><div class="n">${usd(D.meta.category_net_assets)} in net assets</div>`));
+$("t-over").innerHTML = `<thead><tr><th>Fund</th><th>Net assets</th><th>Period</th><th>Fund</th><th>Index fund</th><th>Difference, points</th><th>Last 12 months: fund</th><th>index fund</th></tr></thead><tbody>` +
+  D.detail.map((f, i) => `<tr><td><a href="#fund" data-f="${i}"><b>${f.ticker}</b></a><small>${esc(f.name)}</small></td><td>${usd(f.net_assets)}</td><td>${ym(f.window.from)} to ${ym(f.window.to)}</td><td>${pct(f.window.fund)}</td><td>${pct(f.window.benchmark)}<small>${f.benchmark}</small></td><td>${pts(f.window.gap)}</td><td>${f.last12 ? pct(f.last12.fund) : NA}</td><td>${f.last12 ? pct(f.last12.benchmark) : NA}</td></tr>`).join("") + "</tbody>";
+$("over-note").textContent = "Each comparison runs over the months that both the fund and its index fund have on file, so periods can differ by a month between funds.";
+$("t-over").querySelectorAll("a[data-f]").forEach(a => a.addEventListener("click", () => { cur = +a.dataset.f; fund(); }));
+
+/* ---------- fund by fund ---------- */
 let cur = 0;
-D.detail.forEach((f, i) => {
-  const b = el("button", {type: "button", "aria-pressed": i === 0}, f.ticker);
-  b.onclick = () => { cur = i; [...$("pick").children].forEach((c, j) => c.setAttribute("aria-pressed", j === i)); fund(); };
-  $("pick").append(b);
-});
+D.detail.forEach((f, i) => { const b = el("button", {type: "button"}, f.ticker); b.onclick = () => { cur = i; fund(); }; $("pick").append(b); });
 
 function fund() {
   const f = D.detail[cur], w = f.window;
+  [...$("pick").children].forEach((c, j) => c.setAttribute("aria-pressed", j === cur));
   $("ftiles").innerHTML = "";
-  if (w) $("ftiles").append(
+  $("ftiles").append(
     el("div", {class: "tile"}, `<div class="k">${f.ticker}, ${ym(w.from)} to ${ym(w.to)}</div><div class="v">${pct(w.fund)}</div><div class="n">${esc(f.name)}</div>`),
     el("div", {class: "tile"}, `<div class="k">${f.benchmark}, same months</div><div class="v">${pct(w.benchmark)}</div><div class="n">index fund on the ${esc(f.benchmark_index)}</div>`),
-    el("div", {class: "tile"}, `<div class="k">Difference</div><div class="v">${pct(w.gap)}</div><div class="n">percentage points over ${w.months} months</div>`),
+    el("div", {class: "tile"}, `<div class="k">Difference</div><div class="v">${pts(w.gap)}</div><div class="n">percentage points over ${w.months} months</div>`),
     el("div", {class: "tile"}, `<div class="k">Net assets</div><div class="v">${usd(f.net_assets)}</div><div class="n">on ${dmy(f.report_date)}</div>`));
-  $("legend").innerHTML = `<span><i style="border-color:var(--blue)"></i>${f.ticker}</span><span><i style="border-color:var(--orange)"></i>${f.benchmark} (index fund)</span>`;
+  $("chart-title").textContent = `Cumulative total return: ${f.ticker} and ${f.benchmark}`;
+  $("legend").innerHTML = `<span><i class="ln" style="border-color:var(--blue)"></i>${f.ticker}, total return</span><span><i class="ln" style="border-color:var(--orange)"></i>${f.benchmark}, index fund on the ${esc(f.benchmark_index)}, total return</span>`;
   draw(f);
-  $("mtable").innerHTML = "<table><thead><tr><th>Month</th><th>" + f.ticker + "</th><th>" + f.benchmark + "</th><th>" + f.ticker + " cumulative</th><th>" + f.benchmark + " cumulative</th></tr></thead><tbody>" +
+  $("mtable").innerHTML = `<table><thead><tr><th>Month</th><th>${f.ticker}</th><th>${f.benchmark}</th><th>${f.ticker}, cumulative</th><th>${f.benchmark}, cumulative</th></tr></thead><tbody>` +
     f.months.map(m => `<tr><td>${ym(m.month)}</td><td>${pct(m.fund, 2)}</td><td>${pct(m.benchmark, 2)}</td><td>${pct(m.fund_cum)}</td><td>${pct(m.benchmark_cum)}</td></tr>`).join("") + "</tbody></table>";
 
   const o = f.overlay, n = f.notes;
   let t = esc(f.overlay_kind) + ". ";
   if (o.written_calls) t += `On ${dmy(f.report_date)} the fund had ${o.written_calls} written call position${o.written_calls > 1 ? "s" : ""}` +
-    (o.notional_pct != null ? `, with a face value at strike of ${plain(o.notional_pct, 0)} of net assets` : "") +
-    (o.nearest_expiration ? `, the nearest expiring ${dmy(o.nearest_expiration)}` : "") + ".";
-  if (n.count) t += ` It held ${n.count} equity-linked notes worth ${plain(n.pct)} of net assets.`;
+    (o.notional_pct != null ? `, with a face value at strike of ${plain(o.notional_pct, 0)} of net assets` : "") + ".";
+  if (n.count) t += ` On ${dmy(f.report_date)} it held ${n.count} equity-linked notes worth ${plain(n.pct)} of net assets, issued by ${n.issuers.length} banks. The filing gives no strike for the options inside them.`;
   $("ovtext").innerHTML = t;
   let h = "";
-  if (o.positions.length) h += "<table><thead><tr><th>Written call</th><th>Strike</th><th>Expires</th><th>Value, % of net assets</th></tr></thead><tbody>" +
-    o.positions.map(p => `<tr><td>${esc(p.title)}</td><td>${p.strike == null ? "–" : p.strike.toLocaleString("en-US")}${p.strike_basis === "from title" ? " *" : ""}</td><td>${dmy(p.expiration)}</td><td>${plain(p.value_pct, 2)}</td></tr>`).join("") +
-    "</tbody></table>" + (o.strikes_repaired ? '<p class="note">* Strike taken from the name of the holding; the strike field of the data set gives a different, shorter number.</p>' : "");
-  if (n.count) h += "<table><thead><tr><th>Issuer of the notes</th><th>Notes</th><th>% of net assets</th></tr></thead><tbody>" +
+  if (o.positions.length) h += `<table class="now"><thead><tr><th>Written call</th><th>Strike</th><th>Expires</th><th>Value, % of net assets</th></tr></thead><tbody>` +
+    o.positions.map(p => `<tr><td>${esc(p.title)}</td><td>${p.strike == null ? NA : p.strike.toLocaleString("en-US")}${p.strike_basis === "from title" ? " *" : ""}</td><td>${dmy(p.expiration)}</td><td>${plain(p.value_pct, 2)}</td></tr>`).join("") +
+    "</tbody></table>" + (o.strikes_repaired ? '<p class="note">* Strike taken from the name of the holding. The strike field of the SEC data set holds only its last digits. The expiry date is shown as filed.</p>' : "");
+  if (n.count) h += `<table class="now"><thead><tr><th>Issuer of the notes</th><th>Notes</th><th>% of net assets</th></tr></thead><tbody>` +
     n.issuers.map(i => `<tr><td>${esc(i.issuer)}</td><td>${i.notes}</td><td>${plain(i.pct, 2)}</td></tr>`).join("") + "</tbody></table>";
   $("ovtable").innerHTML = h;
-  const fl = f.flows.slice(-12);
-  $("flowtable").innerHTML = "<table><thead><tr><th>Month</th><th>Net flow, $m</th></tr></thead><tbody>" +
-    fl.map(x => `<tr><td>${ym(x.month)}</td><td>${musd(x.net)}</td></tr>`).join("") + "</tbody></table>" +
-    (f.flow_months_not_used.length ? '<p class="note">"Not used" marks a month in which the filing reports a negative amount for sales or redemptions.</p>' : "");
+
+  const fl = f.flows.slice(-12), mx = Math.max(1, ...fl.map(x => Math.abs(x.net || 0)));
+  $("flowbars").innerHTML = fl.map(x => {
+    const w2 = x.net == null ? 0 : Math.abs(x.net) / mx * 50, neg = x.net < 0;
+    return `<div class="fb"><span>${ym(x.month)}</span><div class="track"><i style="${neg ? `right:50%;border-radius:4px 0 0 4px` : `left:50%;border-radius:0 4px 4px 0`};width:${w2}%"></i></div><b>${x.net == null ? '<span style="color:var(--mut);font-weight:400">not used</span>' : musd(x.net)}</b></div>`;
+  }).join("");
+  $("flownote").textContent = f.flow_months_not_used.length ? '"Not used" marks a month in which the filing reports a negative amount for sales or redemptions.' : "";
 }
 
-function draw(f) {
-  const box = $("chart"), tip = $("tip");
+function lineChart(box, tip, series, labels, xlab, fmtTip, opts = {}) {
   box.querySelector("svg")?.remove();
-  const pts = [{month: "start", fund_cum: 0, benchmark_cum: 0}, ...f.months];
-  if (pts.length < 2) return;
-  const W = Math.max(320, box.clientWidth), H = 300, L = 46, R = 64, T = 14, B = 30;
-  const ys = pts.flatMap(p => [p.fund_cum, p.benchmark_cum]);
-  let lo = Math.min(0, ...ys), hi = Math.max(0, ...ys);
+  const n = series[0].v.length; if (n < 2) return;
+  const W = Math.max(300, box.clientWidth), H = opts.h || 300, L = 46, R = opts.r ?? 64, T = 14, B = 30;
+  const all = series.flatMap(s => s.v);
+  let lo = Math.min(0, ...all), hi = Math.max(0, ...all);
   const step = [1, 2, 5, 10, 20, 25, 50, 100].find(s => (hi - lo) / s <= 6) || 200;
   lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
-  const x = i => L + (W - L - R) * i / (pts.length - 1), y = v => T + (H - T - B) * (hi - v) / (hi - lo);
-  const NS = "http://www.w3.org/2000/svg";
+  const x = i => L + (W - L - R) * i / (n - 1), y = v => T + (H - T - B) * (hi - v) / (hi - lo);
   const s = document.createElementNS(NS, "svg");
-  s.setAttribute("viewBox", `0 0 ${W} ${H}`); s.setAttribute("height", H); s.setAttribute("role", "img");
-  s.setAttribute("aria-label", `Cumulative total return of ${f.ticker} and ${f.benchmark}`);
+  s.setAttribute("viewBox", `0 0 ${W} ${H}`); s.setAttribute("height", H); s.setAttribute("role", "img"); s.setAttribute("aria-label", opts.label || "");
   let g = "";
   for (let v = lo; v <= hi + 1e-9; v += step)
     g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--${v === 0 ? "axis" : "line"})"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11.5" fill="var(--mut)">${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v)}%</text>`;
-  const every = Math.ceil((pts.length - 1) / 8);
-  pts.forEach((p, i) => { if (i && (pts.length - 1 - i) % every === 0) g += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11.5" fill="var(--mut)">${ym(p.month)}</text>`; });
-  const path = k => pts.map((p, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p[k]).toFixed(1)).join("");
-  g += `<path d="${path("benchmark_cum")}" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linejoin="round"/>`;
-  g += `<path d="${path("fund_cum")}" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linejoin="round"/>`;
-  const last = pts[pts.length - 1];
-  let yf = y(last.fund_cum), yb = y(last.benchmark_cum);
-  if (Math.abs(yf - yb) < 14) { const m = (yf + yb) / 2, up = yf < yb; yf = m + (up ? -7 : 7); yb = m + (up ? 7 : -7); }
-  g += `<text x="${W - R + 8}" y="${yf + 4}" font-size="12" font-weight="600" fill="var(--ink)">${f.ticker}</text><text x="${W - R + 8}" y="${yb + 4}" font-size="12" font-weight="600" fill="var(--ink)">${f.benchmark}</text>`;
-  g += `<line id="xh" y1="${T}" y2="${H - B}" stroke="var(--axis)" style="display:none"/><circle id="d1" r="4.5" fill="var(--blue)" stroke="var(--surface)" stroke-width="2" style="display:none"/><circle id="d2" r="4.5" fill="var(--orange)" stroke="var(--surface)" stroke-width="2" style="display:none"/>`;
-  g += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" id="hit"/>`;
+  xlab.forEach(([i, t]) => g += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11.5" fill="var(--mut)">${t}</text>`);
+  [...series].reverse().forEach(sr => g += `<path d="${sr.v.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join("")}" fill="none" stroke="var(--${sr.c})" stroke-width="2" stroke-linejoin="round"/>`);
+  if (labels) {
+    let ya = y(series[0].v[n - 1]), yb = y(series[1].v[n - 1]);
+    if (Math.abs(ya - yb) < 14) { const m = (ya + yb) / 2, up = ya < yb; ya = m + (up ? -7 : 7); yb = m + (up ? 7 : -7); }
+    g += `<text x="${W - R + 8}" y="${ya + 4}" font-size="12" font-weight="600" fill="var(--ink)">${labels[0]}</text><text x="${W - R + 8}" y="${yb + 4}" font-size="12" font-weight="600" fill="var(--ink)">${labels[1]}</text>`;
+  }
+  g += `<line class="xh" y1="${T}" y2="${H - B}" stroke="var(--axis)" style="display:none"/>` + series.map(sr => `<circle class="dot" r="4.5" fill="var(--${sr.c})" stroke="var(--surface)" stroke-width="2" style="display:none"/>`).join("");
+  g += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" class="hit"/>`;
   s.innerHTML = g; box.prepend(s);
-  const hit = s.querySelector("#hit"), xh = s.querySelector("#xh"), d1 = s.querySelector("#d1"), d2 = s.querySelector("#d2");
+  const hit = s.querySelector(".hit"), xh = s.querySelector(".xh"), dots = [...s.querySelectorAll(".dot")];
   const show = e => {
     const r = s.getBoundingClientRect(), px = (e.clientX - r.left) * W / r.width;
-    const i = Math.max(1, Math.min(pts.length - 1, Math.round((px - L) / (W - L - R) * (pts.length - 1)))), p = pts[i];
-    xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i));
-    d1.setAttribute("cx", x(i)); d1.setAttribute("cy", y(p.fund_cum)); d2.setAttribute("cx", x(i)); d2.setAttribute("cy", y(p.benchmark_cum));
-    [xh, d1, d2].forEach(n => n.style.display = "");
-    tip.innerHTML = `<b>${ym(p.month)}</b><br><i style="border-color:var(--blue)"></i>${f.ticker} ${pct(p.fund_cum)} <span class="na">(month ${pct(p.fund, 2)})</span><br><i style="border-color:var(--orange)"></i>${f.benchmark} ${pct(p.benchmark_cum)} <span class="na">(month ${pct(p.benchmark, 2)})</span>`;
-    tip.style.display = "block";
+    const i = Math.max(opts.first ?? 0, Math.min(n - 1, Math.round((px - L) / (W - L - R) * (n - 1))));
+    xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.style.display = "";
+    dots.forEach((d, k) => { d.setAttribute("cx", x(i)); d.setAttribute("cy", y(series[k].v[i])); d.style.display = ""; });
+    tip.innerHTML = fmtTip(i); tip.style.display = "block";
     const tx = x(i) * r.width / W;
-    tip.style.left = (tx > r.width * 0.6 ? tx - tip.offsetWidth - 12 : tx + 12) + "px"; tip.style.top = "10px";
+    tip.style.left = (tx > r.width * 0.55 ? tx - tip.offsetWidth - 12 : tx + 12) + "px"; tip.style.top = "8px";
   };
   hit.addEventListener("pointermove", show); hit.addEventListener("pointerdown", show);
-  hit.addEventListener("pointerleave", () => { [xh, d1, d2].forEach(n => n.style.display = "none"); tip.style.display = "none"; });
+  hit.addEventListener("pointerleave", () => { xh.style.display = "none"; dots.forEach(d => d.style.display = "none"); tip.style.display = "none"; });
 }
+
+function draw(f) {
+  const p = [{month: null, fund_cum: 0, benchmark_cum: 0}, ...f.months];
+  const every = Math.ceil((p.length - 1) / 8), xl = [];
+  p.forEach((m, i) => { if (i && (p.length - 1 - i) % every === 0) xl.push([i, ym(m.month)]); });
+  lineChart($("chart"), $("tip"), [{c: "blue", v: p.map(m => m.fund_cum)}, {c: "orange", v: p.map(m => m.benchmark_cum)}], [f.ticker, f.benchmark], xl,
+    i => `<div class="t">${ym(p[i].month)}, total return since ${ym(f.months[0].month)}</div><div class="r"><span><i style="border-color:var(--blue)"></i>${f.ticker}</span><b>${pct(p[i].fund_cum)}</b></div><div class="r"><span><i style="border-color:var(--orange)"></i>${f.benchmark}</span><b>${pct(p[i].benchmark_cum)}</b></div><div class="t" style="margin:4px 0 0">In the month: ${pct(p[i].fund, 2)} and ${pct(p[i].benchmark, 2)}</div>`,
+    {first: 1, label: `Cumulative total return of ${f.ticker} and ${f.benchmark}`});
+}
+
+/* ---------- how it works ---------- */
+function payoff() {
+  const k = +$("s-k").value, pr = +$("s-p").value;
+  $("o-k").textContent = k.toFixed(1) + "%"; $("o-p").textContent = pr.toFixed(1) + "%";
+  const xs = []; for (let m = -20; m <= 20.001; m += 1) xs.push(m);
+  const cc = xs.map(m => Math.min(m, k) + pr), sh = xs.map(m => m);
+  $("r-cap").innerHTML = `+${(k + pr).toFixed(1)}%<small>strike ${k.toFixed(1)}% above, plus ${pr.toFixed(1)}% premium</small>`;
+  $("r-text").innerHTML = `If the shares rise 10%, the fund makes ${pct(Math.min(10, k) + pr)} and gives up ${Math.max(0, 10 - k - pr).toFixed(1)} points. If they fall 10%, it loses ${pct(-10 + pr)}: the premium is the only cushion. The fund comes out ahead of the shares alone whenever they rise less than ${(k + pr).toFixed(1)}%.`;
+  lineChart($("pchart"), $("ptip"), [{c: "blue", v: cc}, {c: "orange", v: sh}], null, [[0, "−20%"], [10, "−10%"], [20, "0%"], [30, "+10%"], [40, "+20%"]],
+    i => `<div class="t">Shares ${pct(xs[i], 0)} over the month</div><div class="r"><span><i style="border-color:var(--blue)"></i>With the call sold</span><b>${pct(cc[i])}</b></div><div class="r"><span><i style="border-color:var(--orange)"></i>Shares alone</span><b>${pct(sh[i])}</b></div>`,
+    {h: 240, r: 12, label: "Return of shares alone and of shares with a call sold, by how far the shares move"});
+}
+$("s-k").addEventListener("input", payoff); $("s-p").addEventListener("input", payoff);
+
+$("t-types").innerHTML = `<thead><tr><th>Name on the fund</th><th>Funds</th><th>Net assets</th><th>Had written calls on the report date</th><th>Hold notes</th><th>Calls written, median</th></tr></thead><tbody>` +
+  D.types.map(t => `<tr><td>${t.type}</td><td>${t.funds}</td><td>${usd(t.net_assets)}</td><td>${t.with_written_calls}</td><td>${t.with_notes}</td><td>${plain(t.median_calls_written, 0)}</td></tr>`).join("") + "</tbody>";
+const pi = D.types.find(t => t.type === "Premium income");
+$("types-note").textContent = `Counted from the latest report of each of the ${D.meta.funds_in_category} funds. Funds named premium income hold ${(pi.net_assets / D.meta.category_net_assets * 100).toFixed(0)}% of the category's net assets. "Calls written, median" is among the funds that had a written call on their report date.`;
 
 /* ---------- category ---------- */
-const COLS = [
-  ["name", "Fund", "l", r => esc(r.name)],
-  ["report_date", "Report date", "", r => dmy(r.report_date)],
-  ["net_assets", "Net assets", "", r => usd(r.net_assets)],
-  ["return_3m", "3 months", "", r => pct(r.return_3m)],
-  ["return_12m", "12 months", "", r => pct(r.return_12m)],
-  ["net_flow_3m", "Net flow, 3 months, $m", "", r => r.net_flow_3m == null ? '<span class="na">–</span>' : musd(r.net_flow_3m)],
-  ["notional_pct", "Calls written", "", r => plain(r.notional_pct, 0)],
-  ["notes_pct", "In notes", "", r => r.notes_count ? plain(r.notes_pct) : '<span class="na">–</span>'],
-];
-let sortKey = "net_assets", sortDir = -1;
+$("lede-cat").textContent = `Every US-registered fund whose name says covered call, buy-write or premium income: ${D.meta.funds_in_category} funds with ${usd(D.meta.category_net_assets).replace("bn", " billion")} in net assets. Funds built around buffers, barriers or written puts are left out.`;
+D.types.forEach(t => $("cat-tiles").append(el("div", {class: "tile"}, `<div class="k">${t.type}</div><div class="v">${t.funds}</div><div class="n">funds, ${usd(t.net_assets)} in net assets</div>`)));
+let cType = "All", cQ = "", cAll = false, sortKey = "net_assets", sortDir = -1;
+["All", ...D.types.map(t => t.type)].forEach(t => { const b = el("button", {type: "button", "aria-pressed": t === "All"}, t); b.onclick = () => { cType = t; cAll = false; [...$("cat-type").children].forEach(c => c.setAttribute("aria-pressed", c === b)); cat(); }; $("cat-type").append(b); });
+$("cat-q").addEventListener("input", e => { cQ = e.target.value.trim().toLowerCase(); cat(); });
+$("cat-more").onclick = () => { cAll = !cAll; cat(); };
+const COLS = [["name", "Fund"], ["net_assets", "Net assets"], ["return_12m", "12-month total return"], ["notional_pct", "Calls written, % of net assets"], ["notes_pct", "In notes"]];
 function cat() {
-  const rows = [...D.category].sort((a, b) => {
-    const u = a[sortKey], v = b[sortKey];
-    if (u == null && v == null) return 0; if (u == null) return 1; if (v == null) return -1;
-    return (typeof u === "string" ? u.localeCompare(v) : u - v) * sortDir;
-  });
-  $("cat").innerHTML = "<thead><tr>" + COLS.map(c => `<th class="${c[2]}" ${c[0] === sortKey ? `aria-sort="${sortDir > 0 ? "ascending" : "descending"}"` : ""}><button type="button" data-k="${c[0]}">${c[1]}</button></th>`).join("") + "</tr></thead><tbody>" +
-    rows.map(r => "<tr>" + COLS.map(c => `<td class="${c[2]}">${c[3](r)}</td>`).join("") + "</tr>").join("") + "</tbody>";
-  $("cat").querySelectorAll("button").forEach(b => b.onclick = () => {
-    const k = b.dataset.k; if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = k === "name" ? 1 : -1; } cat();
-  });
+  let rows = D.category.filter(r => (cType === "All" || r.type === cType) && (!cQ || r.name.toLowerCase().includes(cQ)));
+  rows.sort((a, b) => { const u = a[sortKey], v = b[sortKey]; if (u == null && v == null) return 0; if (u == null) return 1; if (v == null) return -1; return (typeof u === "string" ? u.localeCompare(v) : u - v) * sortDir; });
+  const total = rows.length, LIM = 20;
+  $("cat-count").textContent = `${total} fund${total === 1 ? "" : "s"}`;
+  if (!cAll && !cQ) rows = rows.slice(0, LIM);
+  $("cat-more").style.display = total > LIM && !cQ ? "" : "none";
+  $("cat-more").textContent = cAll ? `Show the ${LIM} largest` : `Show all ${total}`;
+  $("cat").innerHTML = "<thead><tr>" + COLS.map(c => `<th ${c[0] === sortKey ? `aria-sort="${sortDir > 0 ? "ascending" : "descending"}"` : ""}><button type="button" data-k="${c[0]}">${c[1]}</button></th>`).join("") + "</tr></thead><tbody>" +
+    rows.map(r => `<tr><td><b style="font-weight:600">${esc(r.name)}</b><small>${r.type} · as of ${ym(r.report_date)}</small></td><td>${usd(r.net_assets)}</td><td>${pct(r.return_12m)}</td><td>${r.notional_pct == null ? NA : `<span class="cw"><i style="width:${Math.min(100, r.notional_pct / 1.5)}%"></i></span>${plain(r.notional_pct, 0)}`}</td><td>${r.notes_count ? plain(r.notes_pct) : NA}</td></tr>`).join("") + "</tbody>";
+  $("cat").querySelectorAll("th button").forEach(b => b.onclick = () => { const k = b.dataset.k; if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = k === "name" ? 1 : -1; } cat(); });
 }
-$("cattext").textContent = `Every US-registered fund whose name says covered call, buy-write or premium income: ${D.meta.funds_in_category} funds. Funds built around buffers, barriers or written puts are left out. Click a column to sort.`;
 
-fund(); cat();
-let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => draw(D.detail[cur]), 120); });
+/* ---------- views and tabs, as in the Crypto Observatory ---------- */
+const VIEWS = ["explained", "category"], TABS = ["overview", "fund", "notes"];
+function showTab() {
+  const h = location.hash.slice(1), view = VIEWS.includes(h) ? h : "funds", tab = TABS.includes(h) ? h : "overview";
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === "view-" + view));
+  document.querySelectorAll(".site nav button").forEach(b => b.dataset.view === view ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  document.querySelectorAll(".pane").forEach(p => p.classList.toggle("on", p.id === "pane-" + tab));
+  if (view === "funds" && tab === "fund") fund();
+  if (view === "explained") payoff();
+}
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => { if (location.hash.slice(1) !== b.dataset.tab) location.hash = b.dataset.tab; }));
+document.querySelectorAll(".site nav button").forEach(b => b.addEventListener("click", () => { const to = b.dataset.view === "funds" ? "overview" : b.dataset.view; if (location.hash.slice(1) !== to) location.hash = to; }));
+window.addEventListener("hashchange", () => { showTab(); window.scrollTo(0, 0); });
+cat(); showTab();
+let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(showTab, 120); });
 </script>
 </body>
 </html>
