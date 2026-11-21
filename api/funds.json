@@ -27,7 +27,7 @@
   {
    "id": "S000034456",
    "name": "AdvisorShares STAR Global Buy-Write ETF",
-   "ticker": null,
+   "ticker": "VEGA",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": null,
@@ -84,7 +84,7 @@
   {
    "id": "S000091835",
    "name": "Amplify Bitcoin Max Income Covered Call ETF",
-   "ticker": null,
+   "ticker": "BAGY",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -130,7 +130,7 @@
   {
    "id": "S000088399",
    "name": "Amplify Bloomberg U.S. Treasury 12% Premium Income ETF",
-   "ticker": null,
+   "ticker": "TLTP",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -1075,7 +1075,7 @@
   {
    "id": "S000040302",
    "name": "First Trust BuyWrite Income ETF",
-   "ticker": null,
+   "ticker": "FTHI",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": null,
@@ -1141,7 +1141,7 @@
   {
    "id": "S000040305",
    "name": "First Trust Nasdaq BuyWrite Income ETF",
-   "ticker": null,
+   "ticker": "FTQI",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": "QQQ",
@@ -1213,7 +1213,7 @@
   {
    "id": "S000090516",
    "name": "First Trust Small Cap BuyWrite Income ETF",
-   "ticker": null,
+   "ticker": "FTKI",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": null,
@@ -1259,7 +1259,7 @@
   {
    "id": "S000091765",
    "name": "Global X Bitcoin Covered Call ETF",
-   "ticker": null,
+   "ticker": "BCCC",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -1307,7 +1307,7 @@
   {
    "id": "S000080789",
    "name": "Global X Dow 30 Covered Call & Growth ETF",
-   "ticker": null,
+   "ticker": "DYLG",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -1355,7 +1355,7 @@
   {
    "id": "S000075250",
    "name": "Global X Dow 30 Covered Call ETF",
-   "ticker": null,
+   "ticker": "DJIA",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -1412,7 +1412,7 @@
   {
    "id": "S000099781",
    "name": "Global X Ethereum Covered Call ETF",
-   "ticker": null,
+   "ticker": "EHCC",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -1554,7 +1554,7 @@
   {
    "id": "S000075249",
    "name": "Global X Information Technology Covered Call & Growth ETF",
-   "ticker": null,
+   "ticker": "TYLG",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -1600,7 +1600,7 @@
   {
    "id": "S000084648",
    "name": "Global X MLP & Energy Infrastructure Covered Call ETF",
-   "ticker": null,
+   "ticker": "MLPD",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -1694,7 +1694,7 @@
   {
    "id": "S000069249",
    "name": "Global X Nasdaq 100 Covered Call & Growth ETF",
-   "ticker": null,
+   "ticker": "QYLG",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": "QQQ",
@@ -1916,7 +1916,7 @@
   {
    "id": "S000077681",
    "name": "Global X Russell 2000 Covered Call & Growth ETF",
-   "ticker": null,
+   "ticker": "RYLG",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": "IWM",
@@ -2070,7 +2070,7 @@
   {
    "id": "S000069248",
    "name": "Global X S&P 500 Covered Call & Growth ETF",
-   "ticker": null,
+   "ticker": "XYLG",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": "IVV",
@@ -2289,7 +2289,7 @@
   {
    "id": "S000084646",
    "name": "Global X S&P 500 Quality Dividend Covered Call ETF",
-   "ticker": null,
+   "ticker": "QDCC",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -2335,7 +2335,7 @@
   {
    "id": "S000081510",
    "name": "Goldman Sachs Nasdaq-100 Premium Income ETF",
-   "ticker": null,
+   "ticker": "GPIQ",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": "QQQ",
@@ -2400,7 +2400,7 @@
   {
    "id": "S000081511",
    "name": "Goldman Sachs S&P 500 Premium Income ETF",
-   "ticker": null,
+   "ticker": "GPIX",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": "IVV",
@@ -2463,7 +2463,7 @@
   {
    "id": "S000084446",
    "name": "Grayscale Bitcoin Covered Call ETF",
-   "ticker": null,
+   "ticker": "BTCC",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -2509,7 +2509,7 @@
   {
    "id": "S000090980",
    "name": "Grayscale Bitcoin Premium Income ETF",
-   "ticker": null,
+   "ticker": "BPI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -2555,7 +2555,7 @@
   {
    "id": "S000089961",
    "name": "Grayscale Ethereum Covered Call ETF",
-   "ticker": null,
+   "ticker": "ETCO",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -2601,7 +2601,7 @@
   {
    "id": "S000097542",
    "name": "Hartford Equity Premium Income ETF",
-   "ticker": null,
+   "ticker": "HEMI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -2647,7 +2647,7 @@
   {
    "id": "S000055166",
    "name": "Horizon Equity Premium Income Fund",
-   "ticker": null,
+   "ticker": "HNDDX",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -2701,7 +2701,7 @@
   {
    "id": "S000020214",
    "name": "Invesco S&P 500 BuyWrite ETF",
-   "ticker": null,
+   "ticker": "PBP",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": "IVV",
@@ -2762,7 +2762,7 @@
   {
    "id": "S000076777",
    "name": "iShares 20+ Year Treasury Bond BuyWrite Strategy ETF",
-   "ticker": null,
+   "ticker": "TLTW",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": null,
@@ -2808,7 +2808,7 @@
   {
    "id": "S000076779",
    "name": "iShares High Yield Corporate Bond BuyWrite Strategy ETF",
-   "ticker": null,
+   "ticker": "HYGW",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": null,
@@ -2854,7 +2854,7 @@
   {
    "id": "S000076781",
    "name": "iShares Investment Grade Corporate Bond BuyWrite Strategy ETF",
-   "ticker": null,
+   "ticker": "LQDW",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": null,
@@ -2956,7 +2956,7 @@
   {
    "id": "S000083814",
    "name": "iShares Russell 2000 BuyWrite ETF",
-   "ticker": null,
+   "ticker": "IWMW",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": "IWM",
@@ -3017,7 +3017,7 @@
   {
    "id": "S000083815",
    "name": "iShares S&P 500 BuyWrite ETF",
-   "ticker": null,
+   "ticker": "IVVW",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": "IVV",
@@ -3239,7 +3239,7 @@
   {
    "id": "S000062679",
    "name": "JPMorgan Equity Premium Income Fund",
-   "ticker": null,
+   "ticker": "JEPAX",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -3360,7 +3360,7 @@
   {
    "id": "S000087366",
    "name": "Kensington Hedged Premium Income ETF",
-   "ticker": null,
+   "ticker": "KHPI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -3406,7 +3406,7 @@
   {
    "id": "S000079434",
    "name": "KraneShares KWEB Covered Call Strategy ETF",
-   "ticker": null,
+   "ticker": "KLIP",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -3461,7 +3461,7 @@
   {
    "id": "S000026831",
    "name": "Madison Covered Call & Equity Income Fund",
-   "ticker": null,
+   "ticker": "MENAX",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -3553,7 +3553,7 @@
   {
    "id": "S000081094",
    "name": "Madison Covered Call ETF",
-   "ticker": null,
+   "ticker": "CVRD",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -3601,7 +3601,7 @@
   {
    "id": "S000077243",
    "name": "Main Buywrite ETF",
-   "ticker": null,
+   "ticker": "BUYW",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": null,
@@ -3658,7 +3658,7 @@
   {
    "id": "S000052164",
    "name": "Main BuyWrite Fund",
-   "ticker": null,
+   "ticker": "BUYWX",
    "role": "fund",
    "name_type": "Buy-write",
    "benchmark": null,
@@ -3780,7 +3780,7 @@
   {
    "id": "S000082252",
    "name": "Parametric Equity Premium Income ETF",
-   "ticker": null,
+   "ticker": "PAPI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -3826,7 +3826,7 @@
   {
    "id": "S000028857",
    "name": "Pioneer Equity Premium Income Fund",
-   "ticker": null,
+   "ticker": "MUARX",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -3876,7 +3876,7 @@
   {
    "id": "S000017165",
    "name": "Rational Premium Income Fund",
-   "ticker": null,
+   "ticker": "HRSAX",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -3922,7 +3922,7 @@
   {
    "id": "S000085093",
    "name": "REX AI Equity Premium Income ETF",
-   "ticker": null,
+   "ticker": "AIPI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -3968,7 +3968,7 @@
   {
    "id": "S000088880",
    "name": "REX Crypto Equity Premium Income ETF",
-   "ticker": null,
+   "ticker": "CEPI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4014,7 +4014,7 @@
   {
    "id": "S000081571",
    "name": "REX FANG & Innovation Equity Premium Income ETF",
-   "ticker": null,
+   "ticker": "FEPI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4062,7 +4062,7 @@
   {
    "id": "S000083807",
    "name": "Roundhill Bitcoin Covered Call Strategy ETF",
-   "ticker": null,
+   "ticker": "YBTC",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -4108,7 +4108,7 @@
   {
    "id": "S000086585",
    "name": "Roundhill Ether Covered Call Strategy ETF",
-   "ticker": null,
+   "ticker": "YETH",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -4154,7 +4154,7 @@
   {
    "id": "S000083811",
    "name": "Roundhill Innovation-100 0DTE Covered Call Strategy ETF",
-   "ticker": null,
+   "ticker": "QDTE",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -4200,7 +4200,7 @@
   {
    "id": "S000091693",
    "name": "Roundhill Magnificent Seven Covered Call ETF",
-   "ticker": null,
+   "ticker": "MAGY",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -4246,7 +4246,7 @@
   {
    "id": "S000087669",
    "name": "Roundhill Russell 2000 0DTE Covered Call Strategy ETF",
-   "ticker": null,
+   "ticker": "RDTE",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": "IWM",
@@ -4307,7 +4307,7 @@
   {
    "id": "S000083809",
    "name": "Roundhill S&P 500 0DTE Covered Call Strategy ETF",
-   "ticker": null,
+   "ticker": "XDTE",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": "IVV",
@@ -4414,7 +4414,7 @@
   {
    "id": "S000092397",
    "name": "Shelton Equity Premium Income ETF",
-   "ticker": null,
+   "ticker": "SEPI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4460,7 +4460,7 @@
   {
    "id": "S000080338",
    "name": "SRH REIT Covered Call ETF",
-   "ticker": null,
+   "ticker": "SRHR",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -4506,7 +4506,7 @@
   {
    "id": "S000093831",
    "name": "State Street(R) Communication Services Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLCI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4552,7 +4552,7 @@
   {
    "id": "S000093834",
    "name": "State Street(R) Consumer Discretionary Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLYI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4598,7 +4598,7 @@
   {
    "id": "S000093835",
    "name": "State Street(R) Consumer Staples Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLSI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4644,7 +4644,7 @@
   {
    "id": "S000093836",
    "name": "State Street(R) Energy Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLEI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4690,7 +4690,7 @@
   {
    "id": "S000093837",
    "name": "State Street(R) Financial Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLFI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4736,7 +4736,7 @@
   {
    "id": "S000093838",
    "name": "State Street(R) Health Care Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLVI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4782,7 +4782,7 @@
   {
    "id": "S000093839",
    "name": "State Street(R) Industrial Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLII",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4828,7 +4828,7 @@
   {
    "id": "S000093840",
    "name": "State Street(R) Materials Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLBI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4874,7 +4874,7 @@
   {
    "id": "S000093841",
    "name": "State Street(R) Real Estate Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLRI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4920,7 +4920,7 @@
   {
    "id": "S000093832",
    "name": "State Street(R) Technology Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLKI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -4966,7 +4966,7 @@
   {
    "id": "S000087670",
    "name": "State Street(R) US Equity Premium Income ETF",
-   "ticker": null,
+   "ticker": "SPIN",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -5012,7 +5012,7 @@
   {
    "id": "S000093833",
    "name": "State Street(R) Utilities Select Sector SPDR(R) Premium Income ETF",
-   "ticker": null,
+   "ticker": "XLUI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -5104,7 +5104,7 @@
   {
    "id": "S000059856",
    "name": "Steward Covered Call Income Fund",
-   "ticker": null,
+   "ticker": "SCJAX",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -5205,7 +5205,7 @@
   {
    "id": "S000089785",
    "name": "T. Rowe Price Capital Appreciation Premium Income ETF",
-   "ticker": null,
+   "ticker": "TCAL",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -5251,7 +5251,7 @@
   {
    "id": "S000091436",
    "name": "Tuttle Capital Bitcoin 0DTE Covered Call ETF",
-   "ticker": null,
+   "ticker": "BITK",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -5297,7 +5297,7 @@
   {
    "id": "S000091439",
    "name": "Tuttle Capital MSTR 0DTE Covered Call ETF",
-   "ticker": null,
+   "ticker": "MSTK",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -5445,7 +5445,7 @@
   {
    "id": "S000089762",
    "name": "Victory Pioneer Equity Premium Income Fund",
-   "ticker": null,
+   "ticker": "PMYRX",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -5491,7 +5491,7 @@
   {
    "id": "S000095899",
    "name": "WisdomTree Equity Premium Income Digital Fund",
-   "ticker": null,
+   "ticker": "WTPIX",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -5537,7 +5537,7 @@
   {
    "id": "S000048315",
    "name": "WisdomTree Equity Premium Income Fund",
-   "ticker": null,
+   "ticker": "WTPI",
    "role": "fund",
    "name_type": "Premium income",
    "benchmark": null,
@@ -5629,7 +5629,7 @@
   {
    "id": "S000090038",
    "name": "YieldMax(R) Nasdaq 100 0dte Covered Call Strategy ETF",
-   "ticker": null,
+   "ticker": "QDTY",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": "QQQ",
@@ -5690,7 +5690,7 @@
   {
    "id": "S000090039",
    "name": "YieldMax(R) R2000 0dte Covered Call Strategy ETF",
-   "ticker": null,
+   "ticker": "RDTY",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": null,
@@ -5736,7 +5736,7 @@
   {
    "id": "S000090040",
    "name": "YieldMax(R) S&P 500 0dte Covered Call Strategy ETF",
-   "ticker": null,
+   "ticker": "SDTY",
    "role": "fund",
    "name_type": "Covered call",
    "benchmark": "IVV",

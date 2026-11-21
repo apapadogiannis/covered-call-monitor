@@ -60,7 +60,7 @@ you fetched disagree on it, one is a cached copy, so fetch again.
   trade well away from net asset value, it is not what a shareholder earned.
 - A month is the calendar month, written YYYY-MM. Returns compound: multiply (1 + r/100).
 - `id` is the SEC series identifier. A few funds have none and use the fund name. Fund names are
-  as filed. 5 of the 109 funds carry a ticker; tickers come from the SEC's list of fund
+  as filed. 77 of the 109 funds carry a ticker; tickers come from the SEC's list of fund
   tickers, which has none for closed-end funds and for funds no longer listed. Find the others by
   name, and check a name in full:
   "JPMorgan Equity Premium Income ETF" and "JPMorgan Equity Premium Income Fund" are different
