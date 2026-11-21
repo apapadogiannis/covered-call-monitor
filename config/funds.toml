@@ -58,7 +58,8 @@ series = ["S000004344"]
 name = '(?i)^ishares russell 2000 etf$'
 
 [source]
-# The SEC publishes one data set per calendar quarter. The monitor keeps this many, newest first.
-quarters_kept = 8
+# The SEC publishes one data set per calendar quarter. The monitor keeps every quarter from this
+# one on. 2019q4 is the first the SEC offers.
+first_quarter = "2019q4"
 page = "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets"
 file = "https://www.sec.gov/files/dera/data/form-n-port-data-sets/{quarter}_nport.zip"

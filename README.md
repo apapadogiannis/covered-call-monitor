@@ -19,7 +19,7 @@ It reports what the funds filed. It does not forecast and it shows no distributi
 ## How it works
 
 ```
-config/funds.toml     which funds are followed, the benchmarks, how many quarters are kept
+config/funds.toml     which funds are followed, the benchmarks, the first quarter kept
 monitor/update.py     the only code that uses the network: downloads the SEC's quarterly data set
 monitor/extract.py    cuts one quarterly data set down to the followed funds
 monitor/build.py      joins the quarters and computes everything the page shows

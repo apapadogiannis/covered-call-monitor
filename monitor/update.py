@@ -65,15 +65,14 @@ def fetch(url: str, dest: Path | None = None) -> bytes | None:
     raise RuntimeError(f"could not retrieve {url}: {last!r}")
 
 
-def quarters_before(today: date, n: int) -> list[str]:
-    """The n most recent calendar quarters that have ended, newest first, as '2026q3'."""
-    y, q = today.year, (today.month - 1) // 3 + 1
+def quarters_since(first: str, today: date) -> list[str]:
+    """Every calendar quarter from `first` to the last one that has ended, oldest first, as '2026q3'."""
+    y, q = int(first[:4]), int(first[5])
+    end = (today.year, (today.month - 1) // 3 + 1)      # the quarter in progress, not included
     out = []
-    while len(out) < n:
-        q -= 1
-        if q == 0:
-            y, q = y - 1, 4
+    while (y, q) < end:
         out.append(f"{y}q{q}")
+        y, q = (y, q + 1) if q < 4 else (y + 1, 1)
     return out
 
 
@@ -94,7 +93,7 @@ def published(cfg: dict) -> dict[str, str]:
 
 def main() -> int:
     cfg = tomllib.loads((ROOT / "config" / "funds.toml").read_text(encoding="utf-8"))
-    wanted = quarters_before(date.today(), cfg["source"]["quarters_kept"])
+    wanted = quarters_since(cfg["source"]["first_quarter"], date.today())
     missing = [q for q in wanted if not (STORE / q / "funds.csv").exists()]
     if not missing:
         print("Nothing to download: every wanted quarter is stored.")

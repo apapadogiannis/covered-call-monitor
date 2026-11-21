@@ -4,12 +4,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from monitor.build import build, compound, month_back, monthly, overlay, strike_from_title  # noqa: E402
-from monitor.update import quarters_before  # noqa: E402
+from monitor.update import quarters_since  # noqa: E402
 from datetime import date  # noqa: E402
 
 assert month_back("2026-01", 2) == "2025-11" and month_back("2026-07", 0) == "2026-07"
-assert quarters_before(date(2026, 11, 21), 3) == ["2026q3", "2026q2", "2026q1"]
-assert quarters_before(date(2026, 1, 5), 2) == ["2025q4", "2025q3"]
+assert quarters_since("2026q1", date(2026, 11, 21)) == ["2026q1", "2026q2", "2026q3"]
+assert quarters_since("2025q3", date(2026, 1, 5)) == ["2025q3", "2025q4"]
 
 # Titles as the funds write them.
 assert strike_from_title("NDX US 08/21/26 C28550 SHORT") == 28550
