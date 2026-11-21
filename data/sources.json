@@ -1,0 +1,100 @@
+{
+  "quarters": {
+    "2024q4": {
+      "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2024q4_nport.zip",
+      "bytes": 406008057,
+      "sha256": "449963cd187fc40774dd947c6302863c9d958369f747b196d957eab999501465",
+      "retrieved": "2026-11-21T06:36:13Z",
+      "reports": 57,
+      "category": 54,
+      "benchmark": 3,
+      "return_rows": 72,
+      "options": 515,
+      "notes": 40
+    },
+    "2025q1": {
+      "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2025q1_nport.zip",
+      "bytes": 462120659,
+      "sha256": "7593dc6f6eaed347ba21bf0e95bb1c1fb14701de98bdf09410a1e975871d2f1b",
+      "retrieved": "2026-11-21T06:36:27Z",
+      "reports": 42,
+      "category": 39,
+      "benchmark": 3,
+      "return_rows": 57,
+      "options": 592,
+      "notes": 40
+    },
+    "2025q2": {
+      "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2025q2_nport.zip",
+      "bytes": 435156377,
+      "sha256": "08b90e310da506ae46e8a5b276022861808d61d56ce434ce310f52f31f608ca7",
+      "retrieved": "2026-11-21T06:36:39Z",
+      "reports": 85,
+      "category": 82,
+      "benchmark": 3,
+      "return_rows": 98,
+      "options": 718,
+      "notes": 45
+    },
+    "2025q3": {
+      "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2025q3_nport.zip",
+      "bytes": 468940747,
+      "sha256": "4cc5c2431bf8997ef0af1cb7b69568255a1d6a1840e41499d9ffd1fc42e030f6",
+      "retrieved": "2026-11-21T06:36:52Z",
+      "reports": 66,
+      "category": 63,
+      "benchmark": 3,
+      "return_rows": 81,
+      "options": 864,
+      "notes": 45
+    },
+    "2025q4": {
+      "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2025q4_nport.zip",
+      "bytes": 417802295,
+      "sha256": "4ebb169e6cc0745b4cc65de4e83ea4916c7ad39146c383007e078b6223af8dea",
+      "retrieved": "2026-11-21T06:37:05Z",
+      "reports": 79,
+      "category": 76,
+      "benchmark": 3,
+      "return_rows": 93,
+      "options": 978,
+      "notes": 45
+    },
+    "2026q1": {
+      "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2026q1_nport.zip",
+      "bytes": 463076167,
+      "sha256": "7626e33d21ab48169db412f7370190a9ba8d6a2c921718e59a445b333b23694c",
+      "retrieved": "2026-11-21T06:37:18Z",
+      "reports": 75,
+      "category": 72,
+      "benchmark": 3,
+      "return_rows": 88,
+      "options": 1035,
+      "notes": 45
+    },
+    "2026q2": {
+      "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2026q2_nport.zip",
+      "bytes": 440699889,
+      "sha256": "077cc836a978a593b29012219395fbe9c303d5e930f5be3b5f4353c3b02296fc",
+      "retrieved": "2026-11-21T06:37:31Z",
+      "reports": 111,
+      "category": 108,
+      "benchmark": 3,
+      "return_rows": 130,
+      "options": 1254,
+      "notes": 45
+    },
+    "2026q3": {
+      "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2026q3_nport.zip",
+      "bytes": 462371568,
+      "sha256": "2f5ee059234d2e28f16d0451d9fcb405aab3dad5d92cded74c8ea9ffc4b66c38",
+      "retrieved": "2026-11-21T06:37:45Z",
+      "reports": 91,
+      "category": 86,
+      "benchmark": 5,
+      "return_rows": 107,
+      "options": 1137,
+      "notes": 45
+    }
+  }
+}
