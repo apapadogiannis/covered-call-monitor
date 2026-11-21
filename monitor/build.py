@@ -383,7 +383,8 @@ def build(out: Path) -> dict:
             "window": {"from": month_back(run[0], step - 1), "to": run[-1], "months": n,
                        "fund": (gf - 1) * 100, "benchmark": (gb - 1) * 100 if bret is not None else None,
                        "gap": (gf - gb) * 100 if bret is not None else None} if run else None,
-            "last12": {"fund": compound(ret, [m for e in last12 for m in span_of(e)]),
+            "last12": {"from": month_back(last12[0], step - 1), "to": last12[-1],
+                       "fund": compound(ret, [m for e in last12 for m in span_of(e)]),
                        "benchmark": compound(bret, [m for e in last12 for m in span_of(e)]) if bret is not None else None}
             if last12 else None,
             "month_order": orders[key]["order"],
@@ -450,7 +451,7 @@ def build(out: Path) -> dict:
 
     quarters = sorted(p.name for p in STORE.iterdir() if (p / "funds.csv").exists())
     dates = [r["report_date"] for v in by_fund.values() for r in v]
-    first_month = min((m for d in detail for m in (d["months"][:1])), key=lambda m: m["month"])["month"]
+    first_month = min(m for s in series.values() for m in s[0])
     data = {"meta": {"quarters": quarters, "reports_from": min(dates), "reports_to": max(dates),
                      "first_month": first_month,
                      "funds_in_category": len(category), "funds_no_longer_reporting": gone,

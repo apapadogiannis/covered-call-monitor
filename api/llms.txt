@@ -42,10 +42,10 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
 - reports.csv: one row per quarterly report: id, ticker, name, report_date, filing_date,
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
   calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
-- data.json: what the page draws from: the monthly series of every fund, five funds in detail and
-  the category totals. It is close to 1 MB and its keys are the page's own. You need it for one
-  thing: under `detail`, `window` and `last12` set a fund beside its index fund over the same
-  months, ending at the last month both have.
+- data.json: what the page draws from, close to 1 MB: the monthly path of every fund beside its
+  index fund (`funds[].months`), five funds in detail with their option positions (`detail`), and
+  the totals by name type (`types`) and for the category (`meta`, `category`). Its keys are the
+  page's own. You rarely need it: funds.json has each fund's comparison with its index fund.
 - datapackage.json: the licence, the citation, and the meaning of every column of the two CSV
   files and every field of funds.json.
 
@@ -72,6 +72,11 @@ you fetched disagree on it, one is a cached copy, so fetch again.
   funds.json `total_return_pct.to` gives the month each fund's returns end. A fund and an index
   fund whose `to` differ cover different months and cannot be set side by side. The category total
   of net assets adds funds at their own report dates.
+- To set a fund beside its index fund, use `against_benchmark` in funds.json: it gives both over
+  the same months, with the months stated.
+- A fund with `no_overlay_on_report_date: true` lists no written call and no note in its latest
+  report. Do not say it has no option overlay: funds that write options expiring the same day
+  hold none at a report date.
 - A fund with `call_exposure_in_notes: true` shows zero written calls because its calls are inside
   structured notes. It does write calls. The size of the notes is not the share of the portfolio
   covered.

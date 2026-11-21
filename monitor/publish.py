@@ -60,11 +60,12 @@ FUND_FIELDS = [   # funds.json, one record per fund
     ("ticker", "Ticker symbol of the fund, or of its first share class, from the SEC's list of fund tickers; null where that list has none (closed-end funds, and funds no longer listed). Find those by name"),
     ("role", "fund, or benchmark for the three index funds used for comparison"),
     ("name_type", "Which of the three words the fund's name uses: Covered call, Buy-write or Premium income"),
-    ("benchmark", "Ticker of the index fund the page sets beside this fund; null where no index fund applies"),
+    ("benchmark", "Ticker of the index fund this fund is set beside, chosen from the index its name states; null where the name states none of the three"),
+    ("against_benchmark", "The fund and its index fund over the same months. `last_12_months` and `longest_common_period` each give `from`, `to`, the fund's and the index fund's total return in per cent over those months; the longest period also gives `months` and `gap`, the fund's cumulative return less the index fund's, in percentage points, not annualised. Use this, not two records' own figures, to compare a fund with its index fund. Null where there is no benchmark"),
     ("still_reporting", "False if the fund's latest report is more than six months older than the newest report on file. Such funds are kept, so the history has no survivorship gap, but they are not counted in the category"),
     ("first_report, latest_report, latest_filing", "Dates of the first and latest quarterly report on file and the date the latest was filed"),
     ("reports", "Number of quarterly reports on file"),
-    ("months, first_month, latest_month", "Number of months with a total return, and the first and last of them. monthly.csv can hold earlier rows for the same fund that carry a net flow but no return"),
+    ("months, first_month, latest_month", "Number of months with a total return, and the first and last of them. monthly.csv can hold earlier rows for the same fund that carry a net flow but no return. For a fund whose month order is not determined, first_month can be off by up to two months"),
     ("net_assets_usd", "Net assets on latest_report, in US dollars"),
     ("total_return_pct", "Total returns on net asset value, in per cent, over the 3, 12, 36 and 60 months ending at `to` (the month of latest_report). The 36 and 60 month figures are annualised. Null where the fund has too few months"),
     ("month_order.order", "as filed, reversed or not determined: how the three monthly returns of each report were read"),
@@ -76,6 +77,7 @@ FUND_FIELDS = [   # funds.json, one record per fund
     ("written_calls.strikes_taken_from_title", "Number of positions whose strike was repaired from the holding's title"),
     ("written_calls.nearest_expiration", "Earliest expiration date among the written calls, as filed"),
     ("call_exposure_in_notes", "True if the fund lists no written calls but holds structured notes. Its call exposure sits inside the notes, and the filing gives neither strikes nor the share of the portfolio covered"),
+    ("no_overlay_on_report_date", "True if the latest report lists neither written calls nor structured notes. This does not mean the fund writes no options: a fund that writes options expiring the same day, or that had rolled out of its position, has none on its books at the report date"),
     ("structured_notes", "Number of structured notes, their market value as per cent of net assets, and their issuers"),
     ("flow_months_not_used", "Months whose net flow is left out because the filing reports negative sales or redemptions"),
 ]
@@ -119,6 +121,7 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
     tick.update({"benchmark:" + b["ticker"]: b["ticker"] for b in cfg["benchmark"]})
     bench_of = {d["series"]: d["benchmark"] for d in cfg["detail"]}
 
+    beside = {f["id"]: f for f in data["funds"]}      # each fund beside its index fund, over the same months
     funds, monthly_rows, report_rows = [], [], []
     for key in sorted(by_fund, key=lambda k: (by_fund[k][-1]["role"] != "category", by_fund[k][-1]["name"].lower())):
         reps = by_fund[key]
@@ -133,7 +136,11 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
         funds.append({
             "id": fid, "name": last["name"], "ticker": tick.get(key),
             "role": "benchmark" if is_bench else "fund", "name_type": None if is_bench else type_of(last["name"]),
-            "benchmark": bench_of.get(key), "still_reporting": last["report_date"][:7] >= cutoff,
+            "benchmark": (beside.get(fid) or {}).get("benchmark") or bench_of.get(key),
+            "against_benchmark": None if not (beside.get(fid) or {}).get("benchmark") else {
+                "last_12_months": beside[fid]["last12"] and {k: (r(v) if isinstance(v, float) else v) for k, v in beside[fid]["last12"].items()},
+                "longest_common_period": beside[fid]["window"] and {k: (r(v) if isinstance(v, float) else v) for k, v in beside[fid]["window"].items()}},
+            "still_reporting": last["report_date"][:7] >= cutoff,
             "first_report": reps[0]["report_date"], "latest_report": last["report_date"],
             "latest_filing": last["filing_date"], "reports": len(reps), "months": len(ret),
             "first_month": min(ret) if ret else None, "latest_month": max(ret) if ret else None,
@@ -145,6 +152,7 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
                               "strikes_taken_from_title": ov["strikes_repaired"],
                               "nearest_expiration": ov["nearest_expiration"]},
             "call_exposure_in_notes": (not is_bench) and ov["written_calls"] == 0 and nt["count"] > 0,
+            "no_overlay_on_report_date": (not is_bench) and ov["written_calls"] == 0 and nt["count"] == 0,
             "structured_notes": {"count": nt["count"], "pct_net_assets": r(nt["pct"], 2),
                                  "issuers": [i["issuer"] for i in nt["issuers"]]},
             "flow_months_not_used": odd})
@@ -243,10 +251,10 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
 - reports.csv: one row per quarterly report: id, ticker, name, report_date, filing_date,
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
   calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
-- data.json: what the page draws from: the monthly series of every fund, five funds in detail and
-  the category totals. It is close to 1 MB and its keys are the page's own. You need it for one
-  thing: under `detail`, `window` and `last12` set a fund beside its index fund over the same
-  months, ending at the last month both have.
+- data.json: what the page draws from, close to 1 MB: the monthly path of every fund beside its
+  index fund (`funds[].months`), five funds in detail with their option positions (`detail`), and
+  the totals by name type (`types`) and for the category (`meta`, `category`). Its keys are the
+  page's own. You rarely need it: funds.json has each fund's comparison with its index fund.
 - datapackage.json: the licence, the citation, and the meaning of every column of the two CSV
   files and every field of funds.json.
 
@@ -273,6 +281,11 @@ you fetched disagree on it, one is a cached copy, so fetch again.
   funds.json `total_return_pct.to` gives the month each fund's returns end. A fund and an index
   fund whose `to` differ cover different months and cannot be set side by side. The category total
   of net assets adds funds at their own report dates.
+- To set a fund beside its index fund, use `against_benchmark` in funds.json: it gives both over
+  the same months, with the months stated.
+- A fund with `no_overlay_on_report_date: true` lists no written call and no note in its latest
+  report. Do not say it has no option overlay: funds that write options expiring the same day
+  hold none at a report date.
 - A fund with `call_exposure_in_notes: true` shows zero written calls because its calls are inside
   structured notes. It does write calls. The size of the notes is not the share of the portfolio
   covered.

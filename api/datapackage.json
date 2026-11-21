@@ -183,7 +183,11 @@
     },
     {
      "name": "benchmark",
-     "description": "Ticker of the index fund the page sets beside this fund; null where no index fund applies"
+     "description": "Ticker of the index fund this fund is set beside, chosen from the index its name states; null where the name states none of the three"
+    },
+    {
+     "name": "against_benchmark",
+     "description": "The fund and its index fund over the same months. `last_12_months` and `longest_common_period` each give `from`, `to`, the fund's and the index fund's total return in per cent over those months; the longest period also gives `months` and `gap`, the fund's cumulative return less the index fund's, in percentage points, not annualised. Use this, not two records' own figures, to compare a fund with its index fund. Null where there is no benchmark"
     },
     {
      "name": "still_reporting",
@@ -199,7 +203,7 @@
     },
     {
      "name": "months, first_month, latest_month",
-     "description": "Number of months with a total return, and the first and last of them. monthly.csv can hold earlier rows for the same fund that carry a net flow but no return"
+     "description": "Number of months with a total return, and the first and last of them. monthly.csv can hold earlier rows for the same fund that carry a net flow but no return. For a fund whose month order is not determined, first_month can be off by up to two months"
     },
     {
      "name": "net_assets_usd",
@@ -244,6 +248,10 @@
     {
      "name": "call_exposure_in_notes",
      "description": "True if the fund lists no written calls but holds structured notes. Its call exposure sits inside the notes, and the filing gives neither strikes nor the share of the portfolio covered"
+    },
+    {
+     "name": "no_overlay_on_report_date",
+     "description": "True if the latest report lists neither written calls nor structured notes. This does not mean the fund writes no options: a fund that writes options expiring the same day, or that had rolled out of its position, has none on its books at the report date"
     },
     {
      "name": "structured_notes",
