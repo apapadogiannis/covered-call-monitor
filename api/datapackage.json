@@ -43,7 +43,7 @@
      {
       "name": "id",
       "type": "string",
-      "description": "SEC series identifier of the fund, or benchmark:<ticker> where a benchmark has none"
+      "description": "SEC series identifier of the fund (S followed by nine digits). A few funds, mostly closed-end, have none; their id is the fund name as filed"
      },
      {
       "name": "ticker",
@@ -63,7 +63,7 @@
      {
       "name": "total_return_pct",
       "type": "number",
-      "description": "Total return for the month in per cent, distributions reinvested; empty if not filed"
+      "description": "Total return on net asset value for the month in per cent, distributions reinvested, to the precision filed; empty if not filed or if the month is before the fund's first full month"
      },
      {
       "name": "net_flow_usd",
@@ -91,7 +91,7 @@
      {
       "name": "id",
       "type": "string",
-      "description": "SEC series identifier of the fund"
+      "description": "SEC series identifier of the fund, or the fund name where it has none"
      },
      {
       "name": "ticker",
@@ -131,12 +131,12 @@
      {
       "name": "written_calls",
       "type": "integer",
-      "description": "Number of written call positions on the report date"
+      "description": "Number of written call positions listed on the report date. Zero for a fund that takes its call exposure through structured notes: see notes"
      },
      {
       "name": "calls_face_value_pct_net_assets",
       "type": "number",
-      "description": "Contracts x 100 x strike of the written calls, as per cent of net assets; empty if not computable"
+      "description": "Contracts x 100 x strike of the written calls, as per cent of net assets. Can exceed 100. Empty if there are no calls, if it cannot be computed, or if it comes out above 200 (options on foreign indices struck in another currency), where it is not shown"
      },
      {
       "name": "notes",
@@ -146,7 +146,7 @@
      {
       "name": "notes_pct_net_assets",
       "type": "number",
-      "description": "Structured notes as per cent of net assets"
+      "description": "Market value of the structured notes as per cent of net assets. This is not the share of the portfolio that calls are written against"
      }
     ],
     "missingValues": [
@@ -159,7 +159,101 @@
    "path": "funds.json",
    "format": "json",
    "mediatype": "application/json",
-   "description": "One record per fund; see llms.txt"
+   "description": "One record per fund, under the key `funds`",
+   "fields": [
+    {
+     "name": "id",
+     "description": "As in the CSV files: the SEC series identifier, or the fund name where the fund has none"
+    },
+    {
+     "name": "name",
+     "description": "Fund name as filed in its latest report"
+    },
+    {
+     "name": "ticker",
+     "description": "Ticker symbol; given only for the five funds shown in detail and the benchmarks, otherwise null. Find other funds by name"
+    },
+    {
+     "name": "role",
+     "description": "fund, or benchmark for the three index funds used for comparison"
+    },
+    {
+     "name": "name_type",
+     "description": "Which of the three words the fund's name uses: Covered call, Buy-write or Premium income"
+    },
+    {
+     "name": "benchmark",
+     "description": "Ticker of the index fund the page sets beside this fund; null where no index fund applies"
+    },
+    {
+     "name": "still_reporting",
+     "description": "False if the fund's latest report is more than six months older than the newest report on file. Such funds are kept, so the history has no survivorship gap, but they are not counted in the category"
+    },
+    {
+     "name": "first_report, latest_report, latest_filing",
+     "description": "Dates of the first and latest quarterly report on file and the date the latest was filed"
+    },
+    {
+     "name": "reports",
+     "description": "Number of quarterly reports on file"
+    },
+    {
+     "name": "months, first_month, latest_month",
+     "description": "Number of months with a total return, and the first and last of them. monthly.csv can hold earlier rows for the same fund that carry a net flow but no return"
+    },
+    {
+     "name": "net_assets_usd",
+     "description": "Net assets on latest_report, in US dollars"
+    },
+    {
+     "name": "total_return_pct",
+     "description": "Total returns on net asset value, in per cent, over the 3, 12, 36 and 60 months ending at `to` (the month of latest_report). The 36 and 60 month figures are annualised. Null where the fund has too few months"
+    },
+    {
+     "name": "month_order.order",
+     "description": "as filed, reversed or not determined: how the three monthly returns of each report were read"
+    },
+    {
+     "name": "month_order.compared_with",
+     "description": "Ticker of the index fund whose months fitted this fund best, out of the three benchmarks. It is used only to decide the order and need not be the fund's own market; null if fewer than four reports could be compared"
+    },
+    {
+     "name": "month_order.misfit_as_filed, misfit_reversed",
+     "description": "Sum over the compared reports of the squared differences, in percentage points, between the fund's and the index fund's monthly returns, under each reading. The order is decided only if one misfit is less than half the other"
+    },
+    {
+     "name": "month_order.reports_compared",
+     "description": "Number of reports used in that comparison"
+    },
+    {
+     "name": "written_calls.positions",
+     "description": "Number of written call positions listed in the latest report"
+    },
+    {
+     "name": "written_calls.face_value_pct_net_assets",
+     "description": "Contracts x 100 x strike, as per cent of net assets. Can exceed 100 when a fund writes calls on more than it holds or the index is above the strike basis. Null if there are no calls, if it cannot be computed, or if it comes out above 200, where it is not shown"
+    },
+    {
+     "name": "written_calls.strikes_taken_from_title",
+     "description": "Number of positions whose strike was repaired from the holding's title"
+    },
+    {
+     "name": "written_calls.nearest_expiration",
+     "description": "Earliest expiration date among the written calls, as filed"
+    },
+    {
+     "name": "call_exposure_in_notes",
+     "description": "True if the fund lists no written calls but holds structured notes. Its call exposure sits inside the notes, and the filing gives neither strikes nor the share of the portfolio covered"
+    },
+    {
+     "name": "structured_notes",
+     "description": "Number of structured notes, their market value as per cent of net assets, and their issuers"
+    },
+    {
+     "name": "flow_months_not_used",
+     "description": "Months whose net flow is left out because the filing reports negative sales or redemptions"
+    }
+   ]
   }
  ]
 }

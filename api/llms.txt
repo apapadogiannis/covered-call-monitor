@@ -11,8 +11,9 @@ This file is written for AI agents and other programs. People should start at th
 ## Coverage
 
 - 109 funds, of which 87 still report; 3 index funds as benchmarks.
-- Monthly figures from 2019-08; latest report on file 2026-07-31.
-- 3622 fund-months and 1215 quarterly reports.
+- Monthly figures from 2019-07; latest report on file 2026-07-31.
+- monthly.csv has 3622 rows and reports.csv 1215, index funds included.
+- Funds that stopped reporting are kept, marked `still_reporting: false`.
 
 ## What this adds over the raw SEC files
 
@@ -26,40 +27,65 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
    The strike is repaired from the holding's title when the filed number is its tail.
 3. Option size. The "shares" field is filled in three different ways. Face value here is
    contracts x 100 x strike, from the holding's balance.
-4. Months before a fund existed are filed as zero. They are removed, with the first part month.
+4. Months before a fund existed are filed as zero. Their returns are removed, with the first part
+   month.
 5. Amended reports replace the report they amend. A fund whose identifier changed keeps one series.
 6. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
    5 years match those published for the funds.
 
 ## Files
 
-- funds.json: one record per fund. Start here. `month_order.order` tells you whether that fund's
-  monthly figures can be trusted month by month.
+- funds.json: one record per fund. Start here, and use it for rankings and for one fund's latest
+  figures. `month_order.order` tells you whether that fund's monthly figures can be trusted month by
+  month. Every field is described in datapackage.json.
 - monthly.csv: columns id, ticker, name, month, total_return_pct, net_flow_usd, month_order.
 - reports.csv: one row per quarterly report: id, ticker, name, report_date, filing_date,
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
   calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
-- data.json: exactly what the page shows (five funds against their index funds, and the category).
-- datapackage.json: the licence, the citation and the meaning of every column of the two CSV files.
+- data.json: what the page draws from: the monthly series of every fund, five funds in detail and
+  the category totals. It is close to 1 MB and its keys are the page's own. You need it for one
+  thing: under `detail`, `window` and `last12` set a fund beside its index fund over the same
+  months, ending at the last month both have.
+- datapackage.json: the licence, the citation, and the meaning of every column of the two CSV
+  files and every field of funds.json.
+
+All files are at https://apapadogiannis.github.io/covered-call-monitor/ (for example https://apapadogiannis.github.io/covered-call-monitor/funds.json). In the repository the same
+files are under api/, except data.json, which exists only on the site.
 
 ## How to read the figures
 
-- Every return is a total return in per cent: price change plus distributions, reinvested.
+- Every return is a total return on net asset value in per cent, with distributions reinvested, as
+  the fund reports it. It is not the return on the market price. For a closed-end fund, which can
+  trade well away from net asset value, it is not what a shareholder earned.
 - A month is the calendar month, written YYYY-MM. Returns compound: multiply (1 + r/100).
-- `id` is the SEC series identifier. Fund names are as filed. Tickers are given only for the five
-  funds shown in detail and the three benchmarks.
+- `id` is the SEC series identifier. A few funds have none and use the fund name. Fund names are
+  as filed. Tickers are given only for the five funds shown in detail and the three benchmarks, so
+  find other funds by name, and check the name in full: "JPMorgan Equity Premium Income ETF" and
+  "JPMorgan Equity Premium Income Fund" are different funds. For a mutual fund the figures are those
+  of the first share class listed.
 - Returns over whole reports (3, 12, 36, 60 months ending at a report date) do not depend on the
   month order. Use them for any fund. Use single months only where month_order is "as filed" or
   "reversed".
-- Each fund is as of its own report date. Report dates differ between fund families.
-- An empty cell means the filing does not give the figure. It never means zero.
+- Each fund is as of its own report date, and report dates differ between fund families. In
+  funds.json `total_return_pct.to` gives the month each fund's returns end. A fund and an index
+  fund whose `to` differ cover different months and cannot be set side by side. The category total
+  of net assets adds funds at their own report dates.
+- A fund with `call_exposure_in_notes: true` shows zero written calls because its calls are inside
+  structured notes. It does write calls. The size of the notes is not the share of the portfolio
+  covered.
+- Face value of written calls can exceed 100% of net assets. It is left empty above 200%, which
+  happens with options on foreign indices struck in another currency.
+- An empty cell means the figure was not filed or is not shown for a stated reason. It never means
+  zero. A monthly return of exactly 0 is the figure as filed.
 
 ## Do not use this for
 
 - Distribution yield, distributions per share, or return of capital: not in these filings.
 - Anything after the latest report date, or daily prices.
 - European (UCITS) funds.
-- Strikes of funds that hold their options inside notes: the filing does not give them.
+- Strikes or coverage of funds that hold their options inside notes: the filing does not give them.
+- Expense ratios, option premium earned, or the tax character of distributions: not in these files.
+- Market-price returns, premiums and discounts.
 - A recommendation. The figures are as filed by the funds and are not audited.
 
 ## Source, licence and credit

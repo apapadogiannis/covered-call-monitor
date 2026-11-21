@@ -31,16 +31,16 @@ ARTICLE = {"citation": "Papadogiannis, A. (2026). High Yield, Capped Gains: Mech
                        "these files are not taken from the article."}
 
 MONTHLY_FIELDS = [
-    ("id", "string", "SEC series identifier of the fund, or benchmark:<ticker> where a benchmark has none"),
+    ("id", "string", "SEC series identifier of the fund (S followed by nine digits). A few funds, mostly closed-end, have none; their id is the fund name as filed"),
     ("ticker", "string", "Ticker symbol; given only for the five funds shown in detail and the benchmarks"),
     ("name", "string", "Fund name as filed in its latest report"),
     ("month", "yearmonth", "Calendar month, YYYY-MM"),
-    ("total_return_pct", "number", "Total return for the month in per cent, distributions reinvested; empty if not filed"),
+    ("total_return_pct", "number", "Total return on net asset value for the month in per cent, distributions reinvested, to the precision filed; empty if not filed or if the month is before the fund's first full month"),
     ("net_flow_usd", "number", "Sales plus reinvestments less redemptions, in US dollars; empty if not filed or not used"),
     ("month_order", "string", "as filed, reversed or not determined: how the fund's three monthly returns per report were read"),
 ]
 REPORT_FIELDS = [
-    ("id", "string", "SEC series identifier of the fund"),
+    ("id", "string", "SEC series identifier of the fund, or the fund name where it has none"),
     ("ticker", "string", "Ticker symbol, where given"),
     ("name", "string", "Fund name as filed in that report"),
     ("report_date", "date", "Date the report describes"),
@@ -48,10 +48,36 @@ REPORT_FIELDS = [
     ("net_assets_usd", "number", "Net assets on the report date, in US dollars"),
     ("total_return_3m_pct", "number", "Total return over the three months ending at the report date, in per cent; does not depend on month order"),
     ("net_flow_3m_usd", "number", "Net flow over those three months, in US dollars; empty if a month was not used"),
-    ("written_calls", "integer", "Number of written call positions on the report date"),
-    ("calls_face_value_pct_net_assets", "number", "Contracts x 100 x strike of the written calls, as per cent of net assets; empty if not computable"),
+    ("written_calls", "integer", "Number of written call positions listed on the report date. Zero for a fund that takes its call exposure through structured notes: see notes"),
+    ("calls_face_value_pct_net_assets", "number", "Contracts x 100 x strike of the written calls, as per cent of net assets. Can exceed 100. Empty if there are no calls, if it cannot be computed, or if it comes out above 200 (options on foreign indices struck in another currency), where it is not shown"),
     ("notes", "integer", "Number of structured notes held"),
-    ("notes_pct_net_assets", "number", "Structured notes as per cent of net assets"),
+    ("notes_pct_net_assets", "number", "Market value of the structured notes as per cent of net assets. This is not the share of the portfolio that calls are written against"),
+]
+
+FUND_FIELDS = [   # funds.json, one record per fund
+    ("id", "As in the CSV files: the SEC series identifier, or the fund name where the fund has none"),
+    ("name", "Fund name as filed in its latest report"),
+    ("ticker", "Ticker symbol; given only for the five funds shown in detail and the benchmarks, otherwise null. Find other funds by name"),
+    ("role", "fund, or benchmark for the three index funds used for comparison"),
+    ("name_type", "Which of the three words the fund's name uses: Covered call, Buy-write or Premium income"),
+    ("benchmark", "Ticker of the index fund the page sets beside this fund; null where no index fund applies"),
+    ("still_reporting", "False if the fund's latest report is more than six months older than the newest report on file. Such funds are kept, so the history has no survivorship gap, but they are not counted in the category"),
+    ("first_report, latest_report, latest_filing", "Dates of the first and latest quarterly report on file and the date the latest was filed"),
+    ("reports", "Number of quarterly reports on file"),
+    ("months, first_month, latest_month", "Number of months with a total return, and the first and last of them. monthly.csv can hold earlier rows for the same fund that carry a net flow but no return"),
+    ("net_assets_usd", "Net assets on latest_report, in US dollars"),
+    ("total_return_pct", "Total returns on net asset value, in per cent, over the 3, 12, 36 and 60 months ending at `to` (the month of latest_report). The 36 and 60 month figures are annualised. Null where the fund has too few months"),
+    ("month_order.order", "as filed, reversed or not determined: how the three monthly returns of each report were read"),
+    ("month_order.compared_with", "Ticker of the index fund whose months fitted this fund best, out of the three benchmarks. It is used only to decide the order and need not be the fund's own market; null if fewer than four reports could be compared"),
+    ("month_order.misfit_as_filed, misfit_reversed", "Sum over the compared reports of the squared differences, in percentage points, between the fund's and the index fund's monthly returns, under each reading. The order is decided only if one misfit is less than half the other"),
+    ("month_order.reports_compared", "Number of reports used in that comparison"),
+    ("written_calls.positions", "Number of written call positions listed in the latest report"),
+    ("written_calls.face_value_pct_net_assets", "Contracts x 100 x strike, as per cent of net assets. Can exceed 100 when a fund writes calls on more than it holds or the index is above the strike basis. Null if there are no calls, if it cannot be computed, or if it comes out above 200, where it is not shown"),
+    ("written_calls.strikes_taken_from_title", "Number of positions whose strike was repaired from the holding's title"),
+    ("written_calls.nearest_expiration", "Earliest expiration date among the written calls, as filed"),
+    ("call_exposure_in_notes", "True if the fund lists no written calls but holds structured notes. Its call exposure sits inside the notes, and the filing gives neither strikes nor the share of the portfolio covered"),
+    ("structured_notes", "Number of structured notes, their market value as per cent of net assets, and their issuers"),
+    ("flow_months_not_used", "Months whose net flow is left out because the filing reports negative sales or redemptions"),
 ]
 
 FILES = [
@@ -100,12 +126,13 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
             "latest_filing": last["filing_date"], "reports": len(reps), "months": len(ret),
             "first_month": min(ret) if ret else None, "latest_month": max(ret) if ret else None,
             "net_assets_usd": last["net_assets"],
-            "total_return_pct": {"3_months": r(span(3)), "12_months": r(span(12)),
+            "total_return_pct": {"to": end, "3_months": r(span(3)), "12_months": r(span(12)),
                                  "36_months_a_year": r(ann(36)), "60_months_a_year": r(ann(60))},
             "month_order": orders[key],
             "written_calls": {"positions": ov["written_calls"], "face_value_pct_net_assets": r(ov["notional_pct"], 2),
                               "strikes_taken_from_title": ov["strikes_repaired"],
                               "nearest_expiration": ov["nearest_expiration"]},
+            "call_exposure_in_notes": (not is_bench) and ov["written_calls"] == 0 and nt["count"] > 0,
             "structured_notes": {"count": nt["count"], "pct_net_assets": r(nt["pct"], 2),
                                  "issuers": [i["issuer"] for i in nt["issuers"]]},
             "flow_months_not_used": odd})
@@ -152,7 +179,8 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
                     "schema": {"fields": [{"name": n, "type": t, "description": d} for n, t, d in REPORT_FIELDS],
                                "missingValues": [""]}},
                    {"name": "funds", "path": "funds.json", "format": "json", "mediatype": "application/json",
-                    "description": "One record per fund; see llms.txt"}]}
+                    "description": "One record per fund, under the key `funds`",
+                    "fields": [{"name": n, "description": d} for n, d in FUND_FIELDS]}]}
     funds_doc = {"about": "Covered-Call Monitor. See llms.txt for what each file is and how the figures are made.",
                  **credit,
                  "reports_to": meta["reports_to"], "first_month": meta["first_month"],
@@ -170,8 +198,9 @@ This file is written for AI agents and other programs. People should start at th
 ## Coverage
 
 - {sum(1 for f in funds if f['role'] == 'fund')} funds, of which {meta['funds_in_category']} still report; {sum(1 for f in funds if f['role'] == 'benchmark')} index funds as benchmarks.
-- Monthly figures from {meta['first_month']}; latest report on file {meta['reports_to']}.
-- {len(monthly_rows)} fund-months and {len(report_rows)} quarterly reports.
+- Monthly figures from {min(x[3] for x in monthly_rows)}; latest report on file {meta['reports_to']}.
+- monthly.csv has {len(monthly_rows)} rows and reports.csv {len(report_rows)}, index funds included.
+- Funds that stopped reporting are kept, marked `still_reporting: false`.
 
 ## What this adds over the raw SEC files
 
@@ -185,40 +214,65 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
    The strike is repaired from the holding's title when the filed number is its tail.
 3. Option size. The "shares" field is filled in three different ways. Face value here is
    contracts x 100 x strike, from the holding's balance.
-4. Months before a fund existed are filed as zero. They are removed, with the first part month.
+4. Months before a fund existed are filed as zero. Their returns are removed, with the first part
+   month.
 5. Amended reports replace the report they amend. A fund whose identifier changed keeps one series.
 6. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
    5 years match those published for the funds.
 
 ## Files
 
-- funds.json: one record per fund. Start here. `month_order.order` tells you whether that fund's
-  monthly figures can be trusted month by month.
+- funds.json: one record per fund. Start here, and use it for rankings and for one fund's latest
+  figures. `month_order.order` tells you whether that fund's monthly figures can be trusted month by
+  month. Every field is described in datapackage.json.
 - monthly.csv: columns id, ticker, name, month, total_return_pct, net_flow_usd, month_order.
 - reports.csv: one row per quarterly report: id, ticker, name, report_date, filing_date,
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
   calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
-- data.json: exactly what the page shows (five funds against their index funds, and the category).
-- datapackage.json: the licence, the citation and the meaning of every column of the two CSV files.
+- data.json: what the page draws from: the monthly series of every fund, five funds in detail and
+  the category totals. It is close to 1 MB and its keys are the page's own. You need it for one
+  thing: under `detail`, `window` and `last12` set a fund beside its index fund over the same
+  months, ending at the last month both have.
+- datapackage.json: the licence, the citation, and the meaning of every column of the two CSV
+  files and every field of funds.json.
+
+All files are at {SITE} (for example {SITE}funds.json). In the repository the same
+files are under api/, except data.json, which exists only on the site.
 
 ## How to read the figures
 
-- Every return is a total return in per cent: price change plus distributions, reinvested.
+- Every return is a total return on net asset value in per cent, with distributions reinvested, as
+  the fund reports it. It is not the return on the market price. For a closed-end fund, which can
+  trade well away from net asset value, it is not what a shareholder earned.
 - A month is the calendar month, written YYYY-MM. Returns compound: multiply (1 + r/100).
-- `id` is the SEC series identifier. Fund names are as filed. Tickers are given only for the five
-  funds shown in detail and the three benchmarks.
+- `id` is the SEC series identifier. A few funds have none and use the fund name. Fund names are
+  as filed. Tickers are given only for the five funds shown in detail and the three benchmarks, so
+  find other funds by name, and check the name in full: "JPMorgan Equity Premium Income ETF" and
+  "JPMorgan Equity Premium Income Fund" are different funds. For a mutual fund the figures are those
+  of the first share class listed.
 - Returns over whole reports (3, 12, 36, 60 months ending at a report date) do not depend on the
   month order. Use them for any fund. Use single months only where month_order is "as filed" or
   "reversed".
-- Each fund is as of its own report date. Report dates differ between fund families.
-- An empty cell means the filing does not give the figure. It never means zero.
+- Each fund is as of its own report date, and report dates differ between fund families. In
+  funds.json `total_return_pct.to` gives the month each fund's returns end. A fund and an index
+  fund whose `to` differ cover different months and cannot be set side by side. The category total
+  of net assets adds funds at their own report dates.
+- A fund with `call_exposure_in_notes: true` shows zero written calls because its calls are inside
+  structured notes. It does write calls. The size of the notes is not the share of the portfolio
+  covered.
+- Face value of written calls can exceed 100% of net assets. It is left empty above 200%, which
+  happens with options on foreign indices struck in another currency.
+- An empty cell means the figure was not filed or is not shown for a stated reason. It never means
+  zero. A monthly return of exactly 0 is the figure as filed.
 
 ## Do not use this for
 
 - Distribution yield, distributions per share, or return of capital: not in these filings.
 - Anything after the latest report date, or daily prices.
 - European (UCITS) funds.
-- Strikes of funds that hold their options inside notes: the filing does not give them.
+- Strikes or coverage of funds that hold their options inside notes: the filing does not give them.
+- Expense ratios, option premium earned, or the tax character of distributions: not in these files.
+- Market-price returns, premiums and discounts.
 - A recommendation. The figures are as filed by the funds and are not audited.
 
 ## Source, licence and credit

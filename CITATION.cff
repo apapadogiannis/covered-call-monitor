@@ -8,11 +8,13 @@ authors:
     given-names: Agisilaos
     orcid: "https://orcid.org/0009-0002-7753-7052"
 date-released: 2026-11-21
-version: "1.0.1"
+version: "1.1.0"
 doi: "10.5281/zenodo.24418592"
 repository-code: "https://github.com/apapadogiannis/covered-call-monitor"
 url: "https://apapadogiannis.github.io/covered-call-monitor/"
-license: MIT
+license:
+  - MIT
+  - CC-BY-4.0
 keywords:
   - covered-call ETFs
   - buy-write

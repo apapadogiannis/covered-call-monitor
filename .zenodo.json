@@ -1,7 +1,7 @@
 {
   "title": "Covered-Call Monitor: returns, overlays and flows from SEC filings",
   "upload_type": "dataset",
-  "description": "A page and a set of data files that measure what covered-call funds earned once their distributions are counted. For each US-registered fund whose name says covered call, buy-write or premium income, they give the total return with every distribution reinvested, the options the fund had written on its last report date, its structured notes, and its net flows, from the fourth quarter of 2019 on. Where a fund follows a well-known index, its return is set beside an index fund on the same market. Everything is computed from the reports the funds file with the US Securities and Exchange Commission (Form N-PORT), with documented corrections to the source: monthly returns filed in reverse order, strikes cut short, months filed before a fund existed. Before every build, twelve returns published by a third party are recomputed from the stored filings and must match. Live page: https://apapadogiannis.github.io/covered-call-monitor/. Guide for programs and AI agents: api/llms.txt. The source data are a work of the US government in the public domain; the computed figures are CC BY 4.0; the code is MIT-licensed. Independent research, for informational and academic purposes only; not investment advice.",
+  "description": "A page and a set of data files that measure what covered-call funds earned once their distributions are counted. For each US-registered fund whose name says covered call, buy-write or premium income, they give the total return with every distribution reinvested, the options the fund had written on its last report date, its structured notes, and its net flows, from the fourth quarter of 2019 on. Where a fund follows a well-known index, its return is set beside an index fund on the same market. Everything is computed from the reports the funds file with the US Securities and Exchange Commission (Form N-PORT), with documented corrections to the source: monthly returns filed in reverse order, strikes cut short, months filed before a fund existed. Before every build, twelve returns published by a third party are recomputed from the stored filings and must match. Live page: https://apapadogiannis.github.io/covered-call-monitor/. Guide for programs and AI agents: https://apapadogiannis.github.io/covered-call-monitor/llms.txt (api/llms.txt in the archive). The source data are a work of the US government in the public domain; the computed figures are CC BY 4.0; the code is MIT-licensed. Independent research, for informational and academic purposes only; not investment advice.",
   "creators": [
     {
       "name": "Papadogiannis, Agisilaos",
@@ -33,6 +33,6 @@
       "scheme": "url"
     }
   ],
-  "version": "1.0.1",
+  "version": "1.1.0",
   "publication_date": "2026-11-21"
 }
