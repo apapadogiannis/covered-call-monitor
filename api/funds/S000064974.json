@@ -52,6 +52,23 @@
    "pct_net_assets": null,
    "issuers": []
   },
+  "distributions": {
+   "last_12_months": null,
+   "quarters": [
+    {
+     "to": "2020-09",
+     "pct_net_assets": 0.0
+    },
+    {
+     "to": "2020-12",
+     "pct_net_assets": 0.04
+    },
+    {
+     "to": "2021-03",
+     "pct_net_assets": 1.06
+    }
+   ]
+  },
   "flow_months_not_used": []
  },
  "monthly": [
@@ -124,6 +141,7 @@
    "total_return_3m_pct": -0.1,
    "net_flow_3m_usd": 12697237.81,
    "written_calls": 0,
+   "distributions_3m_pct_net_assets": null,
    "calls_face_value_pct_net_assets": null,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -135,6 +153,7 @@
    "total_return_3m_pct": 1.1011,
    "net_flow_3m_usd": 1583635.72,
    "written_calls": 0,
+   "distributions_3m_pct_net_assets": 0.0,
    "calls_face_value_pct_net_assets": null,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -146,6 +165,7 @@
    "total_return_3m_pct": 0.396,
    "net_flow_3m_usd": 356807.83,
    "written_calls": 0,
+   "distributions_3m_pct_net_assets": 0.04,
    "calls_face_value_pct_net_assets": null,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -157,6 +177,7 @@
    "total_return_3m_pct": -0.3958,
    "net_flow_3m_usd": -4076516.61,
    "written_calls": 0,
+   "distributions_3m_pct_net_assets": 1.06,
    "calls_face_value_pct_net_assets": null,
    "notes": 0,
    "notes_pct_net_assets": null

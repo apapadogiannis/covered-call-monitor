@@ -71,6 +71,31 @@
    "pct_net_assets": null,
    "issuers": []
   },
+  "distributions": {
+   "last_12_months": {
+    "from": "2024-08",
+    "to": "2025-07",
+    "pct_net_assets": 8.81
+   },
+   "quarters": [
+    {
+     "to": "2024-10",
+     "pct_net_assets": 1.13
+    },
+    {
+     "to": "2025-01",
+     "pct_net_assets": 2.83
+    },
+    {
+     "to": "2025-04",
+     "pct_net_assets": 2.07
+    },
+    {
+     "to": "2025-07",
+     "pct_net_assets": 2.77
+    }
+   ]
+  },
   "flow_months_not_used": []
  },
  "monthly": [
@@ -158,6 +183,7 @@
    "total_return_3m_pct": null,
    "net_flow_3m_usd": 2528762.0,
    "written_calls": 1,
+   "distributions_3m_pct_net_assets": null,
    "calls_face_value_pct_net_assets": 101.12,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -169,6 +195,7 @@
    "total_return_3m_pct": 6.1604,
    "net_flow_3m_usd": -1500873.3,
    "written_calls": 1,
+   "distributions_3m_pct_net_assets": 1.13,
    "calls_face_value_pct_net_assets": 103.76,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -180,6 +207,7 @@
    "total_return_3m_pct": -0.522,
    "net_flow_3m_usd": 0.0,
    "written_calls": 1,
+   "distributions_3m_pct_net_assets": 2.83,
    "calls_face_value_pct_net_assets": 102.21,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -191,6 +219,7 @@
    "total_return_3m_pct": -3.6547,
    "net_flow_3m_usd": 227896.02,
    "written_calls": 1,
+   "distributions_3m_pct_net_assets": 2.07,
    "calls_face_value_pct_net_assets": 102.28,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -202,6 +231,7 @@
    "total_return_3m_pct": 4.0636,
    "net_flow_3m_usd": 0.0,
    "written_calls": 1,
+   "distributions_3m_pct_net_assets": 2.77,
    "calls_face_value_pct_net_assets": 103.25,
    "notes": 0,
    "notes_pct_net_assets": null

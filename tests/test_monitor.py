@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 ROOT_API = Path(__file__).resolve().parent.parent / "api"
-from monitor.build import build, compound, filed_newest_first, month_back, monthly, overlay, risk, strike_from_title  # noqa: E402
+from monitor.build import build, compound, distributions, filed_newest_first, month_back, monthly, overlay, risk, strike_from_title  # noqa: E402
 from monitor.update import quarters_since  # noqa: E402
 from datetime import date  # noqa: E402
 
@@ -51,6 +51,18 @@ new = [report("2026-03-31", (0.4, 2.0, 1.0)), report("2026-06-30", (3.0, 1.0, 1.
 assert sorted(monthly(new, entered_late=True)[0]) == ["2026-02", "2026-03", "2026-04", "2026-05", "2026-06"]
 assert sorted(monthly(new)[0])[0] == "2026-01"                       # a fund on file from the start keeps it
 assert sorted(monthly([report("2026-03-31", (1.0, 2.0, 0.4))], newest_first=True, entered_late=True)[0]) == ["2026-02", "2026-03"]
+
+# What a fund paid out is implied by its filings. A fund that starts a quarter with 100, earns 1% a month
+# with distributions counted as reinvested, takes in nothing and ends with 100 has paid out its return.
+two = [dict(report("2026-03-31", (1, 1, 1), flows=((0.0, 0.0, 0.0),) * 3), net_assets=100.0),
+       dict(report("2026-06-30", (1, 1, 1), flows=((0.0, 0.0, 0.0),) * 3), net_assets=100.0)]
+ret2, flow2, _ = monthly(two)
+d = distributions(two, ret2, flow2)
+assert len(d["quarters"]) == 1 and abs(d["quarters"][0]["rate"] - (1.01 ** 3 - 1) * 100) < 1e-9 and d["last_12_months"] is None
+two[1]["net_assets"] = 100.0 * 1.01 ** 3                 # it kept everything: it paid out nothing
+assert abs(distributions(two, ret2, flow2)["quarters"][0]["rate"]) < 1e-9
+two[1]["net_assets"] = 30.0                              # more than 40% gone in a quarter is not a distribution
+assert distributions(two, ret2, flow2)["quarters"] == []
 
 # Market risk beside the index fund. A fund that is exactly half index fund and half Treasury bills has
 # a beta of one half, half the volatility, and no gap to the mix with the same market risk.
@@ -122,9 +134,16 @@ with tempfile.TemporaryDirectory() as tmp:
     assert all(f["step"] == (1 if f["month_order"] in ("as filed", "reversed") else 3) for f in d["funds"])
     assert all((f["benchmark"] is None) == (f["months"][0]["benchmark"] is None) for f in d["funds"])
     assert "10.3905/jbis.2026.001" in doc["related_article"]["doi"]
-    skill = (Path(tmp) / "SKILL.md").read_text(encoding="utf-8")       # a valid header, real files, no figures
-    assert skill.startswith("---\nname: covered-call-monitor\ndescription: ")
-    assert all(n in skill and (Path(tmp) / n).exists() for n in ("llms.txt", "funds.json", "monthly.csv", "reports.csv", "datapackage.json"))
+    # No skill of its own: the guide and the page point to the one skill of the whole account.
+    assert not (Path(tmp) / "SKILL.md").exists() and "apapadogiannis/main/skill/SKILL.md" in (Path(tmp) / "llms.txt").read_text(encoding="utf-8")
+    # What each fund paid out is implied from net assets, returns and flows. The index funds are the control:
+    # their dividend yields are known and small. A covered-call fund pays out far more.
+    paid = {f["ticker"]: f["distributions"]["last_12_months"]["pct_net_assets"] for f in funds if f["ticker"] and f["distributions"]["last_12_months"]}
+    assert -1 < paid["QQQ"] < 2 and 0 < paid["IVV"] < 2.5 and 0 < paid["IWM"] < 3, paid
+    assert 8 < paid["QYLD"] < 16 and 5 < paid["JEPI"] < 12 and 7 < paid["JEPQ"] < 14, paid
+    for f in funds:
+        qs = f["distributions"]["quarters"]
+        assert all(-1 <= q["pct_net_assets"] <= 40 for q in qs) and [q["to"] for q in qs] == sorted(q["to"] for q in qs)
     # Each fund beside its index fund carries its market risk, and the equal-risk mix lies between bills and the index fund.
     by_ticker = {f["ticker"]: f for f in funds if f["ticker"]}
     for t in ("QYLD", "XYLD", "RYLD", "JEPI", "JEPQ"):

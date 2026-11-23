@@ -52,6 +52,10 @@
    "pct_net_assets": null,
    "issuers": []
   },
+  "distributions": {
+   "last_12_months": null,
+   "quarters": []
+  },
   "flow_months_not_used": []
  },
  "monthly": [
@@ -79,6 +83,7 @@
    "total_return_3m_pct": 1.961,
    "net_flow_3m_usd": -38588521.12,
    "written_calls": 37,
+   "distributions_3m_pct_net_assets": null,
    "calls_face_value_pct_net_assets": 100.79,
    "notes": 0,
    "notes_pct_net_assets": null

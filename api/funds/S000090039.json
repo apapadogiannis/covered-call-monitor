@@ -52,6 +52,35 @@
    "pct_net_assets": null,
    "issuers": []
   },
+  "distributions": {
+   "last_12_months": {
+    "from": "2025-08",
+    "to": "2026-07",
+    "pct_net_assets": 52.82
+   },
+   "quarters": [
+    {
+     "to": "2025-07",
+     "pct_net_assets": 12.84
+    },
+    {
+     "to": "2025-10",
+     "pct_net_assets": 10.96
+    },
+    {
+     "to": "2026-01",
+     "pct_net_assets": 10.52
+    },
+    {
+     "to": "2026-04",
+     "pct_net_assets": 22.83
+    },
+    {
+     "to": "2026-07",
+     "pct_net_assets": 8.5
+    }
+   ]
+  },
   "flow_months_not_used": []
  },
  "monthly": [
@@ -149,6 +178,7 @@
    "total_return_3m_pct": null,
    "net_flow_3m_usd": null,
    "written_calls": 1,
+   "distributions_3m_pct_net_assets": null,
    "calls_face_value_pct_net_assets": 5.86,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -160,6 +190,7 @@
    "total_return_3m_pct": 14.5415,
    "net_flow_3m_usd": 3368482.5,
    "written_calls": 0,
+   "distributions_3m_pct_net_assets": 12.84,
    "calls_face_value_pct_net_assets": null,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -171,6 +202,7 @@
    "total_return_3m_pct": 7.566,
    "net_flow_3m_usd": 5549582.5,
    "written_calls": 0,
+   "distributions_3m_pct_net_assets": 10.96,
    "calls_face_value_pct_net_assets": null,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -182,6 +214,7 @@
    "total_return_3m_pct": 2.075,
    "net_flow_3m_usd": -9477.5,
    "written_calls": 0,
+   "distributions_3m_pct_net_assets": 10.52,
    "calls_face_value_pct_net_assets": null,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -193,6 +226,7 @@
    "total_return_3m_pct": 6.8346,
    "net_flow_3m_usd": 7138225.0,
    "written_calls": 0,
+   "distributions_3m_pct_net_assets": 22.83,
    "calls_face_value_pct_net_assets": null,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -204,6 +238,7 @@
    "total_return_3m_pct": 6.7847,
    "net_flow_3m_usd": 16095570.0,
    "written_calls": 0,
+   "distributions_3m_pct_net_assets": 8.5,
    "calls_face_value_pct_net_assets": null,
    "notes": 0,
    "notes_pct_net_assets": null

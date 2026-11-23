@@ -52,6 +52,35 @@
    "pct_net_assets": null,
    "issuers": []
   },
+  "distributions": {
+   "last_12_months": {
+    "from": "2025-07",
+    "to": "2026-06",
+    "pct_net_assets": 12.14
+   },
+   "quarters": [
+    {
+     "to": "2025-06",
+     "pct_net_assets": 2.81
+    },
+    {
+     "to": "2025-09",
+     "pct_net_assets": 3.16
+    },
+    {
+     "to": "2025-12",
+     "pct_net_assets": 3.14
+    },
+    {
+     "to": "2026-03",
+     "pct_net_assets": 2.72
+    },
+    {
+     "to": "2026-06",
+     "pct_net_assets": 3.12
+    }
+   ]
+  },
   "flow_months_not_used": []
  },
  "monthly": [
@@ -154,6 +183,7 @@
    "total_return_3m_pct": null,
    "net_flow_3m_usd": 2270163.0,
    "written_calls": 60,
+   "distributions_3m_pct_net_assets": null,
    "calls_face_value_pct_net_assets": 95.95,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -165,6 +195,7 @@
    "total_return_3m_pct": -1.5793,
    "net_flow_3m_usd": 1989183.0,
    "written_calls": 78,
+   "distributions_3m_pct_net_assets": 2.81,
    "calls_face_value_pct_net_assets": 90.44,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -176,6 +207,7 @@
    "total_return_3m_pct": 8.2637,
    "net_flow_3m_usd": 752964.0,
    "written_calls": 46,
+   "distributions_3m_pct_net_assets": 3.16,
    "calls_face_value_pct_net_assets": 90.56,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -187,6 +219,7 @@
    "total_return_3m_pct": 3.5206,
    "net_flow_3m_usd": 23094.0,
    "written_calls": 50,
+   "distributions_3m_pct_net_assets": 3.14,
    "calls_face_value_pct_net_assets": 92.24,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -198,6 +231,7 @@
    "total_return_3m_pct": -1.6325,
    "net_flow_3m_usd": 2138046.0,
    "written_calls": 57,
+   "distributions_3m_pct_net_assets": 2.72,
    "calls_face_value_pct_net_assets": 93.33,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -209,6 +243,7 @@
    "total_return_3m_pct": 5.6471,
    "net_flow_3m_usd": 1441038.0,
    "written_calls": 47,
+   "distributions_3m_pct_net_assets": 3.12,
    "calls_face_value_pct_net_assets": 97.77,
    "notes": 0,
    "notes_pct_net_assets": null

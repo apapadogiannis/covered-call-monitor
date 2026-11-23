@@ -8,21 +8,22 @@ Live at https://apapadogiannis.github.io/covered-call-monitor/
 **What does the yield cost?** Covered-call, buy-write and premium-income funds measured each quarter
 from public SEC filings: each fund's total return beside an index fund on the same market and beside
 a mix of that index fund and Treasury bills with the same market risk, the options it had actually
-written on its last report date, and the money moving in and out.
+written on its last report date, what it paid out, and the money moving in and out.
 
-## Use it from your own AI agent
+## Use it from your own AI assistant
 
-`api/SKILL.md` is a skill: a short file that tells an agent when to use the monitor, where its files
-are and how to read them. It holds no figures, so it does not go stale. For Claude Code:
+One skill covers this tool and the rest of the research: a short file that tells an assistant when to
+use the work, where the files are and how to read them. It holds no figures, so it does not go stale.
+For Claude Code:
 
 ```bash
-mkdir -p ~/.claude/skills/covered-call-monitor
-curl -o ~/.claude/skills/covered-call-monitor/SKILL.md https://apapadogiannis.github.io/covered-call-monitor/SKILL.md
+mkdir -p ~/.claude/skills/papadogiannis-finance-research
+curl -o ~/.claude/skills/papadogiannis-finance-research/SKILL.md https://raw.githubusercontent.com/apapadogiannis/apapadogiannis/main/skill/SKILL.md
 ```
 
-Then ask your agent, for example, "how has QYLD done against the Nasdaq-100 index fund?". Other
-agents that read `SKILL.md` files take the same file in their own skills folder. The skill is free
-and is written by the build with the other files in `api/`.
+Then ask, for example, "how has QYLD done against the Nasdaq-100 index fund?". Other assistants that
+read `SKILL.md` files take the same file in their own skills folder. This tool no longer publishes a
+skill of its own: a copy added earlier keeps working, since it only points to the files below.
 
 ## For AI agents and programs
 
@@ -37,7 +38,6 @@ SEC files, which file to use for what, and what not to use it for. The data are 
 | `api/monthly.csv` | monthly total return and net flow for every fund and benchmark, from 2019 |
 | `api/reports.csv` | one row per quarterly report: net assets, 3-month return, written calls, notes |
 | `api/data.json` | what the page draws from; the same file the page serves |
-| `api/SKILL.md` | the skill described above |
 | `api/datapackage.json` | the licence, the citation and the meaning of every column of the CSV files |
 | `api/llms.txt` | the guide |
 
@@ -54,12 +54,15 @@ These files are rebuilt from `data/` by `build.py` and checked by the tests. Do 
 - **The category by name**: every US-registered fund whose name says covered call, buy-write or premium
   income, with net assets, returns, flows and the face value of its written calls. Funds that sell
   calls under another name (option income, enhanced income, overwrite) are not in it.
+- **What each fund paid out**: the filings state no distribution, so it is implied from them, quarter
+  by quarter, from net assets, total returns and flows, and given as a rate on net asset value with its
+  history. It is an estimate, good to within a point or two a year, and not a yield on the market price.
 - **Market risk**: a covered-call fund carries about half the market risk of its index fund, so its
   gap to the index fund is not the cost of the options alone. Each fund with an index fund is also
   set beside a mix of that index fund and four-week Treasury bills with the fund's own beta, with
   the volatility and the largest fall of both.
 
-It reports what the funds filed. It does not forecast and it shows no distribution yield.
+It reports what the funds filed. It does not forecast, and it shows no yield on the market price.
 
 ## How it works
 

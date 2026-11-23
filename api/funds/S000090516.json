@@ -52,6 +52,35 @@
    "pct_net_assets": null,
    "issuers": []
   },
+  "distributions": {
+   "last_12_months": {
+    "from": "2025-07",
+    "to": "2026-06",
+    "pct_net_assets": 15.11
+   },
+   "quarters": [
+    {
+     "to": "2025-06",
+     "pct_net_assets": 3.09
+    },
+    {
+     "to": "2025-09",
+     "pct_net_assets": 2.99
+    },
+    {
+     "to": "2025-12",
+     "pct_net_assets": 3.04
+    },
+    {
+     "to": "2026-03",
+     "pct_net_assets": 6.07
+    },
+    {
+     "to": "2026-06",
+     "pct_net_assets": 3.02
+    }
+   ]
+  },
   "flow_months_not_used": []
  },
  "monthly": [
@@ -154,6 +183,7 @@
    "total_return_3m_pct": null,
    "net_flow_3m_usd": 999155.24,
    "written_calls": 4,
+   "distributions_3m_pct_net_assets": null,
    "calls_face_value_pct_net_assets": 74.2,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -165,6 +195,7 @@
    "total_return_3m_pct": 0.9749,
    "net_flow_3m_usd": 0.0,
    "written_calls": 5,
+   "distributions_3m_pct_net_assets": 3.09,
    "calls_face_value_pct_net_assets": 76.61,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -176,6 +207,7 @@
    "total_return_3m_pct": 2.6504,
    "net_flow_3m_usd": 0.0,
    "written_calls": 5,
+   "distributions_3m_pct_net_assets": 2.99,
    "calls_face_value_pct_net_assets": 77.89,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -187,6 +219,7 @@
    "total_return_3m_pct": 3.8973,
    "net_flow_3m_usd": 0.0,
    "written_calls": 5,
+   "distributions_3m_pct_net_assets": 3.04,
    "calls_face_value_pct_net_assets": 78.33,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -198,6 +231,7 @@
    "total_return_3m_pct": 5.76,
    "net_flow_3m_usd": 22019926.8,
    "written_calls": 5,
+   "distributions_3m_pct_net_assets": 6.07,
    "calls_face_value_pct_net_assets": 71.73,
    "notes": 0,
    "notes_pct_net_assets": null
@@ -209,6 +243,7 @@
    "total_return_3m_pct": 6.1518,
    "net_flow_3m_usd": 982832.29,
    "written_calls": 5,
+   "distributions_3m_pct_net_assets": 3.02,
    "calls_face_value_pct_net_assets": 72.37,
    "notes": 0,
    "notes_pct_net_assets": null

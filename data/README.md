@@ -57,6 +57,17 @@ stored: it is about 450 MB per quarter and can be downloaded again from the SEC.
 - **A fund's identity can change.** The Invesco QQQ Trust has no series identifier before it was
   reorganised and a new one after. Benchmarks are therefore matched by name as well.
 
+## Distributions
+
+The filings state no distribution. `build.py` implies one for each quarter: net assets at the previous
+report date are carried forward month by month at the fund's total return, with each month's net flow
+added at mid-month, and the difference from the net assets filed at the report date is what the fund
+paid out. It is given as per cent of the average of the two net asset figures, and four quarters in a
+row add up to the rate of the last twelve months. The timing of flows within a month is not known,
+so the figure is an estimate: on the three index funds, whose dividend yields are known, it lands
+within about a point a year; for a fund with large flows a single quarter can be off by more. A quarter is left out when a return or a flow is missing, or when the
+result is below -1% or above 40% of net assets.
+
 ## Treasury bills
 
 `rates/treasury_bill_4w_daily.csv` is the US Treasury's daily four-week bill rate (coupon equivalent,

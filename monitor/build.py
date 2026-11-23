@@ -276,6 +276,46 @@ def risk(path: list[dict], step: int):
             "gap_a_year": a_year(gf) - a_year(gb), "gap_to_matched_mix_a_year": a_year(gf) - a_year(gm)}
 
 
+DISTRIBUTION_RANGE = (-1.0, 40.0)   # per cent of net assets a quarter; outside it the figure is not shown
+
+
+def distributions(reps: list[dict], ret: dict[str, float], flow: dict[str, float | None]) -> dict:
+    """What a fund paid out, quarter by quarter, as implied by its filings.
+
+    The filings give no distribution. They give net assets at each report date, the total return
+    of each month (which counts distributions as reinvested) and the money put in and taken out.
+    Net assets carried forward at the total return, with each month's net flow added at mid-month,
+    are what the fund would hold had it paid nothing. What it holds less than that is what it
+    paid out:
+
+        distributions = net assets at the start, grown at the total return, plus net flows
+                        - net assets at the end
+
+    It is given as per cent of the average of the two net asset figures. It is an estimate: the
+    timing of flows within a month is not known, and a merger or a figure filed wrong lands in
+    it. A quarter outside DISTRIBUTION_RANGE is not shown. Four quarters in a row add up to the
+    rate of the last twelve months.
+    """
+    quarters = []
+    for a, b in zip(reps, reps[1:]):
+        end = b["report_date"][:7]
+        months = [month_back(end, 2), month_back(end, 1), end]
+        if (month_back(end, 3) != a["report_date"][:7] or not a["net_assets"] or not b["net_assets"]
+                or any(m not in ret or flow.get(m) is None for m in months)):
+            continue
+        na = a["net_assets"]
+        for m in months:
+            na = (na + flow[m] / 2) * (1 + ret[m] / 100) + flow[m] / 2
+        rate = (na - b["net_assets"]) / ((a["net_assets"] + b["net_assets"]) / 2) * 100
+        if DISTRIBUTION_RANGE[0] <= rate <= DISTRIBUTION_RANGE[1]:
+            quarters.append({"to": end, "rate": rate})
+    year = None
+    if len(quarters) >= 4 and all(month_back(quarters[-k]["to"], 3) == quarters[-k - 1]["to"] for k in (1, 2, 3)):
+        year = {"from": month_back(quarters[-4]["to"], 2), "to": quarters[-1]["to"],
+                "rate": sum(q["rate"] for q in quarters[-4:])}
+    return {"quarters": quarters, "last_12_months": year}
+
+
 CONTRACT = 100   # shares per listed US option contract, equity and index alike
 FACE_LIMIT = 200  # per cent of net assets; above this the face value is not shown
 STILL_REPORTING = 6  # months; a fund whose last report is older than this is no longer listed
@@ -489,6 +529,7 @@ def build(out: Path) -> dict:
                        "benchmark": compound(bret, [m for e in last12 for m in span_of(e)]) if bret is not None else None}
             if last12 else None,
             "risk": risk(path, step) if bret is not None else None,
+            "distributions": distributions(reps, ret, flow),
             "month_order": orders[key]["order"],
             "returns_order": order.get(key),
             "flows": [{"month": m, "net": flow[m]} for m in sorted(flow)],
@@ -526,6 +567,7 @@ def build(out: Path) -> dict:
             "report_date": last["report_date"],
             "net_assets": last["net_assets"], "return_3m": compound(ret, m3), "return_12m": compound(ret, m12),
             "net_flow_3m": sum(f3) if all(f is not None for f in f3) else None,
+            "distribution_12m": (distributions(reps, ret, flow)["last_12_months"] or {}).get("rate"),
             "written_calls": ov["written_calls"], "notional_pct": ov["notional_pct"],
             "strikes_repaired": ov["strikes_repaired"], "notes_pct": nt["pct"], "notes_count": nt["count"]})
     category.sort(key=lambda r: -(r["net_assets"] or 0))

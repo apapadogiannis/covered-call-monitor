@@ -134,6 +134,11 @@
       "description": "Number of written call positions listed on the report date. Zero for a fund that takes its call exposure through structured notes: see notes"
      },
      {
+      "name": "distributions_3m_pct_net_assets",
+      "type": "number",
+      "description": "Distributions over the three months ending at the report date as implied by the filings, per cent of the average of opening and closing net assets: an estimate, see `distributions` in funds.json. Empty for a fund's first report and where it cannot be computed"
+     },
+     {
       "name": "calls_face_value_pct_net_assets",
       "type": "number",
       "description": "Contracts x 100 x strike of the written calls, as per cent of net assets. Can exceed 100. Empty if there are no calls, if it cannot be computed, or if it comes out above 200 (options on foreign indices struck in another currency), where it is not shown"
@@ -264,6 +269,10 @@
     {
      "name": "structured_notes",
      "description": "Number of structured notes, their market value as per cent of net assets, and their issuers"
+    },
+    {
+     "name": "distributions",
+     "description": "What the fund paid out, as implied by its filings: an estimate, not a figure the fund files. `last_12_months` gives `from`, `to` and `pct_net_assets`, the distributions of the last four quarters as per cent of net assets (each quarter on the average of its opening and closing net assets); null unless four quarters in a row can be computed. `quarters` lists each quarter with the month it ends (`to`) and `pct_net_assets`. Method: net assets at the start of the quarter are carried forward at the fund's total return with each month's net flow added at mid-month; what the fund holds less than that at the end is what it paid out. It includes every kind of distribution (income, capital gains, return of capital) and is a rate on net asset value, not a yield on the market price. It is good to within a point or two a year, less for a fund with very large flows; a single quarter is noisier, can be off by a point or more, and can come out slightly negative. A quarter is left out when a flow or a return is missing or the result falls outside -1% to 40%"
     },
     {
      "name": "flow_months_not_used",

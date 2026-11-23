@@ -15,7 +15,7 @@ import json
 import re
 from pathlib import Path
 
-from monitor.build import compound, month_back, notes, overlay, type_of
+from monitor.build import compound, distributions, month_back, notes, overlay, type_of
 
 REPO = "https://github.com/apapadogiannis/covered-call-monitor"
 SITE = "https://apapadogiannis.github.io/covered-call-monitor/"
@@ -50,6 +50,7 @@ REPORT_FIELDS = [
     ("total_return_3m_pct", "number", "Total return over the three months ending at the report date, in per cent; does not depend on month order"),
     ("net_flow_3m_usd", "number", "Net flow over those three months, in US dollars; empty if a month was not used"),
     ("written_calls", "integer", "Number of written call positions listed on the report date. Zero for a fund that takes its call exposure through structured notes: see notes"),
+    ("distributions_3m_pct_net_assets", "number", "Distributions over the three months ending at the report date as implied by the filings, per cent of the average of opening and closing net assets: an estimate, see `distributions` in funds.json. Empty for a fund's first report and where it cannot be computed"),
     ("calls_face_value_pct_net_assets", "number", "Contracts x 100 x strike of the written calls, as per cent of net assets. Can exceed 100. Empty if there are no calls, if it cannot be computed, or if it comes out above 200 (options on foreign indices struck in another currency), where it is not shown"),
     ("notes", "integer", "Number of structured notes held"),
     ("notes_pct_net_assets", "number", "Market value of the structured notes as per cent of net assets. This is not the share of the portfolio that calls are written against"),
@@ -82,6 +83,7 @@ FUND_FIELDS = [   # funds.json, one record per fund
     ("call_exposure_in_notes", "True if the fund lists no written calls but holds structured notes. Its call exposure sits inside the notes, and the filing gives neither strikes nor the share of the portfolio covered"),
     ("no_overlay_on_report_date", "True if the latest report lists neither written calls nor structured notes. This does not mean the fund writes no options: a fund that writes options expiring the same day, or that had rolled out of its position, has none on its books at the report date"),
     ("structured_notes", "Number of structured notes, their market value as per cent of net assets, and their issuers"),
+    ("distributions", "What the fund paid out, as implied by its filings: an estimate, not a figure the fund files. `last_12_months` gives `from`, `to` and `pct_net_assets`, the distributions of the last four quarters as per cent of net assets (each quarter on the average of its opening and closing net assets); null unless four quarters in a row can be computed. `quarters` lists each quarter with the month it ends (`to`) and `pct_net_assets`. Method: net assets at the start of the quarter are carried forward at the fund's total return with each month's net flow added at mid-month; what the fund holds less than that at the end is what it paid out. It includes every kind of distribution (income, capital gains, return of capital) and is a rate on net asset value, not a yield on the market price. It is good to within a point or two a year, less for a fund with very large flows; a single quarter is noisier, can be off by a point or more, and can come out slightly negative. A quarter is left out when a flow or a return is missing or the result falls outside -1% to 40%"),
     ("flow_months_not_used", "Months whose net flow is left out because the filing reports negative sales or reinvestments. Redemptions filed as negative numbers are read as outflows of that size and used"),
 ]
 
@@ -93,62 +95,11 @@ FILES = [
     {"file": "reports.csv", "format": "text/csv", "what": "One row per quarterly report: net assets, 3-month return, written calls, notes"},
     {"file": "data.json", "format": "application/json", "what": "Exactly the numbers shown on the page"},
     {"file": "datapackage.json", "format": "application/json", "what": "Licence, citation and the meaning of every column of the CSV files"},
-    {"file": "SKILL.md", "format": "text/markdown", "what": "A skill a person can add to their own AI agent so that it uses these files"},
 ]
 
 RAW = "https://raw.githubusercontent.com/apapadogiannis/covered-call-monitor/main/api/"
-SKILL = f"""---
-name: covered-call-monitor
-description: Total returns, written call positions, structured notes and net flows of US covered-call, buy-write and premium-income funds (QYLD, XYLD, RYLD, JEPI, JEPQ and about a hundred others), computed and corrected each quarter from the reports the funds file with the SEC. Use when asked how a covered-call fund has done against its index fund, how much of a fund is covered by written calls, which funds hold their options inside notes, or how the category compares. Not for current yields, prices or anything after the latest quarterly report.
----
-
-# Covered-Call Monitor
-
-A public page and a set of data files, updated each quarter. This skill tells you where the files
-are and how to read them. It holds no figures: fetch them each time, because they change.
-
-## Steps
-
-1. Fetch the guide and read it first: {SITE}llms.txt
-   It states what is covered, what was corrected in the source, how to read the figures and what
-   they cannot answer.
-2. Fetch only the file the question needs:
-   - one fund: find it in {SITE}index.json (small), then fetch its own file, {SITE}funds/<file>,
-     which holds its record, every month and every report
-   - a ranking across funds: {SITE}funds.json
-   - monthly total returns and net flows of every fund: {SITE}monthly.csv
-   - one row per quarterly report (net assets, written calls, notes): {SITE}reports.csv
-   - the meaning of every column and field: {SITE}datapackage.json
-3. If that address cannot be reached, the same files are at {RAW}
-
-## Reading rules
-
-- Find a fund by its ticker where it has one, otherwise by its full name. Names can differ by one
-  word between two different funds.
-- To set a fund beside its index fund, use `against_benchmark`. It gives both over the same months.
-  Do not compare two records' own figures: their periods can end in different months, and
-  `total_return_pct.to` says when each ends.
-- The gap to the index fund is not the cost of the options alone: these funds carry about half the
-  market risk of their index fund. Give `against_benchmark.risk` with it: beta, volatility, and the
-  gap to a mix of the index fund and Treasury bills with the same market exposure.
-- Returns are total returns on net asset value with distributions reinvested, not market-price
-  returns. For a closed-end fund they are not what a shareholder earned.
-- A fund with `call_exposure_in_notes` true writes calls through structured notes: the filing gives
-  neither its strikes nor the share of the portfolio covered. A fund with
-  `no_overlay_on_report_date` true may still write options that expire the same day.
-- Use single months only where `month_order.order` is "as filed" or "reversed", or for the middle
-  month of a report. Returns over whole reports are safe for every fund.
-- The data end at the latest quarterly report, which is filed about two months after its date. Say
-  how old the figures are.
-- The files hold no distribution yield, no price and no recommendation.
-
-## Credit
-
-The figures are under CC BY 4.0, whose one condition is credit. When you use one, cite it with the
-"Cite as" line of the guide.
-
-Page: {SITE}  Code: {REPO}  Author: Agisilaos Papadogiannis
-"""
+# One skill covers every tool and paper of the account. It sends an agent to this guide.
+SKILL_FOR_AGENTS = "https://raw.githubusercontent.com/apapadogiannis/apapadogiannis/main/skill/SKILL.md"
 
 
 def r(x, d=4):
@@ -198,6 +149,8 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path], stoppe
         fid = last["series_id"] or key
         end = last["report_date"][:7]
         ov, nt = overlay(last), notes(last)
+        dist = distributions(reps, ret, flow)
+        by_quarter = {q["to"]: q["rate"] for q in dist["quarters"]}
         span = lambda n: compound(ret, [month_back(end, k) for k in range(n - 1, -1, -1)])
         ann = lambda n: None if span(n) is None else ((1 + span(n) / 100) ** (12 / n) - 1) * 100
         funds.append({
@@ -224,6 +177,10 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path], stoppe
             "no_overlay_on_report_date": (not is_bench) and ov["written_calls"] == 0 and nt["count"] == 0,
             "structured_notes": {"count": nt["count"], "pct_net_assets": r(nt["pct"], 2),
                                  "issuers": [i["issuer"] for i in nt["issuers"]]},
+            "distributions": {
+                "last_12_months": dist["last_12_months"] and {"from": dist["last_12_months"]["from"], "to": dist["last_12_months"]["to"],
+                                                              "pct_net_assets": r(dist["last_12_months"]["rate"], 2)},
+                "quarters": [{"to": q["to"], "pct_net_assets": r(q["rate"], 2)} for q in dist["quarters"]]},
             "flow_months_not_used": odd})
         mine = {"monthly": [], "reports": []}
         own[funds[-1]["file"]] = (funds[-1], mine)
@@ -241,12 +198,14 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path], stoppe
             report_rows.append([fid, tick.get(key) or "", rep["name"], rep["report_date"], rep["filing_date"],
                                 rep["net_assets"], "" if c3 is None else r(c3, 4),
                                 "" if any(f is None for f in f3) else round(sum(f3), 2), o["written_calls"],
+                                "" if e not in by_quarter else r(by_quarter[e], 2),
                                 "" if o["notional_pct"] is None else r(o["notional_pct"], 2), n["count"],
                                 "" if n["pct"] is None else r(n["pct"], 2)])
             mine["reports"].append({"report_date": rep["report_date"], "filing_date": rep["filing_date"],
                                     "net_assets_usd": rep["net_assets"], "total_return_3m_pct": r(c3, 4),
                                     "net_flow_3m_usd": None if any(f is None for f in f3) else round(sum(f3), 2),
                                     "written_calls": o["written_calls"],
+                                    "distributions_3m_pct_net_assets": r(by_quarter.get(e), 2),
                                     "calls_face_value_pct_net_assets": r(o["notional_pct"], 2),
                                     "notes": n["count"], "notes_pct_net_assets": r(n["pct"], 2)})
 
@@ -324,10 +283,13 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
 5. Redemptions are filed by some funds as negative numbers (QYLD from 2020 to early 2024, for one). They
    are read as outflows of that size. Only a month with negative sales or reinvestments is left out.
 6. Amended reports replace the report they amend. A fund whose identifier changed keeps one series.
-7. Market risk. Each fund with an index fund is also set beside a mix of that index fund and
+7. Distributions. The filings state none. They are implied from net assets, total returns and
+   flows, quarter by quarter, and given as a rate on net assets. Checked on the three index funds,
+   whose dividend yields are known: {", ".join(f"{f['ticker']} {f['distributions']['last_12_months']['pct_net_assets']:.1f}%" for f in funds if f['role'] == 'benchmark' and f['distributions']['last_12_months'])} over the last twelve months.
+8. Market risk. Each fund with an index fund is also set beside a mix of that index fund and
    four-week Treasury bills with the fund's own beta, so that lower market exposure is not read as
    the cost of the options.
-8. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
+9. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
    5 years match those published for the funds.
 
 ## Files
@@ -342,15 +304,15 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
 - monthly.csv: columns id, ticker, name, month, total_return_pct, net_flow_usd, month_order.
 - reports.csv: one row per quarterly report: id, ticker, name, report_date, filing_date,
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
-  calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
+  distributions_3m_pct_net_assets, calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
 - data.json: what the page draws from, close to 1 MB: the monthly path of every fund beside its
   index fund (`funds[].months`), five funds in detail with their option positions (`detail`), and
   the totals by name type (`types`) and for the category (`meta`, `category`). Its keys are the
   page's own. You rarely need it: funds.json has each fund's comparison with its index fund.
 - datapackage.json: the licence, the citation, and the meaning of every column of the two CSV
   files and every field of funds.json.
-- SKILL.md: a skill a person can add to their own AI agent so that it comes to these files when
-  asked about a covered-call fund. It holds addresses and reading rules, no figures.
+- A skill for an AI assistant: one skill covers this tool and the rest of the author's work, and
+  sends the assistant to this guide. {SKILL_FOR_AGENTS}
 
 All files are at {SITE} (for example {SITE}funds.json). In the repository the same
 files are under api/. Every file of one build states the same latest report date; if two files
@@ -388,6 +350,11 @@ you fetched disagree on it, one is a cached copy, so fetch again.
   Report that gap with the gap to the index fund. The beta is measured over the same months, so
   the mix is a reading in hindsight. No index fund is assigned to most funds: {meta['funds_with_index_fund']} of the
   {meta['funds_in_category']} that still report have one.
+- `distributions` is an estimate implied by the filings, not a filed figure. Call it "the
+  distribution rate implied by the fund's filings, on net asset value", give the twelve-month
+  figure and not a single quarter, and say it is good to within a point or two a year. It is not a yield
+  on the price an investor pays, and a high rate is not a high return: compare it with the total
+  return over the same months, which already counts every distribution.
 - Net flows: for a fund whose `month_order.order` is "reversed", single months of flow are in the
   order filed, which may be reversed too. Sums over the three months of a report are safe.
 - A fund with `no_overlay_on_report_date: true` lists no written call and no note in its latest
@@ -403,7 +370,8 @@ you fetched disagree on it, one is a cached copy, so fetch again.
 
 ## Do not use this for
 
-- Distribution yield, distributions per share, or return of capital: not in these filings.
+- Distributions per share, the split between income and return of capital, or a yield on the
+  market price: not in these filings. The distribution rate here is implied, on net asset value.
 - Anything after the latest report date, or daily prices.
 - European (UCITS) funds.
 - Strikes or coverage of funds that hold their options inside notes: the filing does not give them.
@@ -448,9 +416,9 @@ here are computed from SEC filings and are not taken from the article.
                                 monthly_rows),
            "reports.csv": table(["id", "ticker", "name", "report_date", "filing_date", "net_assets_usd",
                                  "total_return_3m_pct", "net_flow_3m_usd", "written_calls",
-                                 "calls_face_value_pct_net_assets", "notes", "notes_pct_net_assets"], report_rows),
+                                 "distributions_3m_pct_net_assets", "calls_face_value_pct_net_assets", "notes", "notes_pct_net_assets"], report_rows),
            "datapackage.json": json.dumps(package, indent=1) + "\n",
-           "llms.txt": guide, "SKILL.md": SKILL}
+           "llms.txt": guide}
     for d in dirs:
         (d / "funds").mkdir(parents=True, exist_ok=True)
         for name, text in out.items():

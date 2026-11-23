@@ -36,10 +36,13 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
 5. Redemptions are filed by some funds as negative numbers (QYLD from 2020 to early 2024, for one). They
    are read as outflows of that size. Only a month with negative sales or reinvestments is left out.
 6. Amended reports replace the report they amend. A fund whose identifier changed keeps one series.
-7. Market risk. Each fund with an index fund is also set beside a mix of that index fund and
+7. Distributions. The filings state none. They are implied from net assets, total returns and
+   flows, quarter by quarter, and given as a rate on net assets. Checked on the three index funds,
+   whose dividend yields are known: QQQ -0.4%, IVV 1.0%, IWM 1.6% over the last twelve months.
+8. Market risk. Each fund with an index fund is also set beside a mix of that index fund and
    four-week Treasury bills with the fund's own beta, so that lower market exposure is not read as
    the cost of the options.
-8. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
+9. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
    5 years match those published for the funds.
 
 ## Files
@@ -54,15 +57,15 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
 - monthly.csv: columns id, ticker, name, month, total_return_pct, net_flow_usd, month_order.
 - reports.csv: one row per quarterly report: id, ticker, name, report_date, filing_date,
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
-  calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
+  distributions_3m_pct_net_assets, calls_face_value_pct_net_assets, notes, notes_pct_net_assets.
 - data.json: what the page draws from, close to 1 MB: the monthly path of every fund beside its
   index fund (`funds[].months`), five funds in detail with their option positions (`detail`), and
   the totals by name type (`types`) and for the category (`meta`, `category`). Its keys are the
   page's own. You rarely need it: funds.json has each fund's comparison with its index fund.
 - datapackage.json: the licence, the citation, and the meaning of every column of the two CSV
   files and every field of funds.json.
-- SKILL.md: a skill a person can add to their own AI agent so that it comes to these files when
-  asked about a covered-call fund. It holds addresses and reading rules, no figures.
+- A skill for an AI assistant: one skill covers this tool and the rest of the author's work, and
+  sends the assistant to this guide. https://raw.githubusercontent.com/apapadogiannis/apapadogiannis/main/skill/SKILL.md
 
 All files are at https://apapadogiannis.github.io/covered-call-monitor/ (for example https://apapadogiannis.github.io/covered-call-monitor/funds.json). In the repository the same
 files are under api/. Every file of one build states the same latest report date; if two files
@@ -100,6 +103,11 @@ you fetched disagree on it, one is a cached copy, so fetch again.
   Report that gap with the gap to the index fund. The beta is measured over the same months, so
   the mix is a reading in hindsight. No index fund is assigned to most funds: 19 of the
   87 that still report have one.
+- `distributions` is an estimate implied by the filings, not a filed figure. Call it "the
+  distribution rate implied by the fund's filings, on net asset value", give the twelve-month
+  figure and not a single quarter, and say it is good to within a point or two a year. It is not a yield
+  on the price an investor pays, and a high rate is not a high return: compare it with the total
+  return over the same months, which already counts every distribution.
 - Net flows: for a fund whose `month_order.order` is "reversed", single months of flow are in the
   order filed, which may be reversed too. Sums over the three months of a report are safe.
 - A fund with `no_overlay_on_report_date: true` lists no written call and no note in its latest
@@ -115,7 +123,8 @@ you fetched disagree on it, one is a cached copy, so fetch again.
 
 ## Do not use this for
 
-- Distribution yield, distributions per share, or return of capital: not in these filings.
+- Distributions per share, the split between income and return of capital, or a yield on the
+  market price: not in these filings. The distribution rate here is implied, on net asset value.
 - Anything after the latest report date, or daily prices.
 - European (UCITS) funds.
 - Strikes or coverage of funds that hold their options inside notes: the filing does not give them.
