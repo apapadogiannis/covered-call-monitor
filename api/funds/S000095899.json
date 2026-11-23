@@ -1,0 +1,139 @@
+{
+ "about": "Covered-Call Monitor: one fund. Fields as in funds.json, monthly.csv and reports.csv; see llms.txt and datapackage.json.",
+ "reports_to": "2026-07-31",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
+ "fund": {
+  "id": "S000095899",
+  "name": "WisdomTree Equity Premium Income Digital Fund",
+  "ticker": "WTPIX",
+  "file": "funds/S000095899.json",
+  "role": "fund",
+  "name_type": "Premium income",
+  "benchmark": null,
+  "against_benchmark": null,
+  "still_reporting": true,
+  "first_report": "2025-12-31",
+  "latest_report": "2026-06-30",
+  "latest_filing": "2026-08-31",
+  "reports": 3,
+  "months": 6,
+  "first_month": "2026-01",
+  "latest_month": "2026-06",
+  "net_assets_usd": 1626572.26,
+  "total_return_pct": {
+   "to": "2026-06",
+   "3_months": 5.5716,
+   "12_months": null,
+   "36_months_a_year": null,
+   "60_months_a_year": null
+  },
+  "month_order": {
+   "order": "not determined",
+   "compared_with": null,
+   "reports_compared": 0,
+   "misfit_as_filed": null,
+   "misfit_reversed": null
+  },
+  "written_calls": {
+   "positions": 0,
+   "face_value_pct_net_assets": null,
+   "strikes_taken_from_title": 0,
+   "nearest_expiration": null
+  },
+  "call_exposure_in_notes": false,
+  "no_overlay_on_report_date": true,
+  "structured_notes": {
+   "count": 0,
+   "pct_net_assets": null,
+   "issuers": []
+  },
+  "flow_months_not_used": []
+ },
+ "monthly": [
+  {
+   "month": "2025-10",
+   "total_return_pct": null,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2025-11",
+   "total_return_pct": null,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2025-12",
+   "total_return_pct": null,
+   "net_flow_usd": 1414034.0
+  },
+  {
+   "month": "2026-01",
+   "total_return_pct": 1.69,
+   "net_flow_usd": 16347.98
+  },
+  {
+   "month": "2026-02",
+   "total_return_pct": -0.28,
+   "net_flow_usd": 28359.4
+  },
+  {
+   "month": "2026-03",
+   "total_return_pct": -3.18,
+   "net_flow_usd": 51642.54
+  },
+  {
+   "month": "2026-04",
+   "total_return_pct": 3.78,
+   "net_flow_usd": 65396.18
+  },
+  {
+   "month": "2026-05",
+   "total_return_pct": 1.92,
+   "net_flow_usd": 52396.22
+  },
+  {
+   "month": "2026-06",
+   "total_return_pct": -0.19,
+   "net_flow_usd": -571.69
+  }
+ ],
+ "reports": [
+  {
+   "report_date": "2025-12-31",
+   "filing_date": "2026-02-27",
+   "net_assets_usd": 1426532.16,
+   "total_return_3m_pct": null,
+   "net_flow_3m_usd": 1414034.0,
+   "written_calls": 0,
+   "calls_face_value_pct_net_assets": null,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2026-03-31",
+   "filing_date": "2026-06-01",
+   "net_assets_usd": 1467035.36,
+   "total_return_3m_pct": -1.8194,
+   "net_flow_3m_usd": 96349.92,
+   "written_calls": 0,
+   "calls_face_value_pct_net_assets": null,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2026-06-30",
+   "filing_date": "2026-08-31",
+   "net_assets_usd": 1626572.26,
+   "total_return_3m_pct": 5.5716,
+   "net_flow_3m_usd": 117220.71,
+   "written_calls": 0,
+   "calls_face_value_pct_net_assets": null,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  }
+ ]
+}

@@ -3,7 +3,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from monitor.build import build, compound, filed_newest_first, month_back, monthly, overlay, strike_from_title  # noqa: E402
+ROOT_API = Path(__file__).resolve().parent.parent / "api"
+from monitor.build import build, compound, filed_newest_first, month_back, monthly, overlay, risk, strike_from_title  # noqa: E402
 from monitor.update import quarters_since  # noqa: E402
 from datetime import date  # noqa: E402
 
@@ -29,6 +30,9 @@ assert abs(compound(ret, ["2026-01", "2026-02"]) - 3.02) < 1e-9 and compound(ret
 # A negative sales figure is a filing oddity: the month is reported as not used.
 _, flow, odd = monthly([report("2026-03-31", (1, 2, 3), flows=((-5.0, 0.0, 1.0), (2.0, 0.0, 1.0), (2.0, 0.0, 1.0)))])
 assert odd == ["2026-01"] and flow["2026-01"] is None and flow["2026-02"] == 1.0
+# Redemptions filed as a negative number are an outflow of that size: the month is used.
+_, flow, odd = monthly([report("2026-03-31", (1, 2, 3), flows=((5.0, 1.0, -2.0), (5.0, 1.0, 2.0), (2.0, 0.0, 1.0)))])
+assert odd == [] and flow["2026-01"] == flow["2026-02"] == 4.0
 
 
 # A fund that files newest first is recognised from its index fund, and read the right way round.
@@ -41,6 +45,23 @@ assert not filed_newest_first(straight, bench)["newest_first"]
 # Months before a fund existed (filed as zero) and its first part month are dropped.
 ret, _, _ = monthly([report("2026-03-31", (0, 2.0, 1.0)), report("2026-06-30", (0, 1.0, 1.0))])
 assert sorted(ret) == ["2026-03", "2026-04", "2026-05", "2026-06"] and ret["2026-04"] == 0
+# A fund that started in the first month of its first report files no zero before it. When the fund
+# enters the data after the form's first year, that first month is its part month and is dropped.
+new = [report("2026-03-31", (0.4, 2.0, 1.0)), report("2026-06-30", (3.0, 1.0, 1.0))]
+assert sorted(monthly(new, entered_late=True)[0]) == ["2026-02", "2026-03", "2026-04", "2026-05", "2026-06"]
+assert sorted(monthly(new)[0])[0] == "2026-01"                       # a fund on file from the start keeps it
+assert sorted(monthly([report("2026-03-31", (1.0, 2.0, 0.4))], newest_first=True, entered_late=True)[0]) == ["2026-02", "2026-03"]
+
+# Market risk beside the index fund. A fund that is exactly half index fund and half Treasury bills has
+# a beta of one half, half the volatility, and no gap to the mix with the same market risk.
+idx = [4.0, -6.0, 3.0, 1.5, -2.5, 5.0, 0.5, -1.0] * 3
+half = [{"fund": 0.3 + 0.5 * (b - 0.3), "benchmark": b, "cash": 0.3} for b in idx]
+k = risk(half, 1)
+assert abs(k["beta"] - 0.5) < 1e-12 and abs(k["gap_to_matched_mix"]) < 1e-9 and abs(k["correlation"] - 1) < 1e-12
+assert abs(k["volatility_fund"] / k["volatility_benchmark"] - 0.5) < 1e-12 and k["gap_a_year"] < 0
+assert k["largest_fall_benchmark"] < k["largest_fall_fund"] < 0 and k["periods"] == 24
+assert risk(half[:23], 1) is None and risk(half[:12], 3) is not None and risk(half[:11], 3) is None
+assert risk([{**half[0], "cash": None}] + half[1:], 1) is None        # no bill rate, no mix
 
 
 def call(title, balance, strike, unit="NC"):
@@ -93,13 +114,39 @@ with tempfile.TemporaryDirectory() as tmp:
     header = (Path(tmp) / "reports.csv").open(encoding="utf-8").readline().strip().split(",")
     assert header == [f["name"] for f in pkg["resources"][1]["schema"]["fields"]]
     # Every fund still reporting can be opened on the page, in steps that match what is known of its months.
-    assert len(d["funds"]) == d["meta"]["funds_in_category"] and all(f["months"] for f in d["funds"])
+    # A fund with no full period on file yet (one report, started inside it) is in the category table only.
+    shown = {f["id"] for f in d["funds"]}
+    absent = [c for c in d["category"] if (c["series_id"] or c["name"]) not in shown]
+    assert len(d["funds"]) + len(absent) == d["meta"]["funds_in_category"] and all(f["months"] for f in d["funds"])
+    assert len(absent) <= 3 and all(c["return_3m"] is None for c in absent), absent
     assert all(f["step"] == (1 if f["month_order"] in ("as filed", "reversed") else 3) for f in d["funds"])
     assert all((f["benchmark"] is None) == (f["months"][0]["benchmark"] is None) for f in d["funds"])
     assert "10.3905/jbis.2026.001" in doc["related_article"]["doi"]
     skill = (Path(tmp) / "SKILL.md").read_text(encoding="utf-8")       # a valid header, real files, no figures
     assert skill.startswith("---\nname: covered-call-monitor\ndescription: ")
     assert all(n in skill and (Path(tmp) / n).exists() for n in ("llms.txt", "funds.json", "monthly.csv", "reports.csv", "datapackage.json"))
+    # Each fund beside its index fund carries its market risk, and the equal-risk mix lies between bills and the index fund.
+    by_ticker = {f["ticker"]: f for f in funds if f["ticker"]}
+    for t in ("QYLD", "XYLD", "RYLD", "JEPI", "JEPQ"):
+        a = by_ticker[t]["against_benchmark"]
+        k, w = a["risk"], a["longest_common_period"]
+        assert 0.3 < k["beta"] < 0.9 and k["volatility_fund"] < k["volatility_benchmark"], (t, k)
+        assert 0 < k["matched_mix"] < w["benchmark"] and abs(k["gap_to_matched_mix"] - (w["fund"] - k["matched_mix"])) < 1e-3
+        assert abs(k["gap_a_year"] - w["gap_a_year"]) < 1e-3 and k["periods"] == w["months"]
+    # Funds that stopped reporting keep their comparison, so the files have no survivorship gap.
+    gone = [f for f in funds if f["role"] == "fund" and not f["still_reporting"]]
+    assert any(f["against_benchmark"] for f in gone) and all((f["benchmark"] is None) == (f["against_benchmark"] is None) for f in gone)
+    # Negative redemptions are used; only negative sales or reinvestments leave a month out.
+    assert sum(len(f["flow_months_not_used"]) for f in funds) < 40
+    # Every fund has its own small file, listed in a short index, and it says what funds.json says.
+    index = json.loads((Path(tmp) / "index.json").read_text(encoding="utf-8"))
+    assert len(index["funds"]) == len(funds) == len({f["file"] for f in funds})
+    assert (Path(tmp) / "index.json").stat().st_size < 40_000
+    for f in funds:
+        one = json.loads((Path(tmp) / f["file"]).read_text(encoding="utf-8"))
+        assert one["fund"] == f and len(one["reports"]) == f["reports"] and one["cite_as"] == doc["cite_as"]
+        assert sum(1 for m in one["monthly"] if m["total_return_pct"] is not None) == f["months"]
+    assert {p.name for p in (ROOT_API / "funds").glob("*.json")} == {f["file"].split("/")[1] for f in funds}, "a stale file in api/funds"
     for name in ("llms.txt", "reports.csv"):
         assert (Path(tmp) / name).stat().st_size > 1000, name
 print("all checks pass")

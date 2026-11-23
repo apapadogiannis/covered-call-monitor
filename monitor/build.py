@@ -19,6 +19,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 STORE = ROOT / "data" / "nport"
+BILLS = ROOT / "data" / "rates" / "treasury_bill_4w_daily.csv"
+ON_FILE_FROM_THE_START = "2020-06-30"   # small fund groups first filed the form for the quarter to March 2020
 
 
 def rows(q: Path, name: str):
@@ -138,7 +140,25 @@ def month_order(reps: list[dict], benches: dict[str, dict[str, float]]) -> dict:
             "misfit_as_filed": f, "misfit_reversed": r}
 
 
-def monthly(reps: list[dict], newest_first: bool = False) -> tuple[dict[str, float], dict[str, float | None], list[str]]:
+def cash_returns() -> dict[str, float]:
+    """Return of US Treasury bills in each calendar month, in per cent.
+
+    A month's return is the four-week bill rate (coupon equivalent, a year) on the last day of the
+    month before, divided by twelve: what a bill bought at the start of the month pays over it.
+    """
+    if not BILLS.exists():
+        return {}
+    last: dict[str, tuple[str, float]] = {}
+    with BILLS.open(encoding="utf-8", newline="") as f:
+        for r in csv.DictReader(f):
+            ym, v = r["date"][:7], num(r["yield_4w"])
+            if v is not None and (ym not in last or r["date"] > last[ym][0]):
+                last[ym] = (r["date"], v)
+    return {month_back(ym, -1): v / 12 for ym, (_, v) in last.items()}
+
+
+def monthly(reps: list[dict], newest_first: bool = False,
+            entered_late: bool = False) -> tuple[dict[str, float], dict[str, float | None], list[str]]:
     """Monthly total return (%) and net flow, by month, joined across a fund's reports.
 
     Each report carries the three months that end at its report date. A later report overrides an
@@ -147,7 +167,15 @@ def monthly(reps: list[dict], newest_first: bool = False) -> tuple[dict[str, flo
     reorganised) therefore keeps one unbroken series.
 
     A fund's first report can cover months before it existed, filed as zero, and the month in
-    which it started, which is not a full month. Those months are dropped.
+    which it started, which is not a full month. Those months are dropped. A fund that started in
+    the first month of its first report files no zero before it, so for a fund that enters the
+    data after the form's first year (`entered_late`) the first month filed is dropped as well:
+    it is the month the fund started in. For a fund that only took a covered-call name later,
+    this drops one full month.
+
+    Redemptions are filed by some funds as negative numbers. A redemption is an outflow under
+    either sign, so its size is used. Negative sales or reinvestments have no such reading: that
+    month's net flow is reported as not used.
     """
     ret: dict[str, float] = {}
     flow: dict[str, float | None] = {}
@@ -163,6 +191,8 @@ def monthly(reps: list[dict], newest_first: bool = False) -> tuple[dict[str, flo
                 start += 1
             if 0 < start < 3:
                 start += 1          # the month the fund started in is a part month
+            elif start == 0 and entered_late:
+                start = 1           # a new fund with no zero filed: its first month is the part month
         for i in range(3):
             ym = month_back(end, 2 - i)
             if vals and i >= start and vals[i] is not None:
@@ -170,11 +200,11 @@ def monthly(reps: list[dict], newest_first: bool = False) -> tuple[dict[str, flo
             s, v, d = r["flows"][i]
             if None in (s, v, d):
                 continue
-            if s < 0 or v < 0 or d < 0:      # a filing oddity: reported, not used
+            if s < 0 or v < 0:      # a filing oddity with no clear reading: reported, not used
                 flow[ym] = None
                 odd.append(ym)
             else:
-                flow[ym] = s + v - d
+                flow[ym] = s + v - abs(d)
     return ret, flow, sorted(set(odd))
 
 
@@ -185,6 +215,65 @@ def compound(ret: dict[str, float], months: list[str]):
     for m in months:
         g *= 1 + ret[m] / 100
     return (g - 1) * 100
+
+
+def risk(path: list[dict], step: int):
+    """How much market risk a fund carried beside its index fund, over one run of periods.
+
+    `path` holds the fund's, the index fund's and Treasury bills' return for each period of `step`
+    months. Returned, or None if the run is shorter than two years of months (three years of
+    three-month steps) or a bill rate is missing:
+
+      beta                     slope of the fund's return above bills on the index fund's
+      volatility               standard deviation of the period returns, as a yearly figure
+      largest_fall             the largest fall from an earlier period-end, in per cent
+      matched mix              beta in the index fund and the rest in Treasury bills, rebalanced each
+                               period: the same market exposure as the fund, without options
+    Beta is measured over the same periods it is applied to, so the mix is a reading in hindsight.
+    """
+    need = 24 if step == 1 else 12
+    rows = [(m["fund"], m["benchmark"], m.get("cash")) for m in path]
+    if len(rows) < need or any(c is None or b is None for _, b, c in rows):
+        return None
+    n = len(rows)
+    xf = [f - c for f, _, c in rows]
+    xb = [b - c for _, b, c in rows]
+    mean = lambda v: math.fsum(v) / n
+    mf, mb = mean(xf), mean(xb)
+    var_b = math.fsum((x - mb) ** 2 for x in xb)
+    var_f = math.fsum((x - mf) ** 2 for x in xf)
+    if var_b <= 0:
+        return None
+    cov = math.fsum((x - mf) * (y - mb) for x, y in zip(xf, xb))
+    beta = cov / var_b
+    year = 12 / step
+
+    def sd(v):
+        m = mean(v)
+        return math.sqrt(math.fsum((x - m) ** 2 for x in v) / (n - 1)) * math.sqrt(year)
+
+    def fall(v):
+        g = peak = 1.0
+        worst = 0.0
+        for x in v:
+            g *= 1 + x / 100
+            peak = max(peak, g)
+            worst = min(worst, g / peak - 1)
+        return worst * 100
+
+    gf = gb = gm = 1.0
+    for f, b, c in rows:
+        gf *= 1 + f / 100
+        gb *= 1 + b / 100
+        gm *= 1 + (c + beta * (b - c)) / 100
+    a_year = lambda g: (g ** (year / n) - 1) * 100
+    return {"periods": n, "months_per_period": step, "beta": beta,
+            "correlation": cov / math.sqrt(var_f * var_b) if var_f > 0 else None,
+            "volatility_fund": sd([f for f, _, _ in rows]), "volatility_benchmark": sd([b for _, b, _ in rows]),
+            "largest_fall_fund": fall([f for f, _, _ in rows]), "largest_fall_benchmark": fall([b for _, b, _ in rows]),
+            "matched_mix": (gm - 1) * 100, "gap_to_matched_mix": (gf - gm) * 100,
+            "fund_a_year": a_year(gf), "benchmark_a_year": a_year(gb), "matched_mix_a_year": a_year(gm),
+            "gap_a_year": a_year(gf) - a_year(gb), "gap_to_matched_mix_a_year": a_year(gf) - a_year(gm)}
 
 
 CONTRACT = 100   # shares per listed US option contract, equity and index alike
@@ -296,7 +385,8 @@ def static_text(data: dict) -> dict[str, str]:
                         f"each of {m['funds_in_category']} US funds it shows the total return, with every distribution "
                         "reinvested, the options the fund had written on its last report date, and the money moving in "
                         "and out. Where a fund follows a well-known index, its return is set beside an index fund on the "
-                        "same market, so the cost of the option strategy can be read off directly."),
+                        "same market, and beside a mix of that index fund and Treasury bills that carried the same "
+                        "market risk as the fund."),
         "<!--STAMP-->": f"{m['funds_in_category']} funds · reports to {day(m['reports_to'])} · updated quarterly",
         "<!--LEDECAT-->": (f"Every US-registered fund whose name says covered call, buy-write or premium income: "
                            f"{m['funds_in_category']} funds with {bn} in net assets. Funds built around buffers, "
@@ -309,7 +399,10 @@ def static_text(data: dict) -> dict[str, str]:
 def build(out: Path) -> dict:
     cfg = tomllib.loads((ROOT / "config" / "funds.toml").read_text(encoding="utf-8"))
     by_fund = load(cfg)
-    series = {k: monthly(v) for k, v in by_fund.items()}
+    cash = cash_returns()
+    late = {k: (not k.startswith("benchmark:")) and v[0]["report_date"] > ON_FILE_FROM_THE_START
+            for k, v in by_fund.items()}
+    series = {k: monthly(v, entered_late=late[k]) for k, v in by_fund.items()}
     bench = {b["ticker"]: b for b in cfg["benchmark"]}
     benches = {b["ticker"]: series["benchmark:" + b["ticker"]][0] for b in cfg["benchmark"]
                if "benchmark:" + b["ticker"] in series}
@@ -321,13 +414,14 @@ def build(out: Path) -> dict:
             continue
         orders[k] = month_order(v, benches)
         if orders[k]["order"] == "reversed":
-            series[k] = monthly(v, newest_first=True)
+            series[k] = monthly(v, newest_first=True, entered_late=late[k])
     order = {}
     for d in cfg["detail"]:
         if d["series"] in by_fund:
             order[d["series"]] = filed_newest_first(by_fund[d["series"]],
                                                     series.get("benchmark:" + d["benchmark"], ({},))[0])
-            series[d["series"]] = monthly(by_fund[d["series"]], newest_first=order[d["series"]]["newest_first"])
+            series[d["series"]] = monthly(by_fund[d["series"]], newest_first=order[d["series"]]["newest_first"],
+                                          entered_late=late[d["series"]])
             orders[d["series"]] = {"order": "reversed" if order[d["series"]]["newest_first"] else "as filed",
                                    "compared_with": d["benchmark"],
                                    "reports_compared": order[d["series"]]["reports_compared"],
@@ -365,8 +459,11 @@ def build(out: Path) -> dict:
             gf *= 1 + rf / 100
             if rb is not None:
                 gb *= 1 + rb / 100
-            path.append({"month": e, "fund": rf, "benchmark": rb, "fund_cum": (gf - 1) * 100,
-                         "benchmark_cum": (gb - 1) * 100 if rb is not None else None})
+            point = {"month": e, "fund": rf, "benchmark": rb, "fund_cum": (gf - 1) * 100,
+                     "benchmark_cum": (gb - 1) * 100 if rb is not None else None}
+            if bret is not None:              # Treasury bills over the same months, for the matched mix
+                point["cash"] = compound(cash, span_of(e))
+            path.append(point)
         ov, nt = overlay(last), notes(last)
         if not kind:
             kind = ("Holds equity-linked or other structured notes" if nt["count"] else
@@ -382,11 +479,16 @@ def build(out: Path) -> dict:
             "net_assets": last["net_assets"], "step": step, "months": path,
             "window": {"from": month_back(run[0], step - 1), "to": run[-1], "months": n,
                        "fund": (gf - 1) * 100, "benchmark": (gb - 1) * 100 if bret is not None else None,
-                       "gap": (gf - gb) * 100 if bret is not None else None} if run else None,
+                       "gap": (gf - gb) * 100 if bret is not None else None,
+                       "fund_a_year": (gf ** (12 / n) - 1) * 100 if n > 12 else None,
+                       "benchmark_a_year": (gb ** (12 / n) - 1) * 100 if n > 12 and bret is not None else None,
+                       "gap_a_year": ((gf ** (12 / n) - 1) - (gb ** (12 / n) - 1)) * 100
+                       if n > 12 and bret is not None else None} if run else None,
             "last12": {"from": month_back(last12[0], step - 1), "to": last12[-1],
                        "fund": compound(ret, [m for e in last12 for m in span_of(e)]),
                        "benchmark": compound(bret, [m for e in last12 for m in span_of(e)]) if bret is not None else None}
             if last12 else None,
+            "risk": risk(path, step) if bret is not None else None,
             "month_order": orders[key]["order"],
             "returns_order": order.get(key),
             "flows": [{"month": m, "net": flow[m]} for m in sorted(flow)],
@@ -439,6 +541,15 @@ def build(out: Path) -> dict:
             funds.append(record(key, None, benchmark_for(last["name"]), None))
     funds = [f for f in funds if f["months"]]
     funds.sort(key=lambda f: -(f["net_assets"] or 0))
+    # Funds that stopped reporting are not on the page, but the files keep them beside their index
+    # fund over the months they did report, so the comparison has no survivorship gap.
+    stopped = {}
+    for key, reps in by_fund.items():
+        last = reps[-1]
+        if last["role"] == "category" and last["report_date"][:7] < cutoff and benchmark_for(last["name"]):
+            rec = record(key, None, benchmark_for(last["name"]), None)
+            if rec["months"]:
+                stopped[rec["id"]] = rec
 
     types = []
     for label, _ in TYPES:
@@ -463,7 +574,7 @@ def build(out: Path) -> dict:
 
     out.mkdir(parents=True, exist_ok=True)
     from monitor.publish import publish          # the files written for programs and AI agents
-    data["meta"]["files"] = publish(cfg, by_fund, series, orders, data, cutoff, [ROOT / "api", out])
+    data["meta"]["files"] = publish(cfg, by_fund, series, orders, data, cutoff, [ROOT / "api", out], stopped)
     for d in (ROOT / "api", out):
         (d / "data.json").write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")
     template = (ROOT / "site" / "template.html").read_text(encoding="utf-8")

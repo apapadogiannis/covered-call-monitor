@@ -1,0 +1,113 @@
+{
+ "about": "Covered-Call Monitor: one fund. Fields as in funds.json, monthly.csv and reports.csv; see llms.txt and datapackage.json.",
+ "reports_to": "2026-07-31",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
+ "fund": {
+  "id": "S000099781",
+  "name": "Global X Ethereum Covered Call ETF",
+  "ticker": "EHCC",
+  "file": "funds/S000099781.json",
+  "role": "fund",
+  "name_type": "Covered call",
+  "benchmark": null,
+  "against_benchmark": null,
+  "still_reporting": true,
+  "first_report": "2026-04-30",
+  "latest_report": "2026-07-31",
+  "latest_filing": "2026-09-29",
+  "reports": 2,
+  "months": 3,
+  "first_month": "2026-05",
+  "latest_month": "2026-07",
+  "net_assets_usd": 1181434.01,
+  "total_return_pct": {
+   "to": "2026-07",
+   "3_months": -17.0084,
+   "12_months": null,
+   "36_months_a_year": null,
+   "60_months_a_year": null
+  },
+  "month_order": {
+   "order": "not determined",
+   "compared_with": null,
+   "reports_compared": 0,
+   "misfit_as_filed": null,
+   "misfit_reversed": null
+  },
+  "written_calls": {
+   "positions": 1,
+   "face_value_pct_net_assets": 52.4,
+   "strikes_taken_from_title": 0,
+   "nearest_expiration": "2026-08-07"
+  },
+  "call_exposure_in_notes": false,
+  "no_overlay_on_report_date": false,
+  "structured_notes": {
+   "count": 0,
+   "pct_net_assets": null,
+   "issuers": []
+  },
+  "flow_months_not_used": []
+ },
+ "monthly": [
+  {
+   "month": "2026-02",
+   "total_return_pct": null,
+   "net_flow_usd": 766274.09
+  },
+  {
+   "month": "2026-03",
+   "total_return_pct": null,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2026-04",
+   "total_return_pct": null,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2026-05",
+   "total_return_pct": 12.610121,
+   "net_flow_usd": 402608.1
+  },
+  {
+   "month": "2026-06",
+   "total_return_pct": -19.583964,
+   "net_flow_usd": 188059.56
+  },
+  {
+   "month": "2026-07",
+   "total_return_pct": -8.353867,
+   "net_flow_usd": 0.0
+  }
+ ],
+ "reports": [
+  {
+   "report_date": "2026-04-30",
+   "filing_date": "2026-06-29",
+   "net_assets_usd": 773353.62,
+   "total_return_3m_pct": null,
+   "net_flow_3m_usd": 766274.09,
+   "written_calls": 0,
+   "calls_face_value_pct_net_assets": null,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2026-07-31",
+   "filing_date": "2026-09-29",
+   "net_assets_usd": 1181434.01,
+   "total_return_3m_pct": -17.0084,
+   "net_flow_3m_usd": 590667.66,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 52.4,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  }
+ ]
+}

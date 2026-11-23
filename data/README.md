@@ -35,15 +35,20 @@ stored: it is about 450 MB per quarter and can be downloaded again from the SEC.
   contracts (the balance) x 100 x strike.
 - **Options on foreign indices** are struck in other currencies. A face value above 200% of net
   assets is not shown.
-- **Negative sales or redemptions** appear in a few reports. Such a month's net flow is not used and
-  the page says so.
+- **Redemptions filed as negative numbers.** Some funds file redemptions with a minus sign (about 400
+  fund-months, the Global X funds from 2020 to early 2024 among them). A redemption is an outflow
+  under either sign, so its size is used. **Negative sales or reinvestments** appear in about twenty
+  fund-months and have no such reading: that month's net flow is not used and the page says so.
 - **Monthly returns filed newest first.** The form asks for the three months oldest first. The
   Global X funds file them the other way round. For the funds shown in detail, `build.py` compares
   both readings with the fund's index fund over all reports and uses the one that fits (see
   `filed_newest_first`). With the correction, QYLD's 1-month, 3-month, 1-year, 3-year and 5-year
   returns to 30 June 2026 match those published for the fund.
 - **Months before a fund existed** are filed as zero in its first report. They are dropped, with the
-  part month in which the fund started.
+  part month in which the fund started. A fund that started in the first month of its first report
+  files no zero before it, so for a fund whose first report is dated after 30 June 2020 (by when
+  every fund group was filing the form) the first month filed is dropped as its part month. A fund
+  that only took a covered-call name later loses one full month by this rule.
 - **Funds that stop reporting.** A fund whose latest report is more than six months older than the
   newest report on file is no longer listed in the category.
 - **Several reports for one date.** An amended report replaces the earlier one for the same fund and
@@ -51,6 +56,14 @@ stored: it is about 450 MB per quarter and can be downloaded again from the SEC.
 - **Share classes.** Where a report lists several classes, the first class identifier is used.
 - **A fund's identity can change.** The Invesco QQQ Trust has no series identifier before it was
   reorganised and a new one after. Benchmarks are therefore matched by name as well.
+
+## Treasury bills
+
+`rates/treasury_bill_4w_daily.csv` is the US Treasury's daily four-week bill rate (coupon equivalent,
+per cent a year), from https://home.treasury.gov/resource-center/data-chart-center/interest-rates
+(US government work, public domain). A month's bill return is the rate on the last day of the month
+before, divided by twelve. It is the cash part of the mix of index fund and bills that each fund is
+set beside. Stored days are never rewritten; the update adds later days.
 
 ## Tickers
 

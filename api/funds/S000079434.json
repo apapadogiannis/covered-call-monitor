@@ -1,0 +1,428 @@
+{
+ "about": "Covered-Call Monitor: one fund. Fields as in funds.json, monthly.csv and reports.csv; see llms.txt and datapackage.json.",
+ "reports_to": "2026-07-31",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
+ "fund": {
+  "id": "S000079434",
+  "name": "KraneShares KWEB Covered Call Strategy ETF",
+  "ticker": "KLIP",
+  "file": "funds/S000079434.json",
+  "role": "fund",
+  "name_type": "Covered call",
+  "benchmark": null,
+  "against_benchmark": null,
+  "still_reporting": true,
+  "first_report": "2023-03-31",
+  "latest_report": "2026-06-30",
+  "latest_filing": "2026-08-28",
+  "reports": 14,
+  "months": 40,
+  "first_month": "2023-02",
+  "latest_month": "2026-06",
+  "net_assets_usd": 99321443.48,
+  "total_return_pct": {
+   "to": "2026-06",
+   "3_months": -5.7278,
+   "12_months": -8.3347,
+   "36_months_a_year": 5.8303,
+   "60_months_a_year": null
+  },
+  "month_order": {
+   "order": "not determined",
+   "compared_with": "IVV",
+   "reports_compared": 13,
+   "misfit_as_filed": 1330.0,
+   "misfit_reversed": 778.0
+  },
+  "written_calls": {
+   "positions": 6,
+   "face_value_pct_net_assets": 106.69,
+   "strikes_taken_from_title": 0,
+   "nearest_expiration": "2026-07-06"
+  },
+  "call_exposure_in_notes": false,
+  "no_overlay_on_report_date": false,
+  "structured_notes": {
+   "count": 0,
+   "pct_net_assets": null,
+   "issuers": []
+  },
+  "flow_months_not_used": [
+   "2024-12",
+   "2025-08"
+  ]
+ },
+ "monthly": [
+  {
+   "month": "2023-01",
+   "total_return_pct": null,
+   "net_flow_usd": 535586.25
+  },
+  {
+   "month": "2023-02",
+   "total_return_pct": -5.765772,
+   "net_flow_usd": 2414665.5
+  },
+  {
+   "month": "2023-03",
+   "total_return_pct": null,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2023-04",
+   "total_return_pct": 6.789263,
+   "net_flow_usd": 16487751.78
+  },
+  {
+   "month": "2023-05",
+   "total_return_pct": -5.112554,
+   "net_flow_usd": 13078507.14
+  },
+  {
+   "month": "2023-06",
+   "total_return_pct": -1.029132,
+   "net_flow_usd": 2569354.36
+  },
+  {
+   "month": "2023-07",
+   "total_return_pct": 0.64332,
+   "net_flow_usd": 33549707.25
+  },
+  {
+   "month": "2023-08",
+   "total_return_pct": -0.693965,
+   "net_flow_usd": 16674184.95
+  },
+  {
+   "month": "2023-09",
+   "total_return_pct": 6.277935,
+   "net_flow_usd": 32051334.65
+  },
+  {
+   "month": "2023-10",
+   "total_return_pct": 1.169174,
+   "net_flow_usd": 9005555.19
+  },
+  {
+   "month": "2023-11",
+   "total_return_pct": 5.445504,
+   "net_flow_usd": 4353838.09
+  },
+  {
+   "month": "2023-12",
+   "total_return_pct": -0.387085,
+   "net_flow_usd": 10965658.83
+  },
+  {
+   "month": "2024-01",
+   "total_return_pct": 4.085862,
+   "net_flow_usd": 19280088.19
+  },
+  {
+   "month": "2024-02",
+   "total_return_pct": 5.884275,
+   "net_flow_usd": 36476968.3
+  },
+  {
+   "month": "2024-03",
+   "total_return_pct": -8.290678,
+   "net_flow_usd": -3714125.87
+  },
+  {
+   "month": "2024-04",
+   "total_return_pct": -4.313167,
+   "net_flow_usd": 1048645.55
+  },
+  {
+   "month": "2024-05",
+   "total_return_pct": 0.017178,
+   "net_flow_usd": 24676687.32
+  },
+  {
+   "month": "2024-06",
+   "total_return_pct": 3.12424,
+   "net_flow_usd": 20015641.16
+  },
+  {
+   "month": "2024-07",
+   "total_return_pct": 4.472909,
+   "net_flow_usd": -6416671.96
+  },
+  {
+   "month": "2024-08",
+   "total_return_pct": 0.025688,
+   "net_flow_usd": -20736849.49
+  },
+  {
+   "month": "2024-09",
+   "total_return_pct": 0.516479,
+   "net_flow_usd": -13447988.51
+  },
+  {
+   "month": "2024-10",
+   "total_return_pct": 2.634369,
+   "net_flow_usd": -2782465.41
+  },
+  {
+   "month": "2024-11",
+   "total_return_pct": -0.578483,
+   "net_flow_usd": 4517963.78
+  },
+  {
+   "month": "2024-12",
+   "total_return_pct": -2.607822,
+   "net_flow_usd": null
+  },
+  {
+   "month": "2025-01",
+   "total_return_pct": 3.464789,
+   "net_flow_usd": -6576332.11
+  },
+  {
+   "month": "2025-02",
+   "total_return_pct": 1.087424,
+   "net_flow_usd": -5794183.96
+  },
+  {
+   "month": "2025-03",
+   "total_return_pct": 2.55906,
+   "net_flow_usd": -5481274.22
+  },
+  {
+   "month": "2025-04",
+   "total_return_pct": 4.705576,
+   "net_flow_usd": 807786.82
+  },
+  {
+   "month": "2025-05",
+   "total_return_pct": 2.998962,
+   "net_flow_usd": 804687.89
+  },
+  {
+   "month": "2025-06",
+   "total_return_pct": -4.898134,
+   "net_flow_usd": -6636615.16
+  },
+  {
+   "month": "2025-07",
+   "total_return_pct": 3.289684,
+   "net_flow_usd": 12404890.79
+  },
+  {
+   "month": "2025-08",
+   "total_return_pct": 3.865968,
+   "net_flow_usd": null
+  },
+  {
+   "month": "2025-09",
+   "total_return_pct": 2.728315,
+   "net_flow_usd": 2389224.58
+  },
+  {
+   "month": "2025-10",
+   "total_return_pct": -0.892836,
+   "net_flow_usd": 6959259.44
+  },
+  {
+   "month": "2025-11",
+   "total_return_pct": -2.548384,
+   "net_flow_usd": 1548861.67
+  },
+  {
+   "month": "2025-12",
+   "total_return_pct": 0.29418,
+   "net_flow_usd": 4111041.32
+  },
+  {
+   "month": "2026-01",
+   "total_return_pct": -5.598376,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2026-02",
+   "total_return_pct": -8.261432,
+   "net_flow_usd": 2142940.2
+  },
+  {
+   "month": "2026-03",
+   "total_return_pct": 5.171913,
+   "net_flow_usd": 6938816.6
+  },
+  {
+   "month": "2026-04",
+   "total_return_pct": -5.519897,
+   "net_flow_usd": -3946000.8
+  },
+  {
+   "month": "2026-05",
+   "total_return_pct": -3.574274,
+   "net_flow_usd": 4521232.1
+  },
+  {
+   "month": "2026-06",
+   "total_return_pct": 3.478505,
+   "net_flow_usd": 684645.81
+  }
+ ],
+ "reports": [
+  {
+   "report_date": "2023-03-31",
+   "filing_date": "2023-05-30",
+   "net_assets_usd": 4782577.94,
+   "total_return_3m_pct": null,
+   "net_flow_3m_usd": 2950251.75,
+   "written_calls": 2,
+   "calls_face_value_pct_net_assets": 97.68,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2023-06-30",
+   "filing_date": "2023-08-29",
+   "net_assets_usd": 34728665.4,
+   "total_return_3m_pct": 0.2868,
+   "net_flow_3m_usd": 32135613.28,
+   "written_calls": 12,
+   "calls_face_value_pct_net_assets": 104.4,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2023-09-30",
+   "filing_date": "2023-11-29",
+   "net_assets_usd": 109520346.13,
+   "total_return_3m_pct": 6.2194,
+   "net_flow_3m_usd": 82275226.85,
+   "written_calls": 16,
+   "calls_face_value_pct_net_assets": 79.63,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2023-12-31",
+   "filing_date": "2024-02-28",
+   "net_assets_usd": 125913291.49,
+   "total_return_3m_pct": 6.2654,
+   "net_flow_3m_usd": 24325052.11,
+   "written_calls": 9,
+   "calls_face_value_pct_net_assets": 65.83,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2024-03-31",
+   "filing_date": "2024-05-30",
+   "net_assets_usd": 163667142.06,
+   "total_return_3m_pct": 1.0734,
+   "net_flow_3m_usd": 52042930.62,
+   "written_calls": 12,
+   "calls_face_value_pct_net_assets": 80.89,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2024-06-30",
+   "filing_date": "2024-08-29",
+   "net_assets_usd": 185190810.9,
+   "total_return_3m_pct": -1.3067,
+   "net_flow_3m_usd": 45740974.03,
+   "written_calls": 4,
+   "calls_face_value_pct_net_assets": 85.37,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2024-09-30",
+   "filing_date": "2024-11-26",
+   "net_assets_usd": 137303669.23,
+   "total_return_3m_pct": 5.0395,
+   "net_flow_3m_usd": -40601509.96,
+   "written_calls": 5,
+   "calls_face_value_pct_net_assets": 99.19,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2024-12-31",
+   "filing_date": "2025-02-28",
+   "net_assets_usd": 121497590.48,
+   "total_return_3m_pct": -0.6204,
+   "net_flow_3m_usd": null,
+   "written_calls": 5,
+   "calls_face_value_pct_net_assets": 105.44,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2025-03-31",
+   "filing_date": "2025-05-29",
+   "net_assets_usd": 104568776.2,
+   "total_return_3m_pct": 7.2664,
+   "net_flow_3m_usd": -17851790.29,
+   "written_calls": 7,
+   "calls_face_value_pct_net_assets": 104.47,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2025-06-30",
+   "filing_date": "2025-08-28",
+   "net_assets_usd": 95438550.66,
+   "total_return_3m_pct": 2.5632,
+   "net_flow_3m_usd": -5024140.45,
+   "written_calls": 7,
+   "calls_face_value_pct_net_assets": 101.23,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2025-09-30",
+   "filing_date": "2025-11-26",
+   "net_assets_usd": 119541723.03,
+   "total_return_3m_pct": 10.2098,
+   "net_flow_3m_usd": null,
+   "written_calls": 12,
+   "calls_face_value_pct_net_assets": 101.32,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2025-12-31",
+   "filing_date": "2026-02-27",
+   "net_assets_usd": 120903176.16,
+   "total_return_3m_pct": -3.1343,
+   "net_flow_3m_usd": 12619162.43,
+   "written_calls": 9,
+   "calls_face_value_pct_net_assets": 109.97,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2026-03-31",
+   "filing_date": "2026-05-29",
+   "net_assets_usd": 111303119.63,
+   "total_return_3m_pct": -8.9183,
+   "net_flow_3m_usd": 9081756.8,
+   "written_calls": 6,
+   "calls_face_value_pct_net_assets": 105.7,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2026-06-30",
+   "filing_date": "2026-08-28",
+   "net_assets_usd": 99321443.48,
+   "total_return_3m_pct": -5.7278,
+   "net_flow_3m_usd": 1259877.11,
+   "written_calls": 6,
+   "calls_face_value_pct_net_assets": 106.69,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  }
+ ]
+}

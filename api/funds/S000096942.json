@@ -1,0 +1,87 @@
+{
+ "about": "Covered-Call Monitor: one fund. Fields as in funds.json, monthly.csv and reports.csv; see llms.txt and datapackage.json.",
+ "reports_to": "2026-07-31",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
+ "fund": {
+  "id": "S000096942",
+  "name": "Amplify XRP 3% Monthly Premium Income ETF",
+  "ticker": null,
+  "file": "funds/S000096942.json",
+  "role": "fund",
+  "name_type": "Premium income",
+  "benchmark": null,
+  "against_benchmark": null,
+  "still_reporting": false,
+  "first_report": "2025-12-31",
+  "latest_report": "2025-12-31",
+  "latest_filing": "2026-02-25",
+  "reports": 1,
+  "months": 1,
+  "first_month": "2025-12",
+  "latest_month": "2025-12",
+  "net_assets_usd": 5188136.58,
+  "total_return_pct": {
+   "to": "2025-12",
+   "3_months": null,
+   "12_months": null,
+   "36_months_a_year": null,
+   "60_months_a_year": null
+  },
+  "month_order": {
+   "order": "not determined",
+   "compared_with": null,
+   "reports_compared": 0,
+   "misfit_as_filed": null,
+   "misfit_reversed": null
+  },
+  "written_calls": {
+   "positions": 1,
+   "face_value_pct_net_assets": 43.98,
+   "strikes_taken_from_title": 0,
+   "nearest_expiration": "2026-01-06"
+  },
+  "call_exposure_in_notes": false,
+  "no_overlay_on_report_date": false,
+  "structured_notes": {
+   "count": 0,
+   "pct_net_assets": null,
+   "issuers": []
+  },
+  "flow_months_not_used": []
+ },
+ "monthly": [
+  {
+   "month": "2025-10",
+   "total_return_pct": null,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2025-11",
+   "total_return_pct": null,
+   "net_flow_usd": 3551928.0
+  },
+  {
+   "month": "2025-12",
+   "total_return_pct": -13.03,
+   "net_flow_usd": 2242764.0
+  }
+ ],
+ "reports": [
+  {
+   "report_date": "2025-12-31",
+   "filing_date": "2026-02-25",
+   "net_assets_usd": 5188136.58,
+   "total_return_3m_pct": null,
+   "net_flow_3m_usd": 5794692.0,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 43.98,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  }
+ ]
+}

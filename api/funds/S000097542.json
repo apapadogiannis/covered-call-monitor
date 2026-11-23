@@ -1,0 +1,134 @@
+{
+ "about": "Covered-Call Monitor: one fund. Fields as in funds.json, monthly.csv and reports.csv; see llms.txt and datapackage.json.",
+ "reports_to": "2026-07-31",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
+ "fund": {
+  "id": "S000097542",
+  "name": "Hartford Equity Premium Income ETF",
+  "ticker": "HEMI",
+  "file": "funds/S000097542.json",
+  "role": "fund",
+  "name_type": "Premium income",
+  "benchmark": null,
+  "against_benchmark": null,
+  "still_reporting": true,
+  "first_report": "2026-01-31",
+  "latest_report": "2026-07-31",
+  "latest_filing": "2026-09-29",
+  "reports": 3,
+  "months": 7,
+  "first_month": "2026-01",
+  "latest_month": "2026-07",
+  "net_assets_usd": 35198461.83,
+  "total_return_pct": {
+   "to": "2026-07",
+   "3_months": 3.3051,
+   "12_months": null,
+   "36_months_a_year": null,
+   "60_months_a_year": null
+  },
+  "month_order": {
+   "order": "not determined",
+   "compared_with": null,
+   "reports_compared": 0,
+   "misfit_as_filed": null,
+   "misfit_reversed": null
+  },
+  "written_calls": {
+   "positions": 6,
+   "face_value_pct_net_assets": 120.92,
+   "strikes_taken_from_title": 0,
+   "nearest_expiration": "2026-07-30"
+  },
+  "call_exposure_in_notes": false,
+  "no_overlay_on_report_date": false,
+  "structured_notes": {
+   "count": 0,
+   "pct_net_assets": null,
+   "issuers": []
+  },
+  "flow_months_not_used": []
+ },
+ "monthly": [
+  {
+   "month": "2025-12",
+   "total_return_pct": null,
+   "net_flow_usd": 11015797.0
+  },
+  {
+   "month": "2026-01",
+   "total_return_pct": 1.37,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2026-02",
+   "total_return_pct": -0.38,
+   "net_flow_usd": 20119897.98
+  },
+  {
+   "month": "2026-03",
+   "total_return_pct": -4.14,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2026-04",
+   "total_return_pct": 8.22,
+   "net_flow_usd": 1002012.08
+  },
+  {
+   "month": "2026-05",
+   "total_return_pct": 3.73,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2026-06",
+   "total_return_pct": -0.2,
+   "net_flow_usd": 1028220.68
+  },
+  {
+   "month": "2026-07",
+   "total_return_pct": -0.21,
+   "net_flow_usd": 1048999.95
+  }
+ ],
+ "reports": [
+  {
+   "report_date": "2026-01-31",
+   "filing_date": "2026-03-25",
+   "net_assets_usd": 11134399.56,
+   "total_return_3m_pct": null,
+   "net_flow_3m_usd": null,
+   "written_calls": 6,
+   "calls_face_value_pct_net_assets": 122.75,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2026-04-30",
+   "filing_date": "2026-06-25",
+   "net_assets_usd": 32787054.92,
+   "total_return_3m_pct": 3.3455,
+   "net_flow_3m_usd": 21121910.06,
+   "written_calls": 6,
+   "calls_face_value_pct_net_assets": 121.95,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2026-07-31",
+   "filing_date": "2026-09-29",
+   "net_assets_usd": 35198461.83,
+   "total_return_3m_pct": 3.3051,
+   "net_flow_3m_usd": 2077220.63,
+   "written_calls": 6,
+   "calls_face_value_pct_net_assets": 120.92,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  }
+ ]
+}

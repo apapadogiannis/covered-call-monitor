@@ -10,6 +10,9 @@ This file is written for AI agents and other programs. People should start at th
 
 ## Coverage
 
+- A fund is included when its name, as filed, says covered call, buy-write or premium income.
+  Funds that sell calls under another name (option income, enhanced income, overwrite) are not
+  included, and a few funds on bonds or other assets are. This is not every fund that writes calls.
 - 109 funds, of which 87 still report; 3 index funds as benchmarks.
 - Monthly figures from 2019-07; latest report on file 2026-07-31.
 - monthly.csv has 3622 rows and reports.csv 1215, index funds included.
@@ -27,17 +30,27 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
    The strike is repaired from the holding's title when the filed number is its tail.
 3. Option size. The "shares" field is filled in three different ways. Face value here is
    contracts x 100 x strike, from the holding's balance.
-4. Months before a fund existed are filed as zero. Their returns are removed, with the first part
-   month.
-5. Amended reports replace the report they amend. A fund whose identifier changed keeps one series.
-6. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
+4. Months before a fund existed are filed as zero. Their returns are removed, with the part month
+   the fund started in. A fund that started in the first month of its first report files no zero,
+   so for every fund that enters the data after June 2020 the first month filed is removed too.
+5. Redemptions are filed by some funds as negative numbers (QYLD from 2020 to early 2024, for one). They
+   are read as outflows of that size. Only a month with negative sales or reinvestments is left out.
+6. Amended reports replace the report they amend. A fund whose identifier changed keeps one series.
+7. Market risk. Each fund with an index fund is also set beside a mix of that index fund and
+   four-week Treasury bills with the fund's own beta, so that lower market exposure is not read as
+   the cost of the options.
+8. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
    5 years match those published for the funds.
 
 ## Files
 
-- funds.json: one record per fund. Start here, and use it for rankings and for one fund's latest
-  figures. `month_order.order` tells you whether that fund's monthly figures can be trusted month by
-  month. Every field is described in datapackage.json.
+- index.json: a short list of every fund (id, ticker, name, benchmark, whether it still reports) with
+  the address of its own file. Start here for a question about one fund.
+- funds/<file>.json: one fund: its record as in funds.json, every month and every report. Small
+  enough to read whole.
+- funds.json: one record per fund, about 150 KB. Use it for rankings and questions across funds.
+  `month_order.order` tells you whether a fund's monthly figures can be trusted month by month.
+  Every field is described in datapackage.json.
 - monthly.csv: columns id, ticker, name, month, total_return_pct, net_flow_usd, month_order.
 - reports.csv: one row per quarterly report: id, ticker, name, report_date, filing_date,
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
@@ -78,7 +91,17 @@ you fetched disagree on it, one is a cached copy, so fetch again.
   fund whose `to` differ cover different months and cannot be set side by side. The category total
   of net assets adds funds at their own report dates.
 - To set a fund beside its index fund, use `against_benchmark` in funds.json: it gives both over
-  the same months, with the months stated.
+  the same months, with the months stated. `gap` is in cumulative points over that fund's own
+  period, so do not compare it between funds; `gap_a_year` is the yearly rate.
+- The gap to the index fund is not the cost of the options alone. These funds carry about half the
+  market risk of their index fund, so in a rising market they trail it for that reason as well.
+  `against_benchmark.risk` gives the beta, the volatility and the largest fall of both, and
+  `gap_to_matched_mix`: the fund against beta in the index fund and the rest in Treasury bills.
+  Report that gap with the gap to the index fund. The beta is measured over the same months, so
+  the mix is a reading in hindsight. No index fund is assigned to most funds: 19 of the
+  87 that still report have one.
+- Net flows: for a fund whose `month_order.order` is "reversed", single months of flow are in the
+  order filed, which may be reversed too. Sums over the three months of a report are safe.
 - A fund with `no_overlay_on_report_date: true` lists no written call and no note in its latest
   report. Do not say it has no option overlay: funds that write options expiring the same day
   hold none at a report date.

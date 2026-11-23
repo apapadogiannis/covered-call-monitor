@@ -1,0 +1,191 @@
+{
+ "about": "Covered-Call Monitor: one fund. Fields as in funds.json, monthly.csv and reports.csv; see llms.txt and datapackage.json.",
+ "reports_to": "2026-07-31",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
+ "fund": {
+  "id": "S000081954",
+  "name": "Global X MSCI Emerging Markets Covered Call ETF",
+  "ticker": null,
+  "file": "funds/S000081954.json",
+  "role": "fund",
+  "name_type": "Covered call",
+  "benchmark": null,
+  "against_benchmark": null,
+  "still_reporting": false,
+  "first_report": "2024-01-31",
+  "latest_report": "2025-01-31",
+  "latest_filing": "2025-04-02",
+  "reports": 5,
+  "months": 13,
+  "first_month": "2023-12",
+  "latest_month": "2025-01",
+  "net_assets_usd": 2644743.23,
+  "total_return_pct": {
+   "to": "2025-01",
+   "3_months": -0.1276,
+   "12_months": 10.235,
+   "36_months_a_year": null,
+   "60_months_a_year": null
+  },
+  "month_order": {
+   "order": "not determined",
+   "compared_with": "QQQ",
+   "reports_compared": 4,
+   "misfit_as_filed": 132.7,
+   "misfit_reversed": 182.7
+  },
+  "written_calls": {
+   "positions": 1,
+   "face_value_pct_net_assets": 81.99,
+   "strikes_taken_from_title": 0,
+   "nearest_expiration": "2025-02-21"
+  },
+  "call_exposure_in_notes": false,
+  "no_overlay_on_report_date": false,
+  "structured_notes": {
+   "count": 0,
+   "pct_net_assets": null,
+   "issuers": []
+  },
+  "flow_months_not_used": []
+ },
+ "monthly": [
+  {
+   "month": "2023-11",
+   "total_return_pct": null,
+   "net_flow_usd": 249084.13
+  },
+  {
+   "month": "2023-12",
+   "total_return_pct": 2.428763,
+   "net_flow_usd": 252903.75
+  },
+  {
+   "month": "2024-01",
+   "total_return_pct": null,
+   "net_flow_usd": 1250475.0
+  },
+  {
+   "month": "2024-02",
+   "total_return_pct": 0.462797,
+   "net_flow_usd": 244291.13
+  },
+  {
+   "month": "2024-03",
+   "total_return_pct": 1.414951,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2024-04",
+   "total_return_pct": 1.727424,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2024-05",
+   "total_return_pct": 1.827048,
+   "net_flow_usd": -493534.24
+  },
+  {
+   "month": "2024-06",
+   "total_return_pct": 3.355069,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2024-07",
+   "total_return_pct": -2.401741,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2024-08",
+   "total_return_pct": -0.071958,
+   "net_flow_usd": 499926.4
+  },
+  {
+   "month": "2024-09",
+   "total_return_pct": 1.969905,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2024-10",
+   "total_return_pct": 1.749457,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2024-11",
+   "total_return_pct": 0.988759,
+   "net_flow_usd": 481727.9
+  },
+  {
+   "month": "2024-12",
+   "total_return_pct": 0.299958,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2025-01",
+   "total_return_pct": -1.401149,
+   "net_flow_usd": 248011.31
+  }
+ ],
+ "reports": [
+  {
+   "report_date": "2024-01-31",
+   "filing_date": "2024-04-01",
+   "net_assets_usd": 1703013.45,
+   "total_return_3m_pct": null,
+   "net_flow_3m_usd": 1752462.88,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 100.9,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2024-04-30",
+   "filing_date": "2024-07-01",
+   "net_assets_usd": 1958457.05,
+   "total_return_3m_pct": 3.6443,
+   "net_flow_3m_usd": 244291.13,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 100.08,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2024-07-31",
+   "filing_date": "2024-09-30",
+   "net_assets_usd": 1476089.26,
+   "total_return_3m_pct": 2.7157,
+   "net_flow_3m_usd": -493534.24,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 100.6,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2024-10-31",
+   "filing_date": "2024-12-30",
+   "net_assets_usd": 1983558.17,
+   "total_return_3m_pct": 3.6792,
+   "net_flow_3m_usd": 499926.4,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 102.01,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2025-01-31",
+   "filing_date": "2025-04-02",
+   "net_assets_usd": 2644743.23,
+   "total_return_3m_pct": -0.1276,
+   "net_flow_3m_usd": 729739.21,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 81.99,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  }
+ ]
+}

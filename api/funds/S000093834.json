@@ -1,0 +1,165 @@
+{
+ "about": "Covered-Call Monitor: one fund. Fields as in funds.json, monthly.csv and reports.csv; see llms.txt and datapackage.json.",
+ "reports_to": "2026-07-31",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
+ "fund": {
+  "id": "S000093834",
+  "name": "State Street(R) Consumer Discretionary Select Sector SPDR(R) Premium Income ETF",
+  "ticker": "XLYI",
+  "file": "funds/S000093834.json",
+  "role": "fund",
+  "name_type": "Premium income",
+  "benchmark": null,
+  "against_benchmark": null,
+  "still_reporting": true,
+  "first_report": "2025-09-30",
+  "latest_report": "2026-06-30",
+  "latest_filing": "2026-08-28",
+  "reports": 4,
+  "months": 11,
+  "first_month": "2025-08",
+  "latest_month": "2026-06",
+  "net_assets_usd": 2079763.84,
+  "total_return_pct": {
+   "to": "2026-06",
+   "3_months": 7.094,
+   "12_months": null,
+   "36_months_a_year": null,
+   "60_months_a_year": null
+  },
+  "month_order": {
+   "order": "as filed",
+   "compared_with": "IVV",
+   "reports_compared": 4,
+   "misfit_as_filed": 67.5,
+   "misfit_reversed": 335.9
+  },
+  "written_calls": {
+   "positions": 1,
+   "face_value_pct_net_assets": 102.66,
+   "strikes_taken_from_title": 0,
+   "nearest_expiration": "2026-07-17"
+  },
+  "call_exposure_in_notes": false,
+  "no_overlay_on_report_date": false,
+  "structured_notes": {
+   "count": 0,
+   "pct_net_assets": null,
+   "issuers": []
+  },
+  "flow_months_not_used": []
+ },
+ "monthly": [
+  {
+   "month": "2025-07",
+   "total_return_pct": null,
+   "net_flow_usd": 992820.4
+  },
+  {
+   "month": "2025-08",
+   "total_return_pct": 4.73,
+   "net_flow_usd": 253607.58
+  },
+  {
+   "month": "2025-09",
+   "total_return_pct": 2.05,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2025-10",
+   "total_return_pct": 0.44,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2025-11",
+   "total_return_pct": -1.86,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2025-12",
+   "total_return_pct": 1.28,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2026-01",
+   "total_return_pct": 2.24,
+   "net_flow_usd": 0.0
+  },
+  {
+   "month": "2026-02",
+   "total_return_pct": -2.69,
+   "net_flow_usd": 242926.03
+  },
+  {
+   "month": "2026-03",
+   "total_return_pct": -5.96,
+   "net_flow_usd": -16418.08
+  },
+  {
+   "month": "2026-04",
+   "total_return_pct": 6.04,
+   "net_flow_usd": 232419.65
+  },
+  {
+   "month": "2026-05",
+   "total_return_pct": 1.87,
+   "net_flow_usd": 460912.74
+  },
+  {
+   "month": "2026-06",
+   "total_return_pct": -0.86,
+   "net_flow_usd": 0.0
+  }
+ ],
+ "reports": [
+  {
+   "report_date": "2025-09-30",
+   "filing_date": "2025-11-26",
+   "net_assets_usd": 1288834.95,
+   "total_return_3m_pct": null,
+   "net_flow_3m_usd": 1246427.98,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 102.81,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2025-12-31",
+   "filing_date": "2026-02-26",
+   "net_assets_usd": 1226038.0,
+   "total_return_3m_pct": -0.1665,
+   "net_flow_3m_usd": 0.0,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 103.99,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2026-03-31",
+   "filing_date": "2026-05-28",
+   "net_assets_usd": 1349657.99,
+   "total_return_3m_pct": -6.4398,
+   "net_flow_3m_usd": 226507.95,
+   "written_calls": 2,
+   "calls_face_value_pct_net_assets": 104.71,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  },
+  {
+   "report_date": "2026-06-30",
+   "filing_date": "2026-08-28",
+   "net_assets_usd": 2079763.84,
+   "total_return_3m_pct": 7.094,
+   "net_flow_3m_usd": 693332.39,
+   "written_calls": 1,
+   "calls_face_value_pct_net_assets": 102.66,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  }
+ ]
+}

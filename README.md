@@ -6,8 +6,9 @@
 Live at https://apapadogiannis.github.io/covered-call-monitor/
 
 **What does the yield cost?** Covered-call, buy-write and premium-income funds measured each quarter
-from public SEC filings: each fund's total return beside the index fund that holds the same shares,
-the options it had actually written on its last report date, and the money moving in and out.
+from public SEC filings: each fund's total return beside an index fund on the same market and beside
+a mix of that index fund and Treasury bills with the same market risk, the options it had actually
+written on its last report date, and the money moving in and out.
 
 ## Use it from your own AI agent
 
@@ -30,7 +31,9 @@ SEC files, which file to use for what, and what not to use it for. The data are 
 
 | File | Content |
 |---|---|
-| `api/funds.json` | one record per fund: identity, status, latest figures, and whether its monthly figures can be trusted month by month |
+| `api/index.json` | a short list of every fund with the address of its own file |
+| `api/funds/` | one small file per fund: its record, every month and every report |
+| `api/funds.json` | one record per fund: identity, status, latest figures, its market risk beside its index fund, and whether its monthly figures can be trusted month by month |
 | `api/monthly.csv` | monthly total return and net flow for every fund and benchmark, from 2019 |
 | `api/reports.csv` | one row per quarterly report: net assets, 3-month return, written calls, notes |
 | `api/data.json` | what the page draws from; the same file the page serves |
@@ -48,8 +51,13 @@ These files are rebuilt from `data/` by `build.py` and checked by the tests. Do 
   (QQQ, IVV, IWM).
 - **Five large funds on the front page** (QYLD, XYLD, RYLD, JEPI, JEPQ), compared with their index
   funds over a chosen period.
-- **The whole category**: every US-registered fund whose name says covered call, buy-write or premium
-  income, with net assets, returns, flows and the face value of its written calls.
+- **The category by name**: every US-registered fund whose name says covered call, buy-write or premium
+  income, with net assets, returns, flows and the face value of its written calls. Funds that sell
+  calls under another name (option income, enhanced income, overwrite) are not in it.
+- **Market risk**: a covered-call fund carries about half the market risk of its index fund, so its
+  gap to the index fund is not the cost of the options alone. Each fund with an index fund is also
+  set beside a mix of that index fund and four-week Treasury bills with the fund's own beta, with
+  the volatility and the largest fall of both.
 
 It reports what the funds filed. It does not forecast and it shows no distribution yield.
 
@@ -58,6 +66,7 @@ It reports what the funds filed. It does not forecast and it shows no distributi
 ```
 config/funds.toml     which funds are followed, the benchmarks, the first quarter kept
 monitor/update.py     the only code that uses the network: downloads the SEC's quarterly data set
+                      and the US Treasury's daily bill rate
 monitor/extract.py    cuts one quarterly data set down to the followed funds
 monitor/build.py      joins the quarters and computes everything the page shows
 monitor/publish.py    writes the files for programs and AI agents (api/)
@@ -65,6 +74,7 @@ api/                  those files: funds.json, monthly.csv, reports.csv, datapac
 site/template.html    the page; the numbers are embedded at build time
 data/nport/<quarter>/ the stored extracts (five small CSV files per quarter)
 data/sources.json     what was downloaded, when, its size and checksum
+data/rates/           the US Treasury's daily four-week bill rate, the cash of the equal-risk mix
 tests/test_monitor.py checks of the rules the page depends on
 tests/test_published.py recomputes published fund returns from the stored filings
 reference/            the published returns used as the yardstick

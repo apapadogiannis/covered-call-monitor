@@ -305,7 +305,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
     <div class="tiles" id="tiles"></div>
     <div class="card">
       <h2>Total return of five large funds and of their index funds</h2>
-      <p class="sub"><b>Every figure here is a total return: the change in price plus every distribution paid, reinvested in the fund.</b> That holds for the covered-call funds and for the index funds alike, so the high distributions are fully counted. The index fund holds the same market without selling calls on it. The difference is what the option strategy cost, or earned, over the period.</p>
+      <p class="sub"><b>Every figure here is a total return: the change in price plus every distribution paid, reinvested in the fund.</b> That holds for the covered-call funds and for the index funds alike, so the high distributions are fully counted. The index fund holds the same market without selling calls on it. The difference is not the cost of the calls alone: these funds also carry about half the market risk of their index fund. <a href="#fund">Fund by fund</a> sets each fund beside a mix of its index fund and Treasury bills with the same market risk.</p>
       <div class="filters"><span>Period</span><div class="seg range" role="group" aria-label="Period"></div></div>
       <p class="sub rangehint" style="margin-top:-6px"></p>
       <div class="legend"><span><i style="background:var(--blue)"></i>Covered-call fund, total return with distributions reinvested</span><span><i style="background:var(--orange)"></i>Its index fund, total return with distributions reinvested</span></div>
@@ -329,6 +329,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
     </div>
     <div class="filters"><span>Period</span><div class="seg range" role="group" aria-label="Period"></div></div>
     <div class="tiles" id="ftiles"></div>
+    <p class="sub" id="riskline" style="max-width:820px"></p>
     <div class="card">
       <h2 id="chart-title"></h2>
       <p class="sub" id="chart-sub"></p>
@@ -369,7 +370,7 @@ p.note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
         <li><b>The comparison uses the months both funds have on file.</b> Fund families report on different cycles, so the last month of a comparison can be earlier than the fund's latest report.</li>
         <li><b>Calls written</b> is the number of contracts written, times 100 shares, times the strike, as a share of the fund's net assets. Near 100% means calls were written against the whole portfolio.</li>
         <li><b>Strikes are checked against the holding's name.</b> For some index options the strike field of the SEC data set holds only the last digits. Where the filed number is the tail of the strike in the holding's name, the name is used and the table marks it.</li>
-        <li><b>Net flow</b> is sales plus reinvestments less redemptions. A month in which a filing reports a negative amount for one of these is left out and marked.</li>
+        <li><b>Net flow</b> is sales plus reinvestments less redemptions. Some funds file redemptions as negative numbers; they are read as outflows of that size. A month in which a filing reports negative sales or reinvestments is left out and marked.</li>
         <li><b>One share class per fund.</b> Where a report lists several classes, the first class identifier is used.</li>
       </ul>
     </div>
@@ -505,12 +506,30 @@ function span(f, n) {
   if (n && total < n) return null;
   const ms = n ? f.months.slice(-Math.floor(n / st)) : f.months;
   let gf = 1, gb = 1;
-  const path = ms.map(m => { gf *= 1 + m.fund / 100; if (hasB(f)) gb *= 1 + m.benchmark / 100; return {month: m.month, fund: m.fund, benchmark: m.benchmark, fund_cum: (gf - 1) * 100, benchmark_cum: hasB(f) ? (gb - 1) * 100 : null}; });
+  const path = ms.map(m => { gf *= 1 + m.fund / 100; if (hasB(f)) gb *= 1 + m.benchmark / 100; return {month: m.month, fund: m.fund, benchmark: m.benchmark, cash: m.cash, fund_cum: (gf - 1) * 100, benchmark_cum: hasB(f) ? (gb - 1) * 100 : null}; });
   const nm = ms.length * st, yrs = nm / 12, ann = g => (Math.pow(g, 1 / yrs) - 1) * 100;
   const first = ms[0].month, y0 = +first.slice(0, 4) * 12 + (+first.slice(5, 7) - 1) - (st - 1);
   return {months: path, n: nm, from: `${String(Math.floor(y0 / 12)).padStart(4, "0")}-${String(y0 % 12 + 1).padStart(2, "0")}`, to: ms[ms.length - 1].month, fund: (gf - 1) * 100,
           benchmark: hasB(f) ? (gb - 1) * 100 : null, gap: hasB(f) ? (gf - gb) * 100 : null,
-          fund_pa: nm > 12 ? ann(gf) : null, benchmark_pa: nm > 12 && hasB(f) ? ann(gb) : null};
+          fund_pa: nm > 12 ? ann(gf) : null, benchmark_pa: nm > 12 && hasB(f) ? ann(gb) : null, risk: hasB(f) ? risk(path, st) : null};
+}
+// Market risk of a fund beside its index fund over one run of periods; the same rule as monitor/build.py.
+// Needs two years of months (three years of three-month steps) and a Treasury bill return for each period.
+function risk(path, st) {
+  const n = path.length;
+  if (n < (st === 1 ? 24 : 12) || path.some(m => m.cash == null || m.benchmark == null)) return null;
+  const xf = path.map(m => m.fund - m.cash), xb = path.map(m => m.benchmark - m.cash);
+  const mean = v => v.reduce((a, b) => a + b, 0) / n, mf = mean(xf), mb = mean(xb);
+  let vb = 0, cov = 0;
+  for (let i = 0; i < n; i++) { vb += (xb[i] - mb) ** 2; cov += (xf[i] - mf) * (xb[i] - mb); }
+  if (!(vb > 0)) return null;
+  const beta = cov / vb, year = 12 / st;
+  const sd = v => { const m = mean(v); return Math.sqrt(v.reduce((a, x) => a + (x - m) ** 2, 0) / (n - 1)) * Math.sqrt(year); };
+  const fall = v => { let g = 1, peak = 1, worst = 0; for (const x of v) { g *= 1 + x / 100; peak = Math.max(peak, g); worst = Math.min(worst, g / peak - 1); } return worst * 100; };
+  let gf = 1, gm = 1;
+  for (const m of path) { gf *= 1 + m.fund / 100; gm *= 1 + (m.cash + beta * (m.benchmark - m.cash)) / 100; }
+  return {beta, volF: sd(path.map(m => m.fund)), volB: sd(path.map(m => m.benchmark)), fallF: fall(path.map(m => m.fund)), fallB: fall(path.map(m => m.benchmark)),
+          mix: (gm - 1) * 100, gapMix: (gf - gm) * 100};
 }
 if (!D.detail.some(f => span(f, range))) range = 0;
 document.querySelectorAll(".seg.range").forEach(seg => RANGES.forEach(([label, n]) => {
@@ -604,6 +623,10 @@ function fund() {
     el("div", {class: "tile"}, `<div class="k">Total return a year</div><div class="v">${w.fund_pa == null ? pct(w.fund) : pct(w.fund_pa)}</div><div class="n">over ${yearsText(w.n)}</div>`),
     el("div", {class: "tile"}, `<div class="k">Calls written</div><div class="v">${plain(f.overlay.notional_pct, 0)}</div><div class="n">face value at strike, % of net assets</div>`));
   $("ftiles").append(el("div", {class: "tile"}, `<div class="k">Net assets</div><div class="v">${usd(f.net_assets)}</div><div class="n">on ${dmy(f.report_date)}</div>`));
+  const k = w.risk, share = k && Math.round(k.beta * 100);
+  $("riskline").innerHTML = !B ? "" : k
+    ? `<b>The difference is not the cost of the calls alone.</b> Over these months ${esc(L)} moved ${k.beta.toFixed(2)} for each 1 that ${f.benchmark} moved (its beta). Its returns varied by ${plain(k.volF)} a year against ${plain(k.volB)}, and its largest fall between ${f.step === 3 ? "quarter" : "month"}-ends was ${plain(-k.fallF)} against ${plain(-k.fallB)}. A mix with the same market risk, ${share}% in ${f.benchmark} and ${100 - share}% in Treasury bills, returned <b>${pct(k.mix)}</b>. ${esc(L)} returned <b>${pts(k.gapMix)} points</b> ${k.gapMix < 0 ? "less" : "more"} than that mix. The beta is measured over these same months, so the mix is a reading in hindsight.`.replace(/(\+|−)(\d[\d.]*) points<\/b> (less|more)/, "$2 points</b> $3")
+    : `The difference is not the cost of the calls alone: a covered-call fund carries less market risk than its index fund. A comparison at equal market risk needs two years of months${f.step === 3 ? " (three years for a fund shown in three-month steps)" : ""}; this period is shorter.`;
   $("chart-title").textContent = B ? `Cumulative total return: ${label(f)} and ${f.benchmark}` : `Cumulative total return: ${f.name}`;
   $("chart-sub").innerHTML = `<b>${esc(f.name)}</b> · ${f.type}. ` + (B ? "Growth of the fund and of its index fund from the same starting month, in per cent, with every distribution reinvested. Not the share price, and not the yield."
       : "Growth of the fund in per cent, with every distribution reinvested. Not the share price, and not the yield. No index fund is set beside this fund: its name does not name the Nasdaq-100, the S&P 500 or the Russell 2000.")
@@ -634,7 +657,7 @@ function fund() {
     const w2 = x.net == null ? 0 : Math.abs(x.net) / mx * 50, neg = x.net < 0;
     return `<div class="fb"><span>${ym(x.month)}</span><div class="track"><i style="${neg ? `right:50%;border-radius:4px 0 0 4px` : `left:50%;border-radius:0 4px 4px 0`};width:${w2}%"></i></div><b>${x.net == null ? '<span style="color:var(--mut);font-weight:400">not used</span>' : musd(x.net)}</b></div>`;
   }).join("");
-  $("flownote").textContent = f.flow_months_not_used.length ? '"Not used" marks a month in which the filing reports a negative amount for sales or redemptions.' : "";
+  $("flownote").textContent = f.flow_months_not_used.length ? '"Not used" marks a month in which the filing reports a negative amount for sales or reinvestments.' : "";
 }
 
 function lineChart(box, tip, series, labels, xlab, fmtTip, opts = {}) {

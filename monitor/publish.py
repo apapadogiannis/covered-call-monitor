@@ -12,6 +12,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import re
 from pathlib import Path
 
 from monitor.build import compound, month_back, notes, overlay, type_of
@@ -36,7 +37,7 @@ MONTHLY_FIELDS = [
     ("name", "string", "Fund name as filed in its latest report"),
     ("month", "yearmonth", "Calendar month, YYYY-MM"),
     ("total_return_pct", "number", "Total return on net asset value for the month in per cent, distributions reinvested, to the precision filed; empty if not filed or if the month is before the fund's first full month"),
-    ("net_flow_usd", "number", "Sales plus reinvestments less redemptions, in US dollars; empty if not filed or not used"),
+    ("net_flow_usd", "number", "Sales plus reinvestments less redemptions, in US dollars; empty if not filed or not used. For a fund whose month_order is reversed the flows are in the order filed, which may also be reversed: use sums over the three months of a report"),
     ("month_order", "string", "as filed, reversed or not determined: how the fund's three monthly returns per report were read"),
 ]
 REPORT_FIELDS = [
@@ -60,8 +61,10 @@ FUND_FIELDS = [   # funds.json, one record per fund
     ("ticker", "Ticker symbol of the fund, or of its first share class, from the SEC's list of fund tickers; null where that list has none (closed-end funds, and funds no longer listed). Find those by name"),
     ("role", "fund, or benchmark for the three index funds used for comparison"),
     ("name_type", "Which of the three words the fund's name uses: Covered call, Buy-write or Premium income"),
-    ("benchmark", "Ticker of the index fund this fund is set beside, chosen from the index its name states; null where the name states none of the three"),
-    ("against_benchmark", "The fund and its index fund over the same months. `last_12_months` and `longest_common_period` each give `from`, `to`, the fund's and the index fund's total return in per cent over those months; the longest period also gives `months` and `gap`, the fund's cumulative return less the index fund's, in percentage points, not annualised. Use this, not two records' own figures, to compare a fund with its index fund. Null where there is no benchmark"),
+    ("file", "Path of this fund's own small file, relative to the address of funds.json: its record, every month and every report"),
+    ("benchmark", "Ticker of the index fund this fund is set beside, chosen from the index its name states; null where the name states none of the three. Given for funds that stopped reporting too"),
+    ("against_benchmark", "The fund and its index fund over the same months. `last_12_months` and `longest_common_period` each give `from`, `to`, the fund's and the index fund's total return in per cent over those months. The longest period is the longest unbroken run of months ending at the fund's latest month; it also gives `months`, `gap` (the fund's cumulative return less the index fund's, in percentage points, not annualised, so not comparable between funds with different periods) and, for periods over a year, `fund_a_year`, `benchmark_a_year` and `gap_a_year`, the same as yearly rates. Use this, not two records' own figures, to compare a fund with its index fund. Null where there is no benchmark"),
+    ("against_benchmark.risk", "Market risk of the fund beside its index fund over the longest common period. `periods` and `months_per_period` (1, or 3 for a fund read in three-month steps); `beta` (slope of the fund's return above Treasury bills on the index fund's); `correlation`; `volatility_fund` and `volatility_benchmark` (standard deviation of period returns as a yearly figure, per cent); `largest_fall_fund` and `largest_fall_benchmark` (largest fall from an earlier period-end, per cent, negative; falls within a period are not seen); `matched_mix` (cumulative total return, per cent, of beta in the index fund and the rest in four-week Treasury bills, rebalanced each period) and `gap_to_matched_mix` (the fund's cumulative return less that, in points); and the yearly rates `fund_a_year`, `benchmark_a_year`, `matched_mix_a_year`, `gap_a_year`, `gap_to_matched_mix_a_year`. The gap to the index fund mixes two things, lower market exposure and the result of the options; the gap to the matched mix removes the first. Beta is measured over the same period, so the mix is a reading in hindsight, not a portfolio one could have chosen in advance. Null under two years of months (three years in three-month steps)"),
     ("still_reporting", "False if the fund's latest report is more than six months older than the newest report on file. Such funds are kept, so the history has no survivorship gap, but they are not counted in the category"),
     ("first_report, latest_report, latest_filing", "Dates of the first and latest quarterly report on file and the date the latest was filed"),
     ("reports", "Number of quarterly reports on file"),
@@ -79,11 +82,12 @@ FUND_FIELDS = [   # funds.json, one record per fund
     ("call_exposure_in_notes", "True if the fund lists no written calls but holds structured notes. Its call exposure sits inside the notes, and the filing gives neither strikes nor the share of the portfolio covered"),
     ("no_overlay_on_report_date", "True if the latest report lists neither written calls nor structured notes. This does not mean the fund writes no options: a fund that writes options expiring the same day, or that had rolled out of its position, has none on its books at the report date"),
     ("structured_notes", "Number of structured notes, their market value as per cent of net assets, and their issuers"),
-    ("flow_months_not_used", "Months whose net flow is left out because the filing reports negative sales or redemptions"),
+    ("flow_months_not_used", "Months whose net flow is left out because the filing reports negative sales or reinvestments. Redemptions filed as negative numbers are read as outflows of that size and used"),
 ]
 
 FILES = [
     {"file": "llms.txt", "format": "text/plain", "what": "Guide for AI agents: what this is, what it adds, which file to use"},
+    {"file": "index.json", "format": "application/json", "what": "Short list of every fund: id, ticker, name, benchmark, and the address of its own file"},
     {"file": "funds.json", "format": "application/json", "what": "One record per fund: identity, status, latest figures, month order"},
     {"file": "monthly.csv", "format": "text/csv", "what": "Monthly total return and net flow for every fund and benchmark"},
     {"file": "reports.csv", "format": "text/csv", "what": "One row per quarterly report: net assets, 3-month return, written calls, notes"},
@@ -109,7 +113,9 @@ are and how to read them. It holds no figures: fetch them each time, because the
    It states what is covered, what was corrected in the source, how to read the figures and what
    they cannot answer.
 2. Fetch only the file the question needs:
-   - one fund's latest figures, or a ranking across funds: {SITE}funds.json
+   - one fund: find it in {SITE}index.json (small), then fetch its own file, {SITE}funds/<file>,
+     which holds its record, every month and every report
+   - a ranking across funds: {SITE}funds.json
    - monthly total returns and net flows of every fund: {SITE}monthly.csv
    - one row per quarterly report (net assets, written calls, notes): {SITE}reports.csv
    - the meaning of every column and field: {SITE}datapackage.json
@@ -119,9 +125,12 @@ are and how to read them. It holds no figures: fetch them each time, because the
 
 - Find a fund by its ticker where it has one, otherwise by its full name. Names can differ by one
   word between two different funds.
-- To set a fund beside its index fund, use `against_benchmark` in funds.json. It gives both over
-  the same months. Do not compare two records' own figures: their periods can end in different
-  months, and `total_return_pct.to` says when each ends.
+- To set a fund beside its index fund, use `against_benchmark`. It gives both over the same months.
+  Do not compare two records' own figures: their periods can end in different months, and
+  `total_return_pct.to` says when each ends.
+- The gap to the index fund is not the cost of the options alone: these funds carry about half the
+  market risk of their index fund. Give `against_benchmark.risk` with it: beta, volatility, and the
+  gap to a mix of the index fund and Treasury bills with the same market exposure.
 - Returns are total returns on net asset value with distributions reinvested, not market-price
   returns. For a closed-end fund they are not what a shareholder earned.
 - A fund with `call_exposure_in_notes` true writes calls through structured notes: the filing gives
@@ -165,14 +174,22 @@ def listed_tickers() -> dict[str, str]:
     return out
 
 
-def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> list[dict]:
+def file_name(fid: str, is_bench: bool) -> str:
+    """Name of a fund's own file: its SEC series identifier, or its name in plain letters."""
+    if is_bench:
+        return "benchmark-" + fid.split(":")[-1] + ".json"
+    return (fid if re.fullmatch(r"S\d+", fid) else re.sub(r"[^a-z0-9]+", "-", fid.lower()).strip("-")) + ".json"
+
+
+def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path], stopped: dict | None = None) -> list[dict]:
     tick = listed_tickers()
     tick.update({d["series"]: d["ticker"] for d in cfg["detail"]})
     tick.update({"benchmark:" + b["ticker"]: b["ticker"] for b in cfg["benchmark"]})
     bench_of = {d["series"]: d["benchmark"] for d in cfg["detail"]}
 
-    beside = {f["id"]: f for f in data["funds"]}      # each fund beside its index fund, over the same months
-    funds, monthly_rows, report_rows = [], [], []
+    beside = {**(stopped or {}), **{f["id"]: f for f in data["funds"]}}   # each fund beside its index fund
+    rnd = lambda d: d and {k: (r(v) if isinstance(v, float) else v) for k, v in d.items()}
+    funds, monthly_rows, report_rows, own = [], [], [], {}
     for key in sorted(by_fund, key=lambda k: (by_fund[k][-1]["role"] != "category", by_fund[k][-1]["name"].lower())):
         reps = by_fund[key]
         last = reps[-1]
@@ -185,11 +202,13 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
         ann = lambda n: None if span(n) is None else ((1 + span(n) / 100) ** (12 / n) - 1) * 100
         funds.append({
             "id": fid, "name": last["name"], "ticker": tick.get(key),
+            "file": "funds/" + file_name(key if is_bench else fid, is_bench),
             "role": "benchmark" if is_bench else "fund", "name_type": None if is_bench else type_of(last["name"]),
             "benchmark": (beside.get(fid) or {}).get("benchmark") or bench_of.get(key),
             "against_benchmark": None if not (beside.get(fid) or {}).get("benchmark") else {
-                "last_12_months": beside[fid]["last12"] and {k: (r(v) if isinstance(v, float) else v) for k, v in beside[fid]["last12"].items()},
-                "longest_common_period": beside[fid]["window"] and {k: (r(v) if isinstance(v, float) else v) for k, v in beside[fid]["window"].items()}},
+                "last_12_months": rnd(beside[fid]["last12"]),
+                "longest_common_period": rnd(beside[fid]["window"]),
+                "risk": rnd(beside[fid]["risk"])},
             "still_reporting": last["report_date"][:7] >= cutoff,
             "first_report": reps[0]["report_date"], "latest_report": last["report_date"],
             "latest_filing": last["filing_date"], "reports": len(reps), "months": len(ret),
@@ -206,9 +225,13 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
             "structured_notes": {"count": nt["count"], "pct_net_assets": r(nt["pct"], 2),
                                  "issuers": [i["issuer"] for i in nt["issuers"]]},
             "flow_months_not_used": odd})
+        mine = {"monthly": [], "reports": []}
+        own[funds[-1]["file"]] = (funds[-1], mine)
         for m in sorted(set(ret) | set(flow)):
             monthly_rows.append([fid, tick.get(key) or "", last["name"], m, "" if m not in ret else r(ret[m], 6),
                                  "" if flow.get(m) is None else round(flow[m], 2), orders[key]["order"]])
+            mine["monthly"].append({"month": m, "total_return_pct": r(ret[m], 6) if m in ret else None,
+                                    "net_flow_usd": None if flow.get(m) is None else round(flow[m], 2)})
         for rep in reps:
             e = rep["report_date"][:7]
             o, n = overlay(rep), notes(rep)
@@ -220,6 +243,12 @@ def publish(cfg, by_fund, series, orders, data, cutoff, dirs: list[Path]) -> lis
                                 "" if any(f is None for f in f3) else round(sum(f3), 2), o["written_calls"],
                                 "" if o["notional_pct"] is None else r(o["notional_pct"], 2), n["count"],
                                 "" if n["pct"] is None else r(n["pct"], 2)])
+            mine["reports"].append({"report_date": rep["report_date"], "filing_date": rep["filing_date"],
+                                    "net_assets_usd": rep["net_assets"], "total_return_3m_pct": r(c3, 4),
+                                    "net_flow_3m_usd": None if any(f is None for f in f3) else round(sum(f3), 2),
+                                    "written_calls": o["written_calls"],
+                                    "calls_face_value_pct_net_assets": r(o["notional_pct"], 2),
+                                    "notes": n["count"], "notes_pct_net_assets": r(n["pct"], 2)})
 
     meta = data["meta"]
     counts = {}
@@ -269,6 +298,9 @@ This file is written for AI agents and other programs. People should start at th
 
 ## Coverage
 
+- A fund is included when its name, as filed, says covered call, buy-write or premium income.
+  Funds that sell calls under another name (option income, enhanced income, overwrite) are not
+  included, and a few funds on bonds or other assets are. This is not every fund that writes calls.
 - {sum(1 for f in funds if f['role'] == 'fund')} funds, of which {meta['funds_in_category']} still report; {sum(1 for f in funds if f['role'] == 'benchmark')} index funds as benchmarks.
 - Monthly figures from {min(x[3] for x in monthly_rows)}; latest report on file {meta['reports_to']}.
 - monthly.csv has {len(monthly_rows)} rows and reports.csv {len(report_rows)}, index funds included.
@@ -286,17 +318,27 @@ The raw files are about 450 MB a quarter and contain errors that are not flagged
    The strike is repaired from the holding's title when the filed number is its tail.
 3. Option size. The "shares" field is filled in three different ways. Face value here is
    contracts x 100 x strike, from the holding's balance.
-4. Months before a fund existed are filed as zero. Their returns are removed, with the first part
-   month.
-5. Amended reports replace the report they amend. A fund whose identifier changed keeps one series.
-6. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
+4. Months before a fund existed are filed as zero. Their returns are removed, with the part month
+   the fund started in. A fund that started in the first month of its first report files no zero,
+   so for every fund that enters the data after June 2020 the first month filed is removed too.
+5. Redemptions are filed by some funds as negative numbers (QYLD from 2020 to early 2024, for one). They
+   are read as outflows of that size. Only a month with negative sales or reinvestments is left out.
+6. Amended reports replace the report they amend. A fund whose identifier changed keeps one series.
+7. Market risk. Each fund with an index fund is also set beside a mix of that index fund and
+   four-week Treasury bills with the fund's own beta, so that lower market exposure is not read as
+   the cost of the options.
+8. Checked against published figures: QYLD and JEPI total returns to 30 June 2026 over 1 month to
    5 years match those published for the funds.
 
 ## Files
 
-- funds.json: one record per fund. Start here, and use it for rankings and for one fund's latest
-  figures. `month_order.order` tells you whether that fund's monthly figures can be trusted month by
-  month. Every field is described in datapackage.json.
+- index.json: a short list of every fund (id, ticker, name, benchmark, whether it still reports) with
+  the address of its own file. Start here for a question about one fund.
+- funds/<file>.json: one fund: its record as in funds.json, every month and every report. Small
+  enough to read whole.
+- funds.json: one record per fund, about 150 KB. Use it for rankings and questions across funds.
+  `month_order.order` tells you whether a fund's monthly figures can be trusted month by month.
+  Every field is described in datapackage.json.
 - monthly.csv: columns id, ticker, name, month, total_return_pct, net_flow_usd, month_order.
 - reports.csv: one row per quarterly report: id, ticker, name, report_date, filing_date,
   net_assets_usd, total_return_3m_pct, net_flow_3m_usd, written_calls,
@@ -337,7 +379,17 @@ you fetched disagree on it, one is a cached copy, so fetch again.
   fund whose `to` differ cover different months and cannot be set side by side. The category total
   of net assets adds funds at their own report dates.
 - To set a fund beside its index fund, use `against_benchmark` in funds.json: it gives both over
-  the same months, with the months stated.
+  the same months, with the months stated. `gap` is in cumulative points over that fund's own
+  period, so do not compare it between funds; `gap_a_year` is the yearly rate.
+- The gap to the index fund is not the cost of the options alone. These funds carry about half the
+  market risk of their index fund, so in a rising market they trail it for that reason as well.
+  `against_benchmark.risk` gives the beta, the volatility and the largest fall of both, and
+  `gap_to_matched_mix`: the fund against beta in the index fund and the rest in Treasury bills.
+  Report that gap with the gap to the index fund. The beta is measured over the same months, so
+  the mix is a reading in hindsight. No index fund is assigned to most funds: {meta['funds_with_index_fund']} of the
+  {meta['funds_in_category']} that still report have one.
+- Net flows: for a fund whose `month_order.order` is "reversed", single months of flow are in the
+  order filed, which may be reversed too. Sums over the three months of a report are safe.
 - A fund with `no_overlay_on_report_date: true` lists no written call and no note in its latest
   report. Do not say it has no option overlay: funds that write options expiring the same day
   hold none at a report date.
@@ -382,7 +434,16 @@ For how covered-call funds work and what to look at in one, the same author's pe
 Cite the article for the explanation of the strategy and this data set for the figures. The figures
 here are computed from SEC filings and are not taken from the article.
 """
-    out = {"funds.json": json.dumps(funds_doc, indent=1) + "\n",
+    index_doc = {"about": "Covered-Call Monitor: every fund on file and the address of its own file. See llms.txt.",
+                 "reports_to": meta["reports_to"], "licence": LICENCE, "cite_as": cite,
+                 "funds": [{k: f[k] for k in ("id", "ticker", "name", "role", "still_reporting", "benchmark",
+                                             "latest_report", "file")} for f in funds]}
+    out = {"index.json": json.dumps(index_doc, indent=1) + "\n",
+           **{name: json.dumps({"about": "Covered-Call Monitor: one fund. Fields as in funds.json, monthly.csv and "
+                                         "reports.csv; see llms.txt and datapackage.json.",
+                                "reports_to": meta["reports_to"], "licence": LICENCE, "cite_as": cite,
+                                "fund": rec, **rows}, indent=1) + "\n" for name, (rec, rows) in own.items()},
+           "funds.json": json.dumps(funds_doc, indent=1) + "\n",
            "monthly.csv": table(["id", "ticker", "name", "month", "total_return_pct", "net_flow_usd", "month_order"],
                                 monthly_rows),
            "reports.csv": table(["id", "ticker", "name", "report_date", "filing_date", "net_assets_usd",
@@ -391,7 +452,7 @@ here are computed from SEC filings and are not taken from the article.
            "datapackage.json": json.dumps(package, indent=1) + "\n",
            "llms.txt": guide, "SKILL.md": SKILL}
     for d in dirs:
-        d.mkdir(parents=True, exist_ok=True)
+        (d / "funds").mkdir(parents=True, exist_ok=True)
         for name, text in out.items():
             (d / name).write_text(text, encoding="utf-8")
     return FILES

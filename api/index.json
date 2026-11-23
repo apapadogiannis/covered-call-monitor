@@ -1,0 +1,1132 @@
+{
+ "about": "Covered-Call Monitor: every fund on file and the address of its own file. See llms.txt.",
+ "reports_to": "2026-07-31",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
+ "funds": [
+  {
+   "id": "S000034456",
+   "ticker": "VEGA",
+   "name": "AdvisorShares STAR Global Buy-Write ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000034456.json"
+  },
+  {
+   "id": "S000091835",
+   "ticker": "BAGY",
+   "name": "Amplify Bitcoin Max Income Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000091835.json"
+  },
+  {
+   "id": "S000088399",
+   "ticker": "TLTP",
+   "name": "Amplify Bloomberg U.S. Treasury 12% Premium Income ETF",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2025-09-30",
+   "file": "funds/S000088399.json"
+  },
+  {
+   "id": "S000080779",
+   "ticker": null,
+   "name": "Amplify COWS Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000080779.json"
+  },
+  {
+   "id": "S000077267",
+   "ticker": null,
+   "name": "Amplify Energy & Natural Resources Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000077267.json"
+  },
+  {
+   "id": "S000095666",
+   "ticker": null,
+   "name": "Amplify Ethereum Max Income Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000095666.json"
+  },
+  {
+   "id": "S000100602",
+   "ticker": null,
+   "name": "Amplify HACK Cybersecurity Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000100602.json"
+  },
+  {
+   "id": "S000094562",
+   "ticker": null,
+   "name": "Amplify SILJ Junior Silver Miners Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000094562.json"
+  },
+  {
+   "id": "S000096942",
+   "ticker": null,
+   "name": "Amplify XRP 3% Monthly Premium Income ETF",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2025-12-31",
+   "file": "funds/S000096942.json"
+  },
+  {
+   "id": "S000065913",
+   "ticker": null,
+   "name": "Delaware Covered Call Strategy Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2024-03-28",
+   "file": "funds/S000065913.json"
+  },
+  {
+   "id": "S000065919",
+   "ticker": null,
+   "name": "Delaware Premium Income Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2024-03-28",
+   "file": "funds/S000065919.json"
+  },
+  {
+   "id": "S000065937",
+   "ticker": null,
+   "name": "Delaware VIP Covered Call Strategy Series",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2020-09-30",
+   "file": "funds/S000065937.json"
+  },
+  {
+   "id": "Eaton Vance Tax-Managed Buy-Write Income Fund",
+   "ticker": null,
+   "name": "Eaton Vance Tax-Managed Buy-Write Income Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/eaton-vance-tax-managed-buy-write-income-fund.json"
+  },
+  {
+   "id": "Eaton Vance Tax-Managed Buy-Write Opportunities Fund",
+   "ticker": null,
+   "name": "Eaton Vance Tax-Managed Buy-Write Opportunities Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/eaton-vance-tax-managed-buy-write-opportunities-fund.json"
+  },
+  {
+   "id": "Eaton Vance Tax-Managed Buy-Write Strategy Fund",
+   "ticker": null,
+   "name": "Eaton Vance Tax-Managed Buy-Write Strategy Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2023-03-31",
+   "file": "funds/eaton-vance-tax-managed-buy-write-strategy-fund.json"
+  },
+  {
+   "id": "Eaton Vance Tax-Managed Global Buy-Write Opportunities Fund",
+   "ticker": null,
+   "name": "Eaton Vance Tax-Managed Global Buy-Write Opportunities Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/eaton-vance-tax-managed-global-buy-write-opportunities-fund.json"
+  },
+  {
+   "id": "S000052083",
+   "ticker": null,
+   "name": "EQ/JPMorgan Hedged Equity and Premium Income Portfolio",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000052083.json"
+  },
+  {
+   "id": "S000053335",
+   "ticker": null,
+   "name": "First Investors Covered Call Strategy Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2019-09-30",
+   "file": "funds/S000053335.json"
+  },
+  {
+   "id": "S000053736",
+   "ticker": null,
+   "name": "First Investors Life Series Covered Call Strategy Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2019-09-30",
+   "file": "funds/S000053736.json"
+  },
+  {
+   "id": "S000061538",
+   "ticker": null,
+   "name": "First Investors Premium Income Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2019-09-30",
+   "file": "funds/S000061538.json"
+  },
+  {
+   "id": "S000040302",
+   "ticker": "FTHI",
+   "name": "First Trust BuyWrite Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000040302.json"
+  },
+  {
+   "id": "S000040305",
+   "ticker": "FTQI",
+   "name": "First Trust Nasdaq BuyWrite Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "QQQ",
+   "latest_report": "2026-06-30",
+   "file": "funds/S000040305.json"
+  },
+  {
+   "id": "S000090516",
+   "ticker": "FTKI",
+   "name": "First Trust Small Cap BuyWrite Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000090516.json"
+  },
+  {
+   "id": "S000091765",
+   "ticker": "BCCC",
+   "name": "Global X Bitcoin Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000091765.json"
+  },
+  {
+   "id": "S000080789",
+   "ticker": "DYLG",
+   "name": "Global X Dow 30 Covered Call & Growth ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000080789.json"
+  },
+  {
+   "id": "S000075250",
+   "ticker": "DJIA",
+   "name": "Global X Dow 30 Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000075250.json"
+  },
+  {
+   "id": "S000099781",
+   "ticker": "EHCC",
+   "name": "Global X Ethereum Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000099781.json"
+  },
+  {
+   "id": "S000075247",
+   "ticker": null,
+   "name": "Global X Financials Covered Call & Growth ETF",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2025-01-31",
+   "file": "funds/S000075247.json"
+  },
+  {
+   "id": "S000075248",
+   "ticker": null,
+   "name": "Global X Health Care Covered Call & Growth ETF",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2025-01-31",
+   "file": "funds/S000075248.json"
+  },
+  {
+   "id": "S000075249",
+   "ticker": "TYLG",
+   "name": "Global X Information Technology Covered Call & Growth ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000075249.json"
+  },
+  {
+   "id": "S000084648",
+   "ticker": "MLPD",
+   "name": "Global X MLP & Energy Infrastructure Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000084648.json"
+  },
+  {
+   "id": "S000081954",
+   "ticker": null,
+   "name": "Global X MSCI Emerging Markets Covered Call ETF",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2025-01-31",
+   "file": "funds/S000081954.json"
+  },
+  {
+   "id": "S000069249",
+   "ticker": "QYLG",
+   "name": "Global X Nasdaq 100 Covered Call & Growth ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "QQQ",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000069249.json"
+  },
+  {
+   "id": "S000063352",
+   "ticker": "QYLD",
+   "name": "Global X NASDAQ 100 Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "QQQ",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000063352.json"
+  },
+  {
+   "id": "S000079695",
+   "ticker": null,
+   "name": "Global X Nasdaq 100 ESG Covered Call ETF",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": "QQQ",
+   "latest_report": "2025-01-31",
+   "file": "funds/S000079695.json"
+  },
+  {
+   "id": "S000077681",
+   "ticker": "RYLG",
+   "name": "Global X Russell 2000 Covered Call & Growth ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IWM",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000077681.json"
+  },
+  {
+   "id": "S000065001",
+   "ticker": "RYLD",
+   "name": "Global X Russell 2000 Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IWM",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000065001.json"
+  },
+  {
+   "id": "S000069248",
+   "ticker": "XYLG",
+   "name": "Global X S&P 500 Covered Call & Growth ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IVV",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000069248.json"
+  },
+  {
+   "id": "S000063353",
+   "ticker": "XYLD",
+   "name": "Global X S&P 500 Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IVV",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000063353.json"
+  },
+  {
+   "id": "S000079699",
+   "ticker": null,
+   "name": "Global X S&P 500 ESG Covered Call ETF",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": "IVV",
+   "latest_report": "2025-01-31",
+   "file": "funds/S000079699.json"
+  },
+  {
+   "id": "S000084646",
+   "ticker": "QDCC",
+   "name": "Global X S&P 500 Quality Dividend Covered Call ETF",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": "IVV",
+   "latest_report": "2025-07-31",
+   "file": "funds/S000084646.json"
+  },
+  {
+   "id": "S000081510",
+   "ticker": "GPIQ",
+   "name": "Goldman Sachs Nasdaq-100 Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "QQQ",
+   "latest_report": "2026-06-30",
+   "file": "funds/S000081510.json"
+  },
+  {
+   "id": "S000081511",
+   "ticker": "GPIX",
+   "name": "Goldman Sachs S&P 500 Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IVV",
+   "latest_report": "2026-06-30",
+   "file": "funds/S000081511.json"
+  },
+  {
+   "id": "S000084446",
+   "ticker": "BTCC",
+   "name": "Grayscale Bitcoin Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000084446.json"
+  },
+  {
+   "id": "S000090980",
+   "ticker": "BPI",
+   "name": "Grayscale Bitcoin Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000090980.json"
+  },
+  {
+   "id": "S000089961",
+   "ticker": "ETCO",
+   "name": "Grayscale Ethereum Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000089961.json"
+  },
+  {
+   "id": "S000097542",
+   "ticker": "HEMI",
+   "name": "Hartford Equity Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000097542.json"
+  },
+  {
+   "id": "S000055166",
+   "ticker": "HNDDX",
+   "name": "Horizon Equity Premium Income Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-05-31",
+   "file": "funds/S000055166.json"
+  },
+  {
+   "id": "S000020214",
+   "ticker": "PBP",
+   "name": "Invesco S&P 500 BuyWrite ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IVV",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000020214.json"
+  },
+  {
+   "id": "S000076777",
+   "ticker": "TLTW",
+   "name": "iShares 20+ Year Treasury Bond BuyWrite Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000076777.json"
+  },
+  {
+   "id": "S000076779",
+   "ticker": "HYGW",
+   "name": "iShares High Yield Corporate Bond BuyWrite Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000076779.json"
+  },
+  {
+   "id": "S000076781",
+   "ticker": "LQDW",
+   "name": "iShares Investment Grade Corporate Bond BuyWrite Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000076781.json"
+  },
+  {
+   "id": "S000096907",
+   "ticker": null,
+   "name": "iShares Nasdaq Premium Income Active ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "QQQ",
+   "latest_report": "2026-06-30",
+   "file": "funds/S000096907.json"
+  },
+  {
+   "id": "S000083814",
+   "ticker": "IWMW",
+   "name": "iShares Russell 2000 BuyWrite ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IWM",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000083814.json"
+  },
+  {
+   "id": "S000083815",
+   "ticker": "IVVW",
+   "name": "iShares S&P 500 BuyWrite ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IVV",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000083815.json"
+  },
+  {
+   "id": "S000081702",
+   "ticker": null,
+   "name": "iShares U.S. Large Cap Premium Income Active ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000081702.json"
+  },
+  {
+   "id": "S000035578",
+   "ticker": null,
+   "name": "JNL/FAMCO Flex Core Covered Call Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2020-03-31",
+   "file": "funds/S000035578.json"
+  },
+  {
+   "id": "S000068402",
+   "ticker": "JEPI",
+   "name": "JPMorgan Equity Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IVV",
+   "latest_report": "2026-06-30",
+   "file": "funds/S000068402.json"
+  },
+  {
+   "id": "S000062679",
+   "ticker": "JEPAX",
+   "name": "JPMorgan Equity Premium Income Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000062679.json"
+  },
+  {
+   "id": "S000076132",
+   "ticker": "JEPQ",
+   "name": "JPMorgan Nasdaq Equity Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "QQQ",
+   "latest_report": "2026-06-30",
+   "file": "funds/S000076132.json"
+  },
+  {
+   "id": "S000087366",
+   "ticker": "KHPI",
+   "name": "Kensington Hedged Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000087366.json"
+  },
+  {
+   "id": "S000079434",
+   "ticker": "KLIP",
+   "name": "KraneShares KWEB Covered Call Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000079434.json"
+  },
+  {
+   "id": "S000026831",
+   "ticker": "MENAX",
+   "name": "Madison Covered Call & Equity Income Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000026831.json"
+  },
+  {
+   "id": "Madison Covered Call & Equity Strategy Fund",
+   "ticker": null,
+   "name": "Madison Covered Call & Equity Strategy Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2024-09-30",
+   "file": "funds/madison-covered-call-equity-strategy-fund.json"
+  },
+  {
+   "id": "S000081094",
+   "ticker": "CVRD",
+   "name": "Madison Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000081094.json"
+  },
+  {
+   "id": "S000077243",
+   "ticker": "BUYW",
+   "name": "Main Buywrite ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000077243.json"
+  },
+  {
+   "id": "S000052164",
+   "ticker": "BUYWX",
+   "name": "Main BuyWrite Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2022-07-31",
+   "file": "funds/S000052164.json"
+  },
+  {
+   "id": "Nuveen S&P 500 Buy-Write Income Fund",
+   "ticker": null,
+   "name": "Nuveen S&P 500 Buy-Write Income Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": "IVV",
+   "latest_report": "2025-12-31",
+   "file": "funds/nuveen-s-p-500-buy-write-income-fund.json"
+  },
+  {
+   "id": "S000082252",
+   "ticker": "PAPI",
+   "name": "Parametric Equity Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000082252.json"
+  },
+  {
+   "id": "S000028857",
+   "ticker": "MUARX",
+   "name": "Pioneer Equity Premium Income Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2025-01-31",
+   "file": "funds/S000028857.json"
+  },
+  {
+   "id": "S000017165",
+   "ticker": "HRSAX",
+   "name": "Rational Premium Income Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000017165.json"
+  },
+  {
+   "id": "S000085093",
+   "ticker": "AIPI",
+   "name": "REX AI Equity Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-05-31",
+   "file": "funds/S000085093.json"
+  },
+  {
+   "id": "S000088880",
+   "ticker": "CEPI",
+   "name": "REX Crypto Equity Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000088880.json"
+  },
+  {
+   "id": "S000081571",
+   "ticker": "FEPI",
+   "name": "REX FANG & Innovation Equity Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000081571.json"
+  },
+  {
+   "id": "S000083807",
+   "ticker": "YBTC",
+   "name": "Roundhill Bitcoin Covered Call Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000083807.json"
+  },
+  {
+   "id": "S000086585",
+   "ticker": "YETH",
+   "name": "Roundhill Ether Covered Call Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000086585.json"
+  },
+  {
+   "id": "S000083811",
+   "ticker": "QDTE",
+   "name": "Roundhill Innovation-100 0DTE Covered Call Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000083811.json"
+  },
+  {
+   "id": "S000091693",
+   "ticker": "MAGY",
+   "name": "Roundhill Magnificent Seven Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000091693.json"
+  },
+  {
+   "id": "S000087669",
+   "ticker": "RDTE",
+   "name": "Roundhill Russell 2000 0DTE Covered Call Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IWM",
+   "latest_report": "2026-06-30",
+   "file": "funds/S000087669.json"
+  },
+  {
+   "id": "S000083809",
+   "ticker": "XDTE",
+   "name": "Roundhill S&P 500 0DTE Covered Call Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IVV",
+   "latest_report": "2026-06-30",
+   "file": "funds/S000083809.json"
+  },
+  {
+   "id": "S000064974",
+   "ticker": null,
+   "name": "SELECTIVE PREMIUM INCOME FUND",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2021-03-31",
+   "file": "funds/S000064974.json"
+  },
+  {
+   "id": "S000092397",
+   "ticker": "SEPI",
+   "name": "Shelton Equity Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000092397.json"
+  },
+  {
+   "id": "S000080338",
+   "ticker": "SRHR",
+   "name": "SRH REIT Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000080338.json"
+  },
+  {
+   "id": "S000093831",
+   "ticker": "XLCI",
+   "name": "State Street(R) Communication Services Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093831.json"
+  },
+  {
+   "id": "S000093834",
+   "ticker": "XLYI",
+   "name": "State Street(R) Consumer Discretionary Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093834.json"
+  },
+  {
+   "id": "S000093835",
+   "ticker": "XLSI",
+   "name": "State Street(R) Consumer Staples Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093835.json"
+  },
+  {
+   "id": "S000093836",
+   "ticker": "XLEI",
+   "name": "State Street(R) Energy Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093836.json"
+  },
+  {
+   "id": "S000093837",
+   "ticker": "XLFI",
+   "name": "State Street(R) Financial Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093837.json"
+  },
+  {
+   "id": "S000093838",
+   "ticker": "XLVI",
+   "name": "State Street(R) Health Care Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093838.json"
+  },
+  {
+   "id": "S000093839",
+   "ticker": "XLII",
+   "name": "State Street(R) Industrial Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093839.json"
+  },
+  {
+   "id": "S000093840",
+   "ticker": "XLBI",
+   "name": "State Street(R) Materials Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093840.json"
+  },
+  {
+   "id": "S000093841",
+   "ticker": "XLRI",
+   "name": "State Street(R) Real Estate Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093841.json"
+  },
+  {
+   "id": "S000093832",
+   "ticker": "XLKI",
+   "name": "State Street(R) Technology Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093832.json"
+  },
+  {
+   "id": "S000087670",
+   "ticker": "SPIN",
+   "name": "State Street(R) US Equity Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000087670.json"
+  },
+  {
+   "id": "S000093833",
+   "ticker": "XLUI",
+   "name": "State Street(R) Utilities Select Sector SPDR(R) Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000093833.json"
+  },
+  {
+   "id": "S000097702",
+   "ticker": null,
+   "name": "STERLING CAPITAL HEDGED EQUITY PREMIUM INCOME ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000097702.json"
+  },
+  {
+   "id": "S000059856",
+   "ticker": "SCJAX",
+   "name": "Steward Covered Call Income Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000059856.json"
+  },
+  {
+   "id": "S000089785",
+   "ticker": "TCAL",
+   "name": "T. Rowe Price Capital Appreciation Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000089785.json"
+  },
+  {
+   "id": "S000091436",
+   "ticker": "BITK",
+   "name": "Tuttle Capital Bitcoin 0DTE Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000091436.json"
+  },
+  {
+   "id": "S000091439",
+   "ticker": "MSTK",
+   "name": "Tuttle Capital MSTR 0DTE Covered Call ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-03-31",
+   "file": "funds/S000091439.json"
+  },
+  {
+   "id": "S000055081",
+   "ticker": null,
+   "name": "USCA Premium Buy-Write Fund",
+   "role": "fund",
+   "still_reporting": false,
+   "benchmark": null,
+   "latest_report": "2020-09-30",
+   "file": "funds/S000055081.json"
+  },
+  {
+   "id": "S000101960",
+   "ticker": null,
+   "name": "VegaShares SPX NDX RTY Premium Income ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000101960.json"
+  },
+  {
+   "id": "S000089762",
+   "ticker": "PMYRX",
+   "name": "Victory Pioneer Equity Premium Income Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000089762.json"
+  },
+  {
+   "id": "S000095899",
+   "ticker": "WTPIX",
+   "name": "WisdomTree Equity Premium Income Digital Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/S000095899.json"
+  },
+  {
+   "id": "S000048315",
+   "ticker": "WTPI",
+   "name": "WisdomTree Equity Premium Income Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-05-31",
+   "file": "funds/S000048315.json"
+  },
+  {
+   "id": "XAI Madison Equity Premium Income Fund",
+   "ticker": null,
+   "name": "XAI Madison Equity Premium Income Fund",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/xai-madison-equity-premium-income-fund.json"
+  },
+  {
+   "id": "S000090038",
+   "ticker": "QDTY",
+   "name": "YieldMax(R) Nasdaq 100 0dte Covered Call Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "QQQ",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000090038.json"
+  },
+  {
+   "id": "S000090039",
+   "ticker": "RDTY",
+   "name": "YieldMax(R) R2000 0dte Covered Call Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-07-31",
+   "file": "funds/S000090039.json"
+  },
+  {
+   "id": "S000090040",
+   "ticker": "SDTY",
+   "name": "YieldMax(R) S&P 500 0dte Covered Call Strategy ETF",
+   "role": "fund",
+   "still_reporting": true,
+   "benchmark": "IVV",
+   "latest_report": "2026-07-31",
+   "file": "funds/S000090040.json"
+  },
+  {
+   "id": "S000101292",
+   "ticker": "QQQ",
+   "name": "Invesco QQQ Trust, Series 1",
+   "role": "benchmark",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/benchmark-QQQ.json"
+  },
+  {
+   "id": "S000004310",
+   "ticker": "IVV",
+   "name": "iShares Core S&P 500 ETF",
+   "role": "benchmark",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/benchmark-IVV.json"
+  },
+  {
+   "id": "S000004344",
+   "ticker": "IWM",
+   "name": "iShares Russell 2000 ETF",
+   "role": "benchmark",
+   "still_reporting": true,
+   "benchmark": null,
+   "latest_report": "2026-06-30",
+   "file": "funds/benchmark-IWM.json"
+  }
+ ]
+}

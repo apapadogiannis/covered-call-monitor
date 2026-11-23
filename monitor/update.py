@@ -31,6 +31,10 @@ STORE = ROOT / "data" / "nport"
 SOURCES = ROOT / "data" / "sources.json"
 TICKERS = ROOT / "data" / "tickers.csv"
 TICKER_LIST = "https://www.sec.gov/files/company_tickers_mf.json"   # series, share class, ticker
+BILLS = ROOT / "data" / "rates" / "treasury_bill_4w_daily.csv"
+BILL_RATES = ("https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/"
+              "{y}/all?type=daily_treasury_bill_rates&field_tdr_date_value={y}&page&_format=csv")
+BILLS_FROM = 2019
 PAUSE = 5          # seconds between requests
 ATTEMPTS = 4
 
@@ -118,6 +122,42 @@ def tickers() -> None:
         print(f"Tickers not updated ({e!r}); the stored list is kept.", flush=True)
 
 
+def bills(today: date | None = None) -> None:
+    """Stores the US Treasury's daily four-week bill rate (coupon equivalent, per cent a year).
+
+    It is the cash rate of the mix of index fund and Treasury bills that each fund is set beside.
+    Days already stored are never rewritten; only later days are added. If the Treasury cannot be
+    read, the stored file is kept and the update goes on.
+    """
+    import csv
+    import io
+    today = today or date.today()
+    stored: dict[str, str] = {}
+    if BILLS.exists():
+        with BILLS.open(encoding="utf-8", newline="") as f:
+            stored = {r["date"]: r["yield_4w"] for r in csv.DictReader(f)}
+    before = len(stored)
+    try:
+        for y in range(int(max(stored)[:4]) if stored else BILLS_FROM, today.year + 1):
+            time.sleep(PAUSE)
+            req = urllib.request.Request(BILL_RATES.format(y=y), headers={"User-Agent": "covered-call-monitor"})
+            with urllib.request.urlopen(req, timeout=120) as r:
+                text = r.read().decode("utf-8")
+            for row in csv.DictReader(io.StringIO(text)):
+                day = datetime.strptime(row["Date"], "%m/%d/%Y").date().isoformat()
+                rate = (row.get("4 WEEKS COUPON EQUIVALENT") or "").strip()
+                if rate and day not in stored:
+                    float(rate)
+                    stored[day] = rate
+        if not stored:
+            raise ValueError("the Treasury returned no rows")
+        BILLS.parent.mkdir(parents=True, exist_ok=True)
+        BILLS.write_text("date,yield_4w\n" + "".join(f"{d},{stored[d]}\n" for d in sorted(stored)), encoding="utf-8")
+        print(f"Treasury bills: {len(stored) - before} days added, to {max(stored)}.", flush=True)
+    except Exception as e:
+        print(f"Treasury bill rates not updated ({e!r}); the stored file is kept.", flush=True)
+
+
 def main() -> int:
     cfg = tomllib.loads((ROOT / "config" / "funds.toml").read_text(encoding="utf-8"))
     wanted = quarters_since(cfg["source"]["first_quarter"], date.today())
@@ -125,6 +165,7 @@ def main() -> int:
     if not missing:
         print("Nothing to download: every wanted quarter is stored.")
         tickers()
+        bills()
         return 0
 
     listing = published(cfg)
@@ -156,6 +197,7 @@ def main() -> int:
         SOURCES.write_text(json.dumps(sources, indent=2) + "\n", encoding="utf-8")
     print(f"Loaded {loaded} quarter(s).")
     tickers()
+    bills()
     return 0
 
 

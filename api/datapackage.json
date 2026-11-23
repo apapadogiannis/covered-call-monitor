@@ -68,7 +68,7 @@
      {
       "name": "net_flow_usd",
       "type": "number",
-      "description": "Sales plus reinvestments less redemptions, in US dollars; empty if not filed or not used"
+      "description": "Sales plus reinvestments less redemptions, in US dollars; empty if not filed or not used. For a fund whose month_order is reversed the flows are in the order filed, which may also be reversed: use sums over the three months of a report"
      },
      {
       "name": "month_order",
@@ -182,12 +182,20 @@
      "description": "Which of the three words the fund's name uses: Covered call, Buy-write or Premium income"
     },
     {
+     "name": "file",
+     "description": "Path of this fund's own small file, relative to the address of funds.json: its record, every month and every report"
+    },
+    {
      "name": "benchmark",
-     "description": "Ticker of the index fund this fund is set beside, chosen from the index its name states; null where the name states none of the three"
+     "description": "Ticker of the index fund this fund is set beside, chosen from the index its name states; null where the name states none of the three. Given for funds that stopped reporting too"
     },
     {
      "name": "against_benchmark",
-     "description": "The fund and its index fund over the same months. `last_12_months` and `longest_common_period` each give `from`, `to`, the fund's and the index fund's total return in per cent over those months; the longest period also gives `months` and `gap`, the fund's cumulative return less the index fund's, in percentage points, not annualised. Use this, not two records' own figures, to compare a fund with its index fund. Null where there is no benchmark"
+     "description": "The fund and its index fund over the same months. `last_12_months` and `longest_common_period` each give `from`, `to`, the fund's and the index fund's total return in per cent over those months. The longest period is the longest unbroken run of months ending at the fund's latest month; it also gives `months`, `gap` (the fund's cumulative return less the index fund's, in percentage points, not annualised, so not comparable between funds with different periods) and, for periods over a year, `fund_a_year`, `benchmark_a_year` and `gap_a_year`, the same as yearly rates. Use this, not two records' own figures, to compare a fund with its index fund. Null where there is no benchmark"
+    },
+    {
+     "name": "against_benchmark.risk",
+     "description": "Market risk of the fund beside its index fund over the longest common period. `periods` and `months_per_period` (1, or 3 for a fund read in three-month steps); `beta` (slope of the fund's return above Treasury bills on the index fund's); `correlation`; `volatility_fund` and `volatility_benchmark` (standard deviation of period returns as a yearly figure, per cent); `largest_fall_fund` and `largest_fall_benchmark` (largest fall from an earlier period-end, per cent, negative; falls within a period are not seen); `matched_mix` (cumulative total return, per cent, of beta in the index fund and the rest in four-week Treasury bills, rebalanced each period) and `gap_to_matched_mix` (the fund's cumulative return less that, in points); and the yearly rates `fund_a_year`, `benchmark_a_year`, `matched_mix_a_year`, `gap_a_year`, `gap_to_matched_mix_a_year`. The gap to the index fund mixes two things, lower market exposure and the result of the options; the gap to the matched mix removes the first. Beta is measured over the same period, so the mix is a reading in hindsight, not a portfolio one could have chosen in advance. Null under two years of months (three years in three-month steps)"
     },
     {
      "name": "still_reporting",
@@ -259,7 +267,7 @@
     },
     {
      "name": "flow_months_not_used",
-     "description": "Months whose net flow is left out because the filing reports negative sales or redemptions"
+     "description": "Months whose net flow is left out because the filing reports negative sales or reinvestments. Redemptions filed as negative numbers are read as outflows of that size and used"
     }
    ]
   }

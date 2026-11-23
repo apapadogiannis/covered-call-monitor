@@ -14,7 +14,9 @@ are and how to read them. It holds no figures: fetch them each time, because the
    It states what is covered, what was corrected in the source, how to read the figures and what
    they cannot answer.
 2. Fetch only the file the question needs:
-   - one fund's latest figures, or a ranking across funds: https://apapadogiannis.github.io/covered-call-monitor/funds.json
+   - one fund: find it in https://apapadogiannis.github.io/covered-call-monitor/index.json (small), then fetch its own file, https://apapadogiannis.github.io/covered-call-monitor/funds/<file>,
+     which holds its record, every month and every report
+   - a ranking across funds: https://apapadogiannis.github.io/covered-call-monitor/funds.json
    - monthly total returns and net flows of every fund: https://apapadogiannis.github.io/covered-call-monitor/monthly.csv
    - one row per quarterly report (net assets, written calls, notes): https://apapadogiannis.github.io/covered-call-monitor/reports.csv
    - the meaning of every column and field: https://apapadogiannis.github.io/covered-call-monitor/datapackage.json
@@ -24,9 +26,12 @@ are and how to read them. It holds no figures: fetch them each time, because the
 
 - Find a fund by its ticker where it has one, otherwise by its full name. Names can differ by one
   word between two different funds.
-- To set a fund beside its index fund, use `against_benchmark` in funds.json. It gives both over
-  the same months. Do not compare two records' own figures: their periods can end in different
-  months, and `total_return_pct.to` says when each ends.
+- To set a fund beside its index fund, use `against_benchmark`. It gives both over the same months.
+  Do not compare two records' own figures: their periods can end in different months, and
+  `total_return_pct.to` says when each ends.
+- The gap to the index fund is not the cost of the options alone: these funds carry about half the
+  market risk of their index fund. Give `against_benchmark.risk` with it: beta, volatility, and the
+  gap to a mix of the index fund and Treasury bills with the same market exposure.
 - Returns are total returns on net asset value with distributions reinvested, not market-price
   returns. For a closed-end fund they are not what a shareholder earned.
 - A fund with `call_exposure_in_notes` true writes calls through structured notes: the filing gives

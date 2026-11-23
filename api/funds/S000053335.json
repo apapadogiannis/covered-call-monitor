@@ -1,0 +1,87 @@
+{
+ "about": "Covered-Call Monitor: one fund. Fields as in funds.json, monthly.csv and reports.csv; see llms.txt and datapackage.json.",
+ "reports_to": "2026-07-31",
+ "licence": {
+  "name": "CC-BY-4.0",
+  "url": "https://creativecommons.org/licenses/by/4.0/",
+  "condition": "Reuse is allowed with credit to the source."
+ },
+ "cite_as": "Papadogiannis, A. (2026). Covered-Call Monitor, data to 2026-07-31. Zenodo. https://doi.org/10.5281/zenodo.24418592",
+ "fund": {
+  "id": "S000053335",
+  "name": "First Investors Covered Call Strategy Fund",
+  "ticker": null,
+  "file": "funds/S000053335.json",
+  "role": "fund",
+  "name_type": "Covered call",
+  "benchmark": null,
+  "against_benchmark": null,
+  "still_reporting": false,
+  "first_report": "2019-09-30",
+  "latest_report": "2019-09-30",
+  "latest_filing": "2019-11-29",
+  "reports": 1,
+  "months": 3,
+  "first_month": "2019-07",
+  "latest_month": "2019-09",
+  "net_assets_usd": 281127557.63,
+  "total_return_pct": {
+   "to": "2019-09",
+   "3_months": 1.961,
+   "12_months": null,
+   "36_months_a_year": null,
+   "60_months_a_year": null
+  },
+  "month_order": {
+   "order": "not determined",
+   "compared_with": null,
+   "reports_compared": 0,
+   "misfit_as_filed": null,
+   "misfit_reversed": null
+  },
+  "written_calls": {
+   "positions": 37,
+   "face_value_pct_net_assets": 100.79,
+   "strikes_taken_from_title": 0,
+   "nearest_expiration": "2019-10-18"
+  },
+  "call_exposure_in_notes": false,
+  "no_overlay_on_report_date": false,
+  "structured_notes": {
+   "count": 0,
+   "pct_net_assets": null,
+   "issuers": []
+  },
+  "flow_months_not_used": []
+ },
+ "monthly": [
+  {
+   "month": "2019-07",
+   "total_return_pct": 1.96,
+   "net_flow_usd": -11556165.57
+  },
+  {
+   "month": "2019-08",
+   "total_return_pct": -2.19,
+   "net_flow_usd": -16759621.81
+  },
+  {
+   "month": "2019-09",
+   "total_return_pct": 2.24,
+   "net_flow_usd": -10272733.74
+  }
+ ],
+ "reports": [
+  {
+   "report_date": "2019-09-30",
+   "filing_date": "2019-11-29",
+   "net_assets_usd": 281127557.63,
+   "total_return_3m_pct": 1.961,
+   "net_flow_3m_usd": -38588521.12,
+   "written_calls": 37,
+   "calls_face_value_pct_net_assets": 100.79,
+   "notes": 0,
+   "notes_pct_net_assets": null
+  }
+ ]
+}
