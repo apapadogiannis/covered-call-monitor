@@ -116,6 +116,11 @@ quarterly update. The page is published only if they do.
 What the check does not show: that the funds' own filings are right, or that funds other than the two
 in the reference match their published returns.
 
+## Privacy
+
+The page is a static file. It sets no cookies and asks nothing of the visitor. It counts visits with GoatCounter, which sets no cookies and keeps no IP address: it records the page
+opened, the site the visitor came from, the browser, the screen size and the country.
+
 ## Data and licensing
 
 Source: US Securities and Exchange Commission, Form N-PORT data sets
