@@ -75,11 +75,13 @@ monitor/build.py      joins the quarters and computes everything the page shows
 monitor/publish.py    writes the files for programs and AI agents (api/)
 api/                  those files: funds.json, monthly.csv, reports.csv, datapackage.json, llms.txt
 site/template.html    the page; the numbers are embedded at build time
+site/assets/          the mark, the tab icon and the card shown when the page is shared
 data/nport/<quarter>/ the stored extracts (five small CSV files per quarter)
 data/sources.json     what was downloaded, when, its size and checksum
 data/rates/           the US Treasury's daily four-week bill rate, the cash of the equal-risk mix
 tests/test_monitor.py checks of the rules the page depends on
 tests/test_published.py recomputes published fund returns from the stored filings
+tests/test_page.py    checks the built page: the elements its script looks up, the names of its cards
 reference/            the published returns used as the yardstick
 ```
 

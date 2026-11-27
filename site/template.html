@@ -3,9 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://gc.zgo.at; style-src 'unsafe-inline'; img-src 'self' data: https://apapadogiannis.goatcounter.com; connect-src https://apapadogiannis.goatcounter.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://gc.zgo.at; style-src 'unsafe-inline'; img-src 'self' https://apapadogiannis.goatcounter.com; connect-src https://apapadogiannis.goatcounter.com; base-uri 'none'; form-action 'none'">
 <title>Covered-Call Monitor: returns, overlays and flows from SEC filings</title>
 <meta name="description" content="What covered-call, buy-write and premium-income funds earn, give up and hold, measured each quarter from public SEC filings.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="https://apapadogiannis.github.io/covered-call-monitor/">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121211" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Covered-Call Monitor">
+<meta property="og:title" content="Covered-Call Monitor: what does the yield cost?">
+<meta property="og:description" content="What covered-call, buy-write and premium-income funds earn, give up and hold, measured each quarter from public SEC filings.">
+<meta property="og:url" content="https://apapadogiannis.github.io/covered-call-monitor/">
+<meta property="og:image" content="https://apapadogiannis.github.io/covered-call-monitor/social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Covered-Call Monitor: what does the yield cost?">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" type="application/json" href="data.json" title="The numbers on this page">
 <link rel="alternate" type="text/plain" href="llms.txt" title="Guide for AI agents">
 <script type="application/ld+json">/*LD*/</script>
@@ -13,21 +28,21 @@
 :root{
   color-scheme:light;
   --page:#f6f5f1;--surface:#fcfcfb;--line:#e1e0d9;--axis:#c3c2b7;
-  --ink:#0b0b0b;--ink2:#52514e;--mut:#898781;
+  --ink:#0b0b0b;--ink2:#52514e;--mut:#6f6d67;--link:#1f66c1;
   --blue:#2a78d6;--band:#cde2fb;--orange:#eb6834;--aqua:#1baf7a;--violet:#6250d6;--rf:#b9b8ae;--yellow:#eda100;--magenta:#e87ba4;--q1:#9ec5f4;--q2:#5598e7;--q3:#256abf;--q4:#104281;
 }
 @media (prefers-color-scheme:dark){
   :root:where(:not([data-theme="light"])){
     color-scheme:dark;
     --page:#121211;--surface:#1a1a19;--line:#2e2e2b;--axis:#52514e;
-    --ink:#f0efec;--ink2:#c3c2b7;--mut:#898781;
+    --ink:#f0efec;--ink2:#c3c2b7;--mut:#9a9891;--link:#5c9eee;
     --blue:#3987e5;--band:#173a66;--orange:#d95926;--aqua:#199e70;--violet:#9085e9;--rf:#6b6a64;--yellow:#c98500;--magenta:#d55181;--q1:#1c5cab;--q2:#3987e5;--q3:#6da7ec;--q4:#b7d3f6;
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
   --page:#121211;--surface:#1a1a19;--line:#2e2e2b;--axis:#52514e;
-  --ink:#f0efec;--ink2:#c3c2b7;--mut:#898781;
+  --ink:#f0efec;--ink2:#c3c2b7;--mut:#9a9891;--link:#5c9eee;
   --blue:#3987e5;--band:#173a66;--orange:#d95926;--aqua:#199e70;--violet:#9085e9;--rf:#6b6a64;--yellow:#c98500;--magenta:#d55181;--q1:#1c5cab;--q2:#3987e5;--q3:#6da7ec;--q4:#b7d3f6;
 }
 *{box-sizing:border-box}
@@ -54,6 +69,26 @@ h2{font-size:20px;line-height:1.25;margin:0 0 6px;letter-spacing:-.01em}
 .site nav button[aria-current="page"]{color:var(--surface);background:var(--ink)}
 .site nav button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
 .view{display:none}.view.on{display:block}
+a{color:var(--link)}
+.site .brand{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mark{width:34px;height:34px;flex:none;display:block}
+footer .sig{display:flex;align-items:center;gap:9px;margin:0 0 12px;color:var(--ink2);font-weight:600}
+footer .sig .mark{width:22px;height:22px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:12px;top:8px;z-index:30;background:var(--surface);padding:6px 10px;border-radius:8px}
+.onpage{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;margin:-10px 0 16px;padding:7px 0;background:var(--page);border-bottom:1px solid var(--line);font-size:13px}
+.onpage[hidden]{display:none}
+.onpage .lab{color:var(--mut);flex:none}
+.onpage .links{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;min-width:0}
+.onpage .links::-webkit-scrollbar{display:none}
+.onpage button{font:inherit;color:var(--ink2);background:none;border:1px solid transparent;border-radius:999px;padding:4px 11px;cursor:pointer;white-space:nowrap;flex:none}
+.onpage button:hover{color:var(--ink);border-color:var(--line)}
+.onpage button[aria-current="true"]{color:var(--ink);background:var(--surface);border-color:var(--axis);font-weight:600}
+.onpage button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.card[data-nav]{scroll-margin-top:52px}
+dl.gloss{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:9px 22px;margin:6px 0 0;font-size:14px}
+dl.gloss dt{font-weight:650}dl.gloss dd{margin:0;color:var(--ink2)}
+@media(max-width:560px){dl.gloss{grid-template-columns:1fr;gap:2px 0}dl.gloss dd{margin-bottom:9px}
+  .onpage .lab{display:none}.onpage{margin:-6px -12px 12px;padding:6px 12px}}
 .method{font-size:12.5px;color:var(--mut);margin:8px 0 18px}
 .method a{color:var(--ink2)}
 .stamp + .method{margin-top:-8px}
@@ -284,25 +319,12 @@ window.goatcounter = {path: function () { return location.pathname; }};
 <script data-goatcounter="https://apapadogiannis.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to the content</a>
 <div class="wrap">
   <header class="site">
-    <div class="brand">Covered-Call Monitor<small>returns, overlays and flows from SEC filings</small></div>
+    <div class="brand"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="var(--blue)"/><line x1="13" y1="50" x2="51" y2="14" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".38"/><polyline points="13,50 33,31 52,31" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="33" cy="31" r="6.5" fill="#fff"/></svg><span>Covered-Call Monitor<small>what the yield costs</small></span></div>
     <nav aria-label="Sections"><button type="button" data-view="funds">Funds</button><button type="button" data-view="explained">How it works</button><button type="button" data-view="category">The category</button></nav>
   </header>
-
-  <!-- ================= FUNDS ================= -->
-  <div class="view" id="view-funds">
-  <h1>What does the yield cost?</h1>
-  <p class="lede" id="lede-funds"><!--LEDE--></p>
-  <div class="stamp" id="stamp"><!--STAMP--></div>
-  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Background: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
-
-  <nav class="tabs" role="tablist" aria-label="Sections">
-    <button type="button" role="tab" data-tab="overview">Overview</button>
-    <button type="button" role="tab" data-tab="fund">Fund by fund</button>
-    <button type="button" role="tab" data-tab="notes">Data and notes</button>
-  </nav>
-
   <noscript>
     <div class="card">
       <h2>This page needs JavaScript for its charts and tables</h2>
@@ -310,9 +332,25 @@ window.goatcounter = {path: function () { return location.pathname; }};
       <!--STATIC-->
     </div>
   </noscript>
+  <nav class="onpage" id="onpage" aria-label="On this page" hidden><span class="lab">On this page</span><div class="links" id="onpage-links"></div></nav>
+  <main id="main">
+
+  <!-- ================= FUNDS ================= -->
+  <div class="view" id="view-funds">
+  <h1>What does the yield cost?</h1>
+  <p class="lede" id="lede-funds"><!--LEDE--></p>
+  <div class="stamp" id="stamp"><!--STAMP--></div>
+  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Related article: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a> · <a href="#glossary">words used</a> · <a href="#about">about</a></p>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button type="button" role="tab" data-tab="overview">Overview</button>
+    <button type="button" role="tab" data-tab="fund">Fund by fund</button>
+    <button type="button" role="tab" data-tab="notes">Data and notes</button>
+  </nav>
+
   <div class="pane" id="pane-overview">
     <div class="tiles" id="tiles"></div>
-    <div class="card">
+    <div class="card" data-nav="Five large funds">
       <h2>Total return of five large funds and of their index funds</h2>
       <p class="sub"><b>Every figure here is a total return: the change in price plus every distribution paid, reinvested in the fund.</b> That holds for the covered-call funds and for the index funds alike, so the high distributions are fully counted. The index fund holds the same market without selling calls on it. The difference is not the cost of the calls alone: these funds also carry about half the market risk of their index fund. <a href="#fund">Fund by fund</a> sets each fund beside a mix of its index fund and Treasury bills with the same market risk.</p>
       <div class="filters"><span>Period</span><div class="seg range" role="group" aria-label="Period"></div></div>
@@ -339,25 +377,25 @@ window.goatcounter = {path: function () { return location.pathname; }};
     <div class="filters"><span>Period</span><div class="seg range" role="group" aria-label="Period"></div></div>
     <div class="tiles" id="ftiles"></div>
     <p class="sub" id="riskline" style="max-width:820px"></p>
-    <div class="card">
+    <div class="card" data-nav="Cumulative return">
       <h2 id="chart-title"></h2>
       <p class="sub" id="chart-sub"></p>
       <div class="legend" id="legend"></div>
       <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
       <details><summary>Monthly figures as a table</summary><div class="scroll" id="mtable"></div></details>
     </div>
-    <div class="card">
+    <div class="card" data-nav="The overlay">
       <h2>The overlay on the last report date</h2>
       <p class="sub" id="ovtext"></p>
       <div class="scroll" id="ovtable"></div>
     </div>
-    <div class="card" id="dist-card">
+    <div class="card" id="dist-card" data-nav="Paid out">
       <h2>What the fund paid out</h2>
       <p class="sub" id="disttext"></p>
       <div id="distchart"></div>
       <p class="note">The filings state no distribution. This is implied from them: net assets at the start of each quarter are carried forward at the fund's total return, with the money that came in and went out; what the fund holds less than that at the end is what it paid out. It counts every kind of distribution, including return of capital, and is a rate on net asset value, not a yield on the market price. The timing of flows within a month is not known, so it is good to within a point or two a year, and a single quarter is noisier.</p>
     </div>
-    <div class="card">
+    <div class="card" data-nav="Flows">
       <h2>Money in and out</h2>
       <p class="sub">New shares created less shares redeemed, month by month, in millions of dollars. A bar to the right is money coming in.</p>
       <div id="flowbars"></div>
@@ -366,7 +404,7 @@ window.goatcounter = {path: function () { return location.pathname; }};
   </div>
 
   <div class="pane" id="pane-notes">
-    <div class="card">
+    <div class="card" data-nav="What it does not show">
       <h2>What this site does not show</h2>
       <ul class="note">
         <li><b>No yield on the price.</b> The filings carry no distributions per share, and a current yield on the market price needs daily prices. What each fund paid out is implied here from its net assets, returns and flows, as a rate on net asset value: an estimate, good to within a point or two a year.</li>
@@ -376,7 +414,7 @@ window.goatcounter = {path: function () { return location.pathname; }};
         <li><b>No judgement on any fund.</b> The site reports what was filed. It does not forecast and does not rank.</li>
       </ul>
     </div>
-    <div class="card">
+    <div class="card" data-nav="How the figures are made">
       <h2>How the figures are made</h2>
       <ul class="note">
         <li><b>Monthly returns are joined across reports.</b> Each public report carries the three months that end at its date. Reports of successive quarters give an unbroken monthly series.</li>
@@ -389,6 +427,21 @@ window.goatcounter = {path: function () { return location.pathname; }};
         <li><b>One share class per fund.</b> Where a report lists several classes, the first class identifier is used.</li>
       </ul>
     </div>
+    <div class="card" id="sec-about" data-nav="About">
+      <h2>About the monitor</h2>
+      <p class="sub">Each quarter the monitor reads the Form N-PORT reports that US-registered funds file with the SEC and works out, for every covered-call, buy-write and premium-income fund, its total return, the calls it had written, what it paid out and the money moving in and out. It reports what was filed. It does not forecast, rank or advise.</p>
+      <ul class="note">
+        <li><b>Live figures, from the filings.</b> The page is rebuilt whenever the SEC posts a new quarter. Each fund's figures are as of its own report date, which the SEC makes public about two months later.</li>
+        <li><b>Checked against published returns.</b> Before every build the returns of two funds are recomputed from the stored filings and must match the figures published for them elsewhere, to within rounding. One of the two files its monthly returns in the reverse order, so the check covers both readings of the form.</li>
+        <li><b>Open.</b> The <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a>, the stored filings and every figure on the site are public. A wrong number is welcome as an <a href="https://github.com/apapadogiannis/covered-call-monitor/issues" target="_blank" rel="noopener">issue</a>.</li>
+      </ul>
+      <h2 style="margin-top:22px">About the author</h2>
+      <p class="sub">Agisilaos Papadogiannis (PhD, MBA) is an independent researcher in finance, working on valuation and asset pricing. Several of his papers are published in peer-reviewed journals, and his papers, replication packages and tools are open. He is the author of a journal article on the same subject, <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains: Mechanics, Trade-Offs, and Practical Diagnostics for Covered-Call ETFs</a> (JBIS, 2026). The monitor is separate work, computed from public filings. The research is conducted independently and without funding.</p>
+      <p class="sub">All papers and tools: <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">github.com/apapadogiannis</a> · ORCID <a href="https://orcid.org/0009-0002-7753-7052" target="_blank" rel="noopener">0009-0002-7753-7052</a> · Other tools: <a href="https://apapadogiannis.github.io/crypto-observatory/" target="_blank" rel="noopener">Crypto Observatory</a>, <a href="https://apapadogiannis.github.io/dual-risk-calculator/" target="_blank" rel="noopener">Dual-Risk DCF Calculator</a></p>
+      <h2 style="margin-top:22px">How to cite</h2>
+      <p class="sub"><b>The monitor.</b> Papadogiannis, A. (2026). Covered-Call Monitor. Zenodo. <a href="https://doi.org/10.5281/zenodo.24418592" target="_blank" rel="noopener">doi.org/10.5281/zenodo.24418592</a>. Give the date of the reports with any figure you quote.</p>
+      <p class="sub"><b>Related article.</b> Papadogiannis, A. (2026). High Yield, Capped Gains: Mechanics, Trade-Offs, and Practical Diagnostics for Covered-Call ETFs. <i>The Journal of Beta Investment Strategies</i>, 17(2), 110–123. <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">doi.org/10.3905/jbis.2026.001</a>. The article belongs to its publisher and is available from the journal. This site reproduces none of its text, tables or figures: every figure here is computed from public SEC filings, and the explanations were written for the site.</p>
+    </div>
   </div>
   </div>
 
@@ -396,9 +449,9 @@ window.goatcounter = {path: function () { return location.pathname; }};
   <div class="view" id="view-explained">
   <h1>How a covered-call fund works</h1>
   <p class="lede">It owns shares and sells someone else the right to their gains above a set price. The payment it receives for that right is what funds the high distribution. The gains it signed away are the cost.</p>
-  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Background: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
+  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Related article: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a> · <a href="#glossary">words used</a> · <a href="#about">about</a></p>
 
-  <div class="card">
+  <div class="card" data-nav="The trade">
     <h2>The trade, one month at a time</h2>
     <div class="lab2">
       <div>
@@ -420,7 +473,7 @@ window.goatcounter = {path: function () { return location.pathname; }};
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" data-nav="What follows">
     <h2>What follows from it</h2>
     <ul class="note">
       <li><b>The yield is not the return.</b> The distribution is paid largely out of premiums. What the investor ends up with is the total return: the distributions plus the change in the fund's value. A fund can pay 10% a year and return much less, or much more, than that.</li>
@@ -431,7 +484,7 @@ window.goatcounter = {path: function () { return location.pathname; }};
     </ul>
   </div>
 
-  <div class="card">
+  <div class="card" data-nav="Three names">
     <h2>Three names, two ideas</h2>
     <p class="sub">The funds on this site carry one of three names. Two of them mean the same trade. The third is a looser label.</p>
     <div class="term"><h3>Covered call</h3><p>The trade described above: hold the shares, sell calls on them. "Covered" means the fund owns what it has promised, so it can always deliver.</p></div>
@@ -441,7 +494,7 @@ window.goatcounter = {path: function () { return location.pathname; }};
     <p class="note" id="types-note"></p>
   </div>
 
-  <div class="card">
+  <div class="card" data-nav="What to look at">
     <h2>What to look at in a fund</h2>
     <ul class="note">
       <li><b>Total return against the index fund</b> over a period with both rising and falling months. <a href="#fund">Fund by fund</a> shows it for five large funds.</li>
@@ -451,6 +504,27 @@ window.goatcounter = {path: function () { return location.pathname; }};
       <li><b>Where the distribution comes from.</b> Part of it can be a return of the investor's own capital. That is in each fund's annual report and is not on this site.</li>
     </ul>
   </div>
+  <div class="card" id="sec-glossary" data-nav="Words used">
+    <h2>Words used on this site</h2>
+    <dl class="gloss">
+      <dt>Covered call, buy-write</dt><dd>Hold the shares and sell (write) call options on them. Two names for the same trade.</dd>
+      <dt>Premium income</dt><dd>A name for the aim, income from option premiums, not for one trade. Funds with this name vary in how they do it.</dd>
+      <dt>Call option, strike</dt><dd>The buyer of a call gets every gain of the shares above an agreed price, the strike, until the option expires.</dd>
+      <dt>Premium</dt><dd>What the buyer pays the fund for the option, up front. It funds most of the distribution.</dd>
+      <dt>Overlay</dt><dd>The options a fund had written on its report date, as its filing lists them.</dd>
+      <dt>Calls written</dt><dd>Contracts written × 100 shares × the strike, as a share of the fund's net assets. Near 100% means calls were written against the whole portfolio.</dd>
+      <dt>Total return</dt><dd>The change in the fund's value plus every distribution paid, reinvested in the fund. Every return on this site is a total return.</dd>
+      <dt>Distribution, paid out</dt><dd>What the fund pays its holders. The filings do not state it, so it is implied here from net assets, returns and flows, as a rate on net asset value: an estimate, good to within a point or two a year.</dd>
+      <dt>Yield</dt><dd>The distribution as a share of the price. It is not the return, and this site shows no yield on the market price.</dd>
+      <dt>Index fund</dt><dd>A fund holding the same market without selling calls on it: QQQ for the Nasdaq-100, IVV for the S&amp;P 500, IWM for the Russell 2000.</dd>
+      <dt>Beta, market risk</dt><dd>How much the fund moved for each 1 that its index fund moved. A covered-call fund carries about half the market risk of its index fund.</dd>
+      <dt>The mix</dt><dd>The index fund and four-week Treasury bills, held in the proportions that give the fund's own beta. It shows what the same market risk earned without the options.</dd>
+      <dt>Net assets</dt><dd>The value of everything the fund holds less what it owes, on its report date.</dd>
+      <dt>Net flow</dt><dd>Sales plus reinvestments less redemptions: the money investors put in or took out.</dd>
+      <dt>Equity-linked note</dt><dd>A note issued by a bank that carries the option inside it. The filing names the note and its issuer, not the option's terms.</dd>
+      <dt>Form N-PORT, report date</dt><dd>The portfolio report US-registered funds file with the SEC. The report for the last month of each fiscal quarter becomes public about two months later, so each fund's figures are as of its own report date.</dd>
+    </dl>
+  </div>
   </div>
 
   <!-- ================= CATEGORY ================= -->
@@ -458,7 +532,7 @@ window.goatcounter = {path: function () { return location.pathname; }};
   <h1>The category</h1>
   <p class="lede" id="lede-cat"><!--LEDECAT--></p>
   <div class="stamp" id="cat-stamp"><!--STAMP--></div>
-  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Background: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a></p>
+  <p class="method">By <a href="https://github.com/apapadogiannis" target="_blank" rel="noopener">Agisilaos Papadogiannis</a> · Related article: <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">High Yield, Capped Gains</a> (JBIS, 2026) · Source: SEC Form N-PORT · <a href="https://github.com/apapadogiannis/covered-call-monitor" target="_blank" rel="noopener">code</a> · <a href="data.json" target="_blank" rel="noopener">data</a> · <a href="#glossary">words used</a> · <a href="#about">about</a></p>
   <div class="tiles" id="cat-tiles"></div>
   <div class="card">
     <div class="filters">
@@ -472,7 +546,9 @@ window.goatcounter = {path: function () { return location.pathname; }};
   </div>
   </div>
 
+  </main>
   <footer>
+    <div class="sig"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="var(--blue)"/><line x1="13" y1="50" x2="51" y2="14" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".38"/><polyline points="13,50 33,31 52,31" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="33" cy="31" r="6.5" fill="#fff"/></svg><span>Covered-Call Monitor</span></div>
     <details class="foot"><summary>Method, sources and data files</summary>
     <p>Source and method: every figure is computed from the Form N-PORT reports that US-registered funds file with the Securities and Exchange Commission, as published in the SEC's quarterly <a id="src" target="_blank" rel="noopener">Form N-PORT data sets</a>. Figures are as filed by the funds and are not audited. Where the layout of the source leads to a misreading (the order of months, strikes cut short), the correction is described in the data files. Background on the strategy: A. Papadogiannis (2026), "High Yield, Capped Gains: Mechanics, Trade-Offs, and Practical Diagnostics for Covered-Call ETFs", <i>The Journal of Beta Investment Strategies</i> 17(2), <a href="https://doi.org/10.3905/jbis.2026.001" target="_blank" rel="noopener">doi.org/10.3905/jbis.2026.001</a>. The explanations on this site are written for it and do not reproduce the article.</p>
     <p id="asof"></p>
@@ -794,18 +870,42 @@ function cat() {
 
 /* ---------- views and tabs, as in the Crypto Observatory ---------- */
 const VIEWS = ["explained", "category"], TABS = ["overview", "fund", "notes"];
+// Addresses that open a card: the section and tab it is in, and the card to scroll to.
+const ANCHOR = {about: ["funds", "notes", "sec-about"], glossary: ["explained", "overview", "sec-glossary"]};
+function safely(f) { try { f(); } catch (e) { console.error("A card could not be drawn:", e); } }
+// "On this page": one button per card of the section and tab in view.
+let ONPAGE = [];
+function onPage() {
+  const nav = $("onpage"), box = $("onpage-links"); box.textContent = "";
+  ONPAGE = [...document.querySelectorAll(".view.on .card[data-nav]")].filter(c => c.offsetParent !== null).map(card => {
+    const b = el("button", {type: "button"}); b.textContent = card.dataset.nav;
+    b.addEventListener("click", () => card.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth", block: "start"}));
+    box.appendChild(b); return {card, b}; });
+  nav.hidden = ONPAGE.length < 2; spy();
+}
+function spy() {
+  if (ONPAGE.length < 2) return;
+  let cur = -1; ONPAGE.forEach((o, i) => { if (o.card.getBoundingClientRect().top <= innerHeight * 0.5) cur = i; });
+  if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = ONPAGE.length - 1;
+  ONPAGE.forEach((o, i) => i === cur ? o.b.setAttribute("aria-current", "true") : o.b.removeAttribute("aria-current"));
+  if (cur < 0) return;
+  const a = ONPAGE[cur].b, box = a.parentNode; if (a.offsetLeft < box.scrollLeft || a.offsetLeft + a.offsetWidth > box.scrollLeft + box.clientWidth) box.scrollLeft = a.offsetLeft - 20;
+}
+{ let tick = false; addEventListener("scroll", () => { if (tick) return; tick = true; requestAnimationFrame(() => { tick = false; spy(); }); }, {passive: true}); }
 function showTab() {
-  const h = location.hash.slice(1), view = VIEWS.includes(h) ? h : "funds", tab = TABS.includes(h) ? h : "overview";
+  const h = location.hash.slice(1), at = ANCHOR[h], view = at ? at[0] : VIEWS.includes(h) ? h : "funds", tab = at ? at[1] : TABS.includes(h) ? h : "overview";
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === "view-" + view));
   document.querySelectorAll(".site nav button").forEach(b => b.dataset.view === view ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
   document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
   document.querySelectorAll(".pane").forEach(p => p.classList.toggle("on", p.id === "pane-" + tab));
-  if (view === "funds" && tab === "fund") fund();
-  if (view === "explained") payoff();
+  if (view === "funds" && tab === "fund") safely(fund);
+  if (view === "explained") safely(payoff);
+  onPage();
+  if (at) $(at[2]).scrollIntoView();
 }
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => { if (location.hash.slice(1) !== b.dataset.tab) location.hash = b.dataset.tab; }));
 document.querySelectorAll(".site nav button").forEach(b => b.addEventListener("click", () => { const to = b.dataset.view === "funds" ? "overview" : b.dataset.view; if (location.hash.slice(1) !== to) location.hash = to; }));
-window.addEventListener("hashchange", () => { showTab(); window.scrollTo(0, 0); });
+window.addEventListener("hashchange", () => { showTab(); if (!ANCHOR[location.hash.slice(1)]) window.scrollTo(0, 0); });
 cat(); overview(); showTab();
 let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(showTab, 120); });
 </script>

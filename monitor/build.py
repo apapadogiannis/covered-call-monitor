@@ -633,11 +633,13 @@ def build(out: Path) -> dict:
           "dateModified": data["meta"]["reports_to"], "isBasedOn": cfg["source"]["page"],
           "distribution": [{"@type": "DataDownload", "encodingFormat": f["format"], "contentUrl": f["file"],
                             "description": f["what"]} for f in data["meta"]["files"]]}
-    html = (template.replace("/*DATA*/null", json.dumps(data, separators=(",", ":")))
-            .replace("/*LD*/", json.dumps(ld, separators=(",", ":"))))
+    safe = lambda v: json.dumps(v, separators=(",", ":")).replace("<", "\\u003c")   # a "<" in a fund's name cannot close the script element
+    html = template.replace("/*DATA*/null", safe(data)).replace("/*LD*/", safe(ld))
     for mark, text in static_text(data).items():        # readable without JavaScript
         html = html.replace(mark, text)
     (out / "index.html").write_text(html, encoding="utf-8")
+    for asset in sorted((ROOT / "site" / "assets").iterdir()):     # the mark, the tab icon and the card shown when the page is shared
+        (out / asset.name).write_bytes(asset.read_bytes())
     return data
 
 
