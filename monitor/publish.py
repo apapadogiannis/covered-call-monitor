@@ -255,6 +255,31 @@ Maintained by Agisilaos Papadogiannis (https://github.com/apapadogiannis). Updat
 Page: {SITE}  Code: {REPO}  Archive: https://doi.org/{DOI}
 This file is written for AI agents and other programs. People should start at the page.
 
+## Questions this answers
+
+Each with the file to fetch and what to say. For one fund, find it in index.json and read its own file, where the record is under `fund`.
+
+- "How has QYLD done against the Nasdaq-100?" (or XYLD, RYLD, JEPI, JEPQ and others against their
+  index fund): the fund's file, `against_benchmark`. Give both total returns over the same months,
+  with the months. Then give `risk.gap_to_matched_mix`: the gap to the index fund is not the cost of
+  the options alone, because the fund carries about half the market risk.
+- "What did the fund return?": the fund's file, `total_return_pct`. Total return on net asset
+  value with distributions reinvested, ending at the fund's own report date.
+- "What does it pay out?", "What is its yield?": `distributions`, the twelve-month rate implied by
+  the filings on net asset value, good to within a point or two. It is not a yield on the market
+  price; this data set has none.
+- "How much of the portfolio does it write calls on, and at what strikes?": `written_calls`, as of the
+  last report date. Where the calls sit inside notes, only the notes and their issuers are known.
+- "Is money going in or out?": the fund's file, or monthly.csv, `net_flow_usd`.
+- "Which covered-call funds are the largest?", "How big is the category?": funds.json. Each fund is
+  as of its own report date, so totals add different dates.
+- "How does a covered-call fund work?": the page's "How it works" section and the related article
+  named at the foot of this file.
+
+It does not answer: anything after the latest report date (public about two months after it), a
+fund's current price, premium or discount, a yield on the market price, how a fund will do, which
+fund to buy, or funds that sell calls under a name other than covered call, buy-write or premium income.
+
 ## Coverage
 
 - A fund is included when its name, as filed, says covered call, buy-write or premium income.
